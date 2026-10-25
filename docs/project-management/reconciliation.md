@@ -85,7 +85,7 @@ masih ada frasa lama yang bertentangan dengan checkpoint v1.6.
   catatan historis tidak lagi menjadi baseline aktif.
 - Baseline database tetap **Database v1.1 dengan 22 tabel**; tidak ada
   otorisasi perubahan schema, migration, atau seed.
-- Empat lampiran dasar Outreach wajib: KTP, KK, foto penerima, dan foto
+- Empat lampiran dasar Outreach wajib: KTP, KK, foto klien, dan foto
   rumah. Lampiran tambahan berdasarkan jenis bantuan dapat dipakai
   dalam prototype, tetapi validasi formalnya tetap `PENDING VALIDATION`.
 - Baznas/CSR menghasilkan tiga PDF terpisah (Outreach beserta halaman

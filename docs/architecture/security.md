@@ -7,11 +7,19 @@ Outreach Kelurahan Manukan Kulon. Alur bisnis dan gate mengikuti
 tetap dipertahankan. Dokumen ini tidak mengotorisasi perubahan skema
 atau migrasi database.
 
+Revisi 23 Oktober 2026: menambahkan kontrol autentikasi prototype sesuai
+D-014 (`docs/project-management/decisions.md`). Tidak ada perubahan lain.
+
 ## Kontrol Wajib
 
 -   **Otorisasi server-side:** Authentication, role, ownership/scope,
     status, action permission, dan resource permission wajib diperiksa
     di server. UI bukan kontrol keamanan.
+-   **Autentikasi prototype:** Login memakai mekanisme bawaan Laravel
+    dengan akun dummy. Akun dibuat dan dikelola ADMIN; registrasi publik
+    dinonaktifkan. Prototype tidak menambahkan kebijakan password atau
+    sesi khusus di luar bawaan Laravel; kebijakan production tetap
+    `PENDING VALIDATION`.
 -   **Validasi parent Outreach:** Akses atau perubahan attachment, form
     Mustahik/Kifayah, signature, historical version, PDF, dan approval
     harus memvalidasi hak akses terhadap parent Outreach serta scope dan

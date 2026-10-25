@@ -1,64 +1,167 @@
 # AGENTS.md — project/
 
-## Read First
+Aturan kerja untuk coding agent (Claude Code atau lainnya) pada repo ini. Sumber kebenaran proyek
+ada di `docs/`; peta dokumen ada di `docs/index.md`. Status gate implementasi dicatat di
+`docs/project-management/tasks.md` (IMP-001).
 
-1. `README.md`
-2. `AGENTS.md` — aturan umum untuk coding agent.
-3. `CLAUDE.md` — instruksi operasional khusus Claude, jika tugas menggunakan Claude.
-4. `docs/index.md`
-5. `docs/project-management/decisions.md`
-6. `docs/project-management/reconciliation.md`
-7. `docs/project-management/tasks.md`
-8. Dokumen kanonis yang relevan dengan task.
-9. Checkpoint v1.6 sebagai snapshot perencanaan jika konteks historis atau keputusan sebelumnya diperlukan.
+## 1. Urutan Baca
 
-Jika konteks historis, keputusan sebelumnya, atau konteks perencanaan diperlukan, periksa file checkpoint v1.6 berformat Markdown (`.md`) yang disediakan pengguna. Jika file checkpoint tidak tersedia atau isinya tidak dapat dibaca, sampaikan keterbatasan tersebut dan jangan mengarang isinya. ZIP repositori proyek, jika disediakan, digunakan untuk memeriksa kondisi berkas proyek saat ini dan bukan pengganti checkpoint. Checkpoint tetap bernama v1.6 untuk revisi dokumentasi biasa; jangan membuat checkpoint bernomor baru tanpa keputusan eksplisit pengguna.
+1. `README.md` dan `docs/index.md`.
+2. `docs/project-management/decisions.md`, `reconciliation.md`, dan `tasks.md`.
+3. Dokumen kanonis yang relevan dengan tugas (lihat peta di bagian 10).
+4. Checkpoint v1.6 hanya untuk konteks historis:
+   `../checkpoint/README_Project_Outreach_Manukan_Kulon_v1.6_checkpoint.md` (di luar repo).
 
-## Aturan Otoritas
+- Muat konteks bertahap; jangan membaca semua dokumen untuk setiap tugas. Perubahan kecil dan jelas
+  tidak perlu memuat seluruh dokumentasi.
+- Jangan memulai implementasi substansial hanya dari konteks percakapan bila dokumentasi tersedia.
+- Jika checkpoint tidak dapat diakses atau dibaca, sampaikan keterbatasan itu dan jangan mengarang
+  isinya. Checkpoint tetap bernama v1.6 untuk revisi dokumentasi biasa; jangan membuat atau
+  mengganti nomor checkpoint tanpa keputusan eksplisit pengguna.
 
-- Dokumen kanonis di `docs/` menjadi sumber kebenaran untuk concern masing-masing.
-- Checkpoint v1.6 adalah snapshot perencanaan, bukan pengganti dokumen kanonis.
-- Workflow v2.1 dan Database v1.1 / 22 tabel adalah baseline terkunci.
-- Jangan mengubah keputusan `LOCKED`, baseline database, atau state workflow tanpa persetujuan eksplisit dan pencatatan dampaknya pada dokumen yang relevan.
-- `PENDING VALIDATION` bukan keputusan final Kelurahan dan tidak boleh ditulis seolah-olah sudah diverifikasi.
-- Jika dua sumber berbeda, catat konflik, sumber, evidence yang tersedia, dan dampaknya. Jangan memilih salah satu secara diam-diam.
-- Jangan meminta pengguna mengulang keputusan yang sudah jelas, kecuali ada evidence baru yang benar-benar bertentangan.
+## 2. Otoritas dan Baseline
 
-## Ruang Lingkup dan Gate Implementasi
+- Dokumen kanonis di `docs/` adalah sumber kebenaran per topik. Checkpoint hanya snapshot
+  perencanaan. Kode bukan sumber kebenaran untuk keputusan baru, dan kode lama bukan bukti perilaku
+  yang diinginkan.
+- Baseline terkunci: Workflow v2.1 dan Database v1.1 (22 tabel). Jangan mengubah keputusan `LOCKED`,
+  schema, field, relasi, constraint, migration, atau seed tanpa persetujuan eksplisit dan pencatatan
+  dampaknya.
+- `PENDING VALIDATION` bukan keputusan final Kelurahan dan tidak boleh ditulis seolah terverifikasi.
+  Keberadaan PDF bukan bukti persetujuan formal pemilik formulir.
+- Klasifikasikan informasi bila perlu: KNOWN, CONFIRMED, LOCKED, PENDING VALIDATION, UNKNOWN. Jangan
+  mengarang requirement; bila perilaku tidak diketahui, katakan dan tanyakan.
+- Jika dua sumber berbeda: catat konflik, sumber, evidence, dan dampaknya; jangan memilih diam-diam.
+  Periksa berurutan: checkpoint (bila relevan), `decisions.md`, dokumen kanonis, lalu implementasi.
+  Jika konflik konsekuensial belum terselesaikan, tanyakan kepada pengguna.
+- Jangan meminta pengguna mengulang keputusan yang sudah jelas, kecuali ada evidence baru yang
+  benar-benar bertentangan.
 
-- Prototype awal bersifat lokal, non-produksi, dan menggunakan dummy data. Demo awal berjalan pada satu komputer; hosting/domain dan penggunaan LAN bukan bagian dari lingkup demo awal.
-- Jangan menunggu seluruh dokumen atau semua validasi eksternal selesai sebelum coding dapat dimulai.
-- Sebelum implementasi dimulai, identifikasi dan selesaikan konflik dokumentasi kritis yang dapat mengubah perilaku bisnis, izin/otorisasi, keamanan, alur kerja, atau baseline yang terkunci.
-- Tandai validasi yang masih tertunda secara jujur sebagai `PENDING VALIDATION`; validasi yang baru bisa dilakukan setelah prototype tersedia bukan penghalang otomatis bagi seluruh coding.
-- Mulai implementasi hanya setelah pengguna secara eksplisit menyetujui pembukaan gate implementasi berdasarkan ringkasan kesiapan dan konflik kritis yang tersisa.
-- Jangan memulai migration, mengubah schema, atau mengubah baseline 22 tabel tanpa persetujuan eksplisit.
-- Jangan mengarang field formulir, opsi dropdown, cardinality, scoring, atau aturan validasi yang tidak didukung dokumen sumber atau evidence.
-- Keberadaan PDF tidak membuktikan adanya persetujuan formal dari pemilik formulir.
-- Gunakan dummy data. Jangan memasukkan PII nyata, secret, token, password, atau kredensial ke dokumentasi maupun data prototype.
+## 3. Lingkup Prototype dan Gate Implementasi
 
-## Aturan Produk dan Keamanan
+- Prototype bersifat lokal, non-produksi, memakai data dummy, dan didemokan pada satu komputer.
+  Hosting, domain, dan penggunaan LAN di luar lingkup kecuali disetujui. Prototype bukan Production;
+  jalan pintas prototype bukan arsitektur Production.
+- Stack: Laravel 13, Vue 3 + TypeScript, Inertia, Vite, MySQL, Dompdf, Tailwind CSS + shadcn-vue
+  (D-013, D-018). Lingkungan: Windows dengan Laragon (D-024). Rincian ada di `architecture.md`.
+- Sebelum coding, selesaikan konflik kritis yang dapat mengubah perilaku bisnis, otorisasi,
+  keamanan, workflow, atau baseline terkunci. Validasi yang menunggu Kelurahan atau prototype bukan
+  penghalang otomatis bagi seluruh coding.
+- Mulai implementasi hanya setelah pengguna menyetujui pembukaan gate secara eksplisit berdasarkan
+  ringkasan kesiapan. Persetujuan itu tidak mengotorisasi perubahan baseline atau keputusan
+  konsekuensial lain. Jangan membuka gate secara otomatis.
+- Jangan menjalankan bootstrap, membuat migration, atau mengubah schema tanpa persetujuan eksplisit.
+- Jangan mengarang field, opsi dropdown, cardinality, scoring, atau aturan validasi tanpa sumber.
+  Dropdown hanya bila opsinya ada di PDF atau ketentuan yang disetujui; selain itu gunakan teks
+  bebas.
+- Gunakan data dummy. Jangan memasukkan PII nyata, secret, token, password, atau kredensial ke
+  dokumen, data prototype, maupun commit.
 
-- Terapkan otorisasi server-side, private file access, validasi upload, dan optimistic concurrency sesuai dokumen kanonis.
-- Finalisasi outreach harus terblokir jika lampiran wajib belum lengkap; draft tetap boleh disimpan.
-- Jika pembuatan PDF wajib gagal, proses pengesahan harus gagal dengan alasan yang jelas. Status tidak boleh berubah menjadi `SELESAI` dan notifikasi `OUTREACH_COMPLETED` tidak boleh dikirim; status tetap `MENUNGGU_PENGESAHAN`.
-- Jenis bantuan Baznas/CSR memerlukan tiga PDF terpisah: (1) formulir outreach beserta lampiran, (2) Mustahik, dan (3) Kifayah. Bangga Surabaya memerlukan PDF outreach beserta lampiran saja.
-- Lampiran pada PDF outreach ditempatkan pada halaman terpisah dari formulir utama.
-- Pertahankan keterlacakan riwayat, tanda tangan, persetujuan, dan referensi lampiran sesuai workflow kanonis. Perubahan data formulir harus mengikuti aturan pembaruan tanda tangan dan pengesahan; perubahan lampiran saja tidak otomatis mewajibkan pengulangan tanda tangan.
-- Jangan mengubah aturan produk atau keamanan hanya untuk mempermudah implementasi tanpa mencatat konflik dan meminta persetujuan jika perubahan bersifat substantif.
+## 4. Aturan Produk dan Keamanan
 
-## Sebelum Mengubah File
+- Terapkan otorisasi server-side, akses file privat, validasi upload, dan optimistic concurrency
+  sesuai `security.md` dan `roles-permissions.md`. UI bukan kontrol keamanan.
+- ADMIN tidak membuat Outreach dari nol. Data hanya diedit selama Special Unlock dengan alasan wajib
+  dicatat. `Lock & Ajukan` setara Finalisasi, sedangkan Approve dan Return milik KEPALA (D-016).
+- Finalisasi diblokir bila lampiran wajib belum lengkap; Draft tetap boleh disimpan. Label lampiran
+  dasar: "Foto Klien" (D-015).
+- Jika pembuatan PDF wajib gagal, pengesahan gagal dengan alasan jelas: status tetap
+  `MENUNGGU_PENGESAHAN`, tidak menjadi `SELESAI`, dan notifikasi `OUTREACH_COMPLETED` tidak dikirim.
+- PDF Baznas/CSR berjumlah tiga (Outreach beserta lampiran, Mustahik, Kifayah). Bangga Surabaya
+  hanya PDF Outreach beserta lampiran. Lampiran ditempatkan pada halaman terpisah dari formulir
+  utama.
+- Jaga keterlacakan riwayat, tanda tangan, persetujuan, dan referensi lampiran. Perubahan data
+  formulir mengikuti aturan pembaruan tanda tangan dan pengesahan; perubahan lampiran saja tidak
+  otomatis mewajibkan tanda tangan ulang.
+- Opsi formulir Mustahik mengikuti PDF sumber secara literal; jangan menormalisasi opsi atau
+  menghitung skor otomatis (D-022).
+- Jangan mengubah aturan produk atau keamanan hanya demi mempermudah implementasi.
 
-- Identifikasi ruang lingkup, dokumen terdampak, dan potensi konflik dengan keputusan yang berlaku.
-- Untuk perubahan substantif pada requirement, keputusan `LOCKED`, baseline, atau file di luar ruang lingkup tugas, sampaikan temuan, dampak, dan usulan perubahan terlebih dahulu; tunggu persetujuan pengguna.
-- Kerjakan satu file Markdown per giliran sesuai alur kerja yang disepakati. Pertahankan nama dan lokasi asli file kecuali pengguna menyetujui perubahan.
-- Jangan mengedit direktori lokal pengguna secara langsung. Berikan file revisi yang dapat diunduh agar pengguna dapat menggantinya sendiri.
+## 5. Persetujuan Perubahan
 
-## Setelah Perubahan
+Perubahan konsekuensial menyangkut arsitektur, database/ERD, workflow/state, roles & permissions,
+model keamanan, lingkup proyek, atau keputusan `LOCKED`. Perubahan substantif pada requirement atau
+file di luar lingkup tugas diperlakukan sama:
 
-- Periksa dokumen dan tautan silang yang terdampak.
-- Pastikan perubahan konsisten dengan keputusan yang masih berlaku dan tandai hal yang masih menunggu validasi.
-- Jalankan pengujian relevan setelah implementasi diizinkan.
-- Perbarui `tasks.md` hanya jika status dan evidence memenuhi kriteria selesai.
-- Jangan membuat atau memperbarui checkpoint setiap kali satu file selesai. Lakukan setelah satu cluster dokumen selesai ditinjau, lalu beri tahu pengguna dan minta persetujuan sebelum checkpoint dibuat.
-- Jangan membuka gate implementasi secara otomatis; gate dibuka setelah pengguna menyetujuinya secara eksplisit.
-- Jangan menandai pekerjaan selesai hanya karena file berhasil diubah; verifikasi konsistensi dan evidence yang relevan.
+Identifikasi dampak → laporkan temuan → usulkan perubahan beserta asumsi dan konsekuensinya → tunggu
+persetujuan → terapkan → verifikasi.
+
+- Jangan melewati aturan ini karena perubahan tampak praktis. Pengecualian hanya bila pengguna sudah
+  menyetujui perubahan yang sama dan dokumen kanonis sudah diperbarui.
+- Perubahan kecil, lokal, dan berisiko rendah dalam lingkup yang sudah diizinkan boleh langsung
+  dikerjakan.
+- Sebelum perubahan signifikan, sampaikan singkat: apa yang berubah, mengapa, area terdampak, dan
+  perlu tidaknya pembaruan dokumen. Jangan menyembunyikan konsekuensi arsitektur, data, workflow,
+  atau keamanan di dalam implementasi besar.
+
+## 6. Alur Kerja
+
+Pahami → temukan sumber kebenaran → periksa implementasi yang ada → nilai dampak → rencanakan →
+implementasi → verifikasi → sinkronkan dokumen dan tugas.
+
+- Tugas substansial: beri rencana singkat (modul/file terdampak, dependensi, dampak data/workflow,
+  validasi/otorisasi, langkah verifikasi). Tugas kecil tidak perlu rencana formal; jangan membuat
+  dokumen perencanaan panjang untuk perubahan rutin.
+- Cari route, komponen, service, model, validasi, dan pola UI yang sudah ada sebelum membuat yang
+  baru, lalu gunakan ulang polanya.
+- Buat perubahan sekecil mungkin yang koheren. Hindari refactor luas, jangan menambah dependensi
+  baru tanpa alasan jelas, dan pertahankan perilaku lain yang sudah berjalan.
+- Kode harus terbaca, konsisten, dan mudah diuji. Ikuti Modular Monolith di `architecture.md`;
+  jangan menambah lapisan atau abstraksi tanpa kebutuhan nyata.
+- Selama rekonsiliasi dokumentasi: kerjakan satu file Markdown per giliran dan pertahankan nama
+  serta lokasi file. Jangan memperbarui checkpoint setiap satu file selesai; setelah satu klaster
+  dokumen ditinjau, beri tahu pengguna dan minta persetujuan sebelum checkpoint dibuat atau diubah.
+
+## 7. Git dan Penyuntingan File (D-017)
+
+- Agent yang bekerja langsung pada repo lokal boleh mengedit file di dalam `project/` setelah
+  perubahan disetujui sesuai aturan di atas. Jangan mengedit file di luar `project/` (termasuk
+  folder checkpoint) tanpa persetujuan eksplisit.
+- Commit per task yang selesai dan terverifikasi, dengan pesan yang jelas. Jangan `git push`, force-
+  push, atau mengubah riwayat Git tanpa persetujuan eksplisit pengguna.
+- Tanpa akses langsung ke repo (percakapan biasa), berikan file revisi yang dapat diunduh agar
+  pengguna menggantinya sendiri.
+
+## 8. Sinkronisasi Dokumen dan Pelacakan
+
+- Bila implementasi mengubah perilaku terdokumentasi, perbarui dokumen kanonis yang terkait. Contoh:
+  field Outreach baru → `forms/outreach.md`, `database.md`, `design.md`; perubahan workflow →
+  `workflow.md`, `roles-permissions.md`, `design.md`, dan `PRD.md` bila perilaku produk berubah.
+  Jangan memperbarui dokumen tak terkait demi simetri.
+- Keputusan penting yang disetujui: perbarui sumber kanonis, catat di `decisions.md` (apa, mengapa,
+  area, tanggal, terkunci atau tidak), lalu perbarui dokumen turunan. Jangan mencatat preferensi
+  coding kecil sebagai keputusan.
+- `tasks.md` diperbarui saat task selesai, terblokir, atau berubah lingkup/status, dan hanya bila
+  evidence memenuhi kriteria selesai. Jangan menulis ulang untuk pekerjaan sepele.
+
+## 9. Verifikasi dan Laporan
+
+- Jangan menyatakan selesai hanya karena kode atau file berubah. Jalankan pemeriksaan yang relevan
+  (uji otomatis, tipe, lint, build, otorisasi, validasi, transisi workflow, upload dan akses file,
+  UI, regresi), periksa diff, lalu laporkan. Jangan mengklaim pengujian yang tidak dijalankan.
+- Laporan tugas substansial: Perubahan, Verifikasi, Dokumentasi, Sisa (keterbatasan, blocker, tindak
+  lanjut). Tugas sepele cukup laporan singkat.
+- Setelah perubahan dokumen, periksa tautan silang dan konsistensi dengan keputusan yang berlaku,
+  serta tandai hal yang masih menunggu validasi.
+
+## 10. Peta Konteks per Tugas
+
+Ini rute, bukan kewajiban membaca semua file. Path relatif terhadap `docs/`.
+
+| Tugas | Baca seperlunya |
+|---|---|
+| Produk / requirement | `product/PRD.md`, `product/scope.md`, `domain/glossary.md` |
+| Outreach | `domain/forms/outreach.md`, `architecture/database.md`, `architecture/workflow.md`, `ux/design.md` |
+| Mustahik | `domain/forms/mustahik.md`, `architecture/database.md`, `architecture/workflow.md`, `ux/design.md` |
+| Kifayah | `domain/forms/kifayah.md`, `architecture/database.md`, `architecture/workflow.md`, `ux/design.md` |
+| Otorisasi / peran | `architecture/roles-permissions.md`, `workflow.md`, `security.md`, `database.md` |
+| UI / UX | `ux/design.md` dan dokumen form atau workflow terkait |
+| Arsitektur / infrastruktur | `architecture/architecture.md`, `database.md`, `security.md` |
+| Pengujian | `engineering/testing.md` dan dokumen fitur yang diuji |
+
+## 11. Prinsip Akhir
+
+Utamakan konsistensi proyek, kebenaran, keterbacaan, dan kemudahan pemeliharaan, bukan kecepatan
+menghasilkan kode. Saat ragu: baca dokumen kanonis, periksa implementasi, identifikasi dampak, dan
+tanyakan sebelum perubahan konsekuensial. Jangan mengarang requirement, jangan menimpa keputusan
+`LOCKED` secara diam-diam, dan jangan menyembunyikan perubahan arsitektur atau data yang penting.

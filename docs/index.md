@@ -7,23 +7,23 @@ Indeks ini adalah registry dokumentasi dan router sumber kebenaran untuk `projec
 ## Urutan Baca
 
 1. [`../README.md`](../README.md) — konteks proyek, status, dan aturan otoritas.
-2. [`../AGENTS.md`](../AGENTS.md) — aturan umum untuk coding agent.
-3. [`../CLAUDE.md`](../CLAUDE.md) — instruksi operasional khusus Claude.
+2. [`../AGENTS.md`](../AGENTS.md) — aturan kerja tunggal proyek untuk coding agent.
+3. [`../CLAUDE.md`](../CLAUDE.md) — penunjuk khusus Claude Code; mengimpor `AGENTS.md`.
 4. Dokumen ini — struktur, status, dan sumber kanonis.
 5. [`project-management/decisions.md`](project-management/decisions.md) — keputusan aktif dan isu yang menunggu konfirmasi.
 6. [`project-management/reconciliation.md`](project-management/reconciliation.md) — evidence dan status rekonsiliasi.
 7. [`project-management/tasks.md`](project-management/tasks.md) — status task dan dependency.
 8. Dokumen kanonis yang relevan dengan pekerjaan.
 
-Jika konteks historis atau keputusan sebelumnya diperlukan, periksa file checkpoint v1.6 (`.md`) yang disediakan pengguna secara terpisah dari ZIP repositori. Gunakan ZIP repositori untuk memeriksa kondisi berkas proyek saat ini; jangan menganggap checkpoint berada di dalam ZIP repositori atau menggunakan ZIP tersebut sebagai pengganti checkpoint. Jika file checkpoint tidak tersedia atau tidak dapat dibaca, sampaikan keterbatasan tersebut dan jangan mengarang isinya. Checkpoint v1.6 tetap bernama v1.6 untuk revisi dokumentasi biasa; jangan membuat checkpoint bernomor baru tanpa keputusan eksplisit pengguna.
+Jika konteks historis atau keputusan sebelumnya diperlukan, periksa file checkpoint v1.6 (`.md`), yang disimpan di luar repositori pada folder `../checkpoint/` (relatif terhadap folder `project/`). Gunakan repo lokal (atau ZIP repositori jika agent tidak punya akses langsung) untuk memeriksa kondisi berkas proyek saat ini; jangan menganggap checkpoint berada di dalam repositori atau ZIP, dan jangan menggunakan keduanya sebagai pengganti checkpoint. Jika file checkpoint tidak tersedia atau tidak dapat dibaca, sampaikan keterbatasan tersebut dan jangan mengarang isinya. Checkpoint v1.6 tetap bernama v1.6 untuk revisi dokumentasi biasa; jangan membuat checkpoint bernomor baru tanpa keputusan eksplisit pengguna.
 
 ## Registry Sumber Kebenaran
 
 | Concern | Lokasi kanonis | Status |
 |---|---|---|
 | Konteks/status proyek | `README.md` | ACTIVE |
-| Instruksi agent | `AGENTS.md` | ACTIVE |
-| Instruksi Claude | `CLAUDE.md` | ACTIVE |
+| Instruksi agent | `AGENTS.md` | ACTIVE — aturan kerja tunggal (D-017) |
+| Instruksi Claude | `CLAUDE.md` | ACTIVE — penunjuk; mengimpor `AGENTS.md` |
 | Peta dokumentasi | `docs/index.md` | ACTIVE |
 | Keputusan | `docs/project-management/decisions.md` | ACTIVE |
 | Matriks rekonsiliasi | `docs/project-management/reconciliation.md` | ACTIVE — verification in progress |
@@ -41,6 +41,7 @@ Jika konteks historis atau keputusan sebelumnya diperlukan, periksa file checkpo
 | UX/UI | `docs/ux/design.md` | ACTIVE — reconciliation required |
 | Scope dan validasi prototype | `docs/prototype/` | ACTIVE — prototype scope and validation planning |
 | Testing | `docs/engineering/testing.md` | ACTIVE — prototype test plan; execution pending prototype |
+| Setup lingkungan lokal | `docs/engineering/setup.md` | DRAFT |
 | Deployment | `docs/engineering/deployment.md` | NOT YET CREATED |
 | Tugas | `docs/project-management/tasks.md` | ACTIVE — v1.6 Worklist |
 | Changelog | `docs/project-management/changelog.md` | NOT YET CREATED |

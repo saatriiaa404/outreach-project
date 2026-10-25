@@ -5,6 +5,10 @@ dan `ADMIN`. Alur bisnis dan status mengikuti
 `docs/architecture/workflow.md` v2.1. Dokumen ini tidak mengubah
 baseline Database v1.1 atau mengotorisasi perubahan skema/migrasi.
 
+Revisi 23 Oktober 2026: batas peran ADMIN diselaraskan dengan
+keputusan D-016 (`docs/project-management/decisions.md`). Workflow v2.1
+dan Database v1.1 tidak berubah.
+
 ## Aturan Otorisasi
 
 ``` text
@@ -24,17 +28,18 @@ atau izin terhadap resource.
   -----------------------------------------------------------------------------
   Aksi                    PETUGAS           KEPALA            ADMIN
   ----------------------- ----------------- ----------------- -----------------
-  Membuat/mengedit Draft  Ya                Tidak             Sesuai scope
-  milik sendiri                                               administratif
+  Membuat/mengedit Draft  Ya                Tidak             Tidak (tidak
+  milik sendiri                                               membuat Outreach
+                                                              dari nol)
 
-  Mengedit                Ya                Tidak             Sesuai scope
-  `PERLU_PERBAIKAN` milik                                     administratif
-  sendiri                                                     
+  Mengedit                Ya                Tidak             Tidak (edit hanya
+  `PERLU_PERBAIKAN` milik                                     lewat Special
+  sendiri                                                     Unlock)
 
-  Melakukan Finalisasi /  Ya, untuk         Tidak             Sesuai scope
-  Finalisasi Ulang        Outreach sendiri                    administratif dan
-                          dan jika validasi                   aturan workflow
-                          lengkap                             
+  Melakukan Finalisasi /  Ya, untuk         Tidak             Hanya lewat Lock
+  Finalisasi Ulang        Outreach sendiri                    & Ajukan setelah
+                          dan jika validasi                   Special Unlock,
+                          lengkap                             validasi penuh
 
   Meninjau data terkunci  Milik sendiri,    Ya, dalam scope   Ya, dalam scope
                           read-only         Kelurahan         administratif
@@ -81,6 +86,22 @@ izin untuk melewati gate atau mengubah status secara manual. - Hak print
 PDF tidak mengubah kepemilikan data, status bisnis, atau keputusan
 approval.
 
+## Scope Administratif ADMIN
+
+Selaras dengan D-016 (`docs/project-management/decisions.md`):
+
+-   Scope administratif ADMIN adalah seluruh Outreach dalam scope
+    Kelurahan, tanpa batas kepemilikan PETUGAS. Ini bukan akses global
+    di luar Kelurahan dan tidak memberi hak membuat Outreach dari nol,
+    Approve, atau Return.
+-   `Lock` setelah Special Unlock mengembalikan Outreach ke
+    `PERLU_PERBAIKAN` bila masih membutuhkan pekerjaan Petugas/Warga.
+-   `Lock & Ajukan untuk Pengesahan` adalah submission action yang
+    setara Finalisasi: validasi penuh, pemeriksaan versi, historical
+    version baru, dan status `MENUNGGU_PENGESAHAN`. Hanya Outreach yang
+    telah difinalisasi, termasuk lewat `Lock & Ajukan`, masuk antrean
+    KEPALA.
+
 ## Batas Per Peran
 
 ### PETUGAS
@@ -106,6 +127,8 @@ approval.
 
 -   Mengelola data dan melakukan tindakan administratif hanya dalam
     scope yang diberikan.
+-   Tidak membuat Outreach dari nol; data hanya diedit selama Special
+    Unlock dengan alasan wajib dicatat.
 -   Dapat menjalankan Special Unlock secara langsung sesuai aturan
     workflow.
 -   Dapat melakukan Lock / Lock & Ajukan sesuai aturan workflow.

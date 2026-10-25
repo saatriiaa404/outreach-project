@@ -12,7 +12,7 @@ Acuan perilaku dan data adalah [Workflow v2.1](../architecture/workflow.md) dan 
 - Gunakan database lokal yang terpisah dari production dan hanya isi dengan data dummy/sintetis.
 - Hosting dan domain tidak diperlukan untuk demo lokal.
 - Data pada database lokal diharapkan bertahan ketika aplikasi dimulai ulang agar skenario lintas sesi, history, dan approval dapat didemonstrasikan.
-- Pengaturan engine database dan konfigurasi teknis harus mengikuti keputusan implementasi yang disetujui; dokumen ini tidak menetapkan engine tertentu.
+- Engine database dan konfigurasi teknis mengikuti keputusan yang disetujui: MySQL dan stack prototype pada D-013 (lihat [Architecture](../architecture/architecture.md)), serta lingkungan lokal Laragon pada D-024. Dokumen ini tidak menetapkan atau mengubahnya.
 - Keputusan persistence ini **bukan** keputusan untuk mengubah schema Database v1.1, dan tidak mengotorisasi migration, tabel, field, relasi, constraint, seed, atau bootstrap baru.
 - Jika kelak perlu menguji akses serentak 1–5 Petugas, evaluasi akses LAN sebagai tahap terpisah. Akses LAN bukan bagian dari cakupan demo saat ini.
 
@@ -32,7 +32,7 @@ Prototype menunjukkan alur lengkap `PETUGAS → KEPALA → ADMIN`:
 
 ## Lampiran
 
-- Empat lampiran wajib Outreach: **KTP, KK, foto penerima, dan foto rumah**.
+- Empat lampiran wajib Outreach: **KTP, KK, foto klien, dan foto rumah**.
 - Draft boleh disimpan walaupun lampiran belum lengkap; Finalisasi harus ditolak sampai keempat lampiran wajib tersedia.
 - Lampiran tambahan berdasarkan jenis bantuan dapat didukung untuk kebutuhan prototype, tetapi persyaratan formalnya tetap `PENDING VALIDATION` sampai dikonfirmasi Kelurahan.
 - Kegagalan upload atau pemrosesan/kompresi harus menampilkan error yang jelas; lampiran tidak boleh dihilangkan secara diam-diam.
@@ -82,5 +82,5 @@ Bagian ini menegaskan keputusan yang berlaku jika masih ada frasa lama yang bert
 - Baseline aktif: Workflow v2.1 dan Database v1.1 dengan 22 tabel.
 - Baznas/CSR menghasilkan tiga PDF terpisah: Outreach dengan halaman lampiran wajib, Mustahik, dan Kifayah. Bangga Surabaya menghasilkan PDF Outreach dengan halaman lampiran wajib.
 - Jika PDF wajib gagal dibuat selama approval, approval gagal; status tetap `MENUNGGU_PENGESAHAN`; tidak ada approval sukses yang dipersistenkan; `OUTREACH_COMPLETED` tidak dikirim.
-- Empat lampiran wajib: KTP, KK, foto penerima, dan foto rumah.
+- Empat lampiran wajib: KTP, KK, foto klien, dan foto rumah.
 - Gate implementasi tetap CLOSED sampai readiness review dan persetujuan eksplisit. Validasi nonkritis dapat tetap `PENDING VALIDATION` dengan alasan dan rencana validasi; jangan menandainya `PASS` tanpa evidence.

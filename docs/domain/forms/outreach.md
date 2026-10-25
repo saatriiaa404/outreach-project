@@ -5,6 +5,8 @@
 > **Tujuan:** Memperjelas field, validasi, dan output PDF Outreach berdasarkan template kosong serta keputusan yang telah dibahas. Catatan dari review contoh terisi terdahulu dipertahankan hanya sebagai catatan historis yang perlu bukti aman untuk diverifikasi kembali.  
 > **Penting:** Dokumen ini belum menggantikan baseline v1.5 dan belum boleh diperlakukan sebagai persetujuan pembukaan gate implementasi.
 
+Revisi Oktober 2026: OUT-VAL-01, OUT-VAL-03, OUT-VAL-06, dan OUT-VAL-07 ditutup serta kebijakan opsi formulir diputuskan sesuai D-019 sampai D-021, D-025, dan D-027 pada `docs/project-management/decisions.md`. Workflow v2.1 dan Database v1.1 tidak berubah.
+
 ## 1. Applicability
 
 Satu Outreach adalah record utama. Source menentukan alur form, sedangkan Type menentukan intervensi dan tetap berbeda dari Source.
@@ -68,7 +70,7 @@ Template memiliki 23 field Data Klien.
 | 6 | Alamat Domisili | Wajib |
 | 7 | Status Kependudukan | Wajib; daftar opsi perlu bersumber dari ketentuan yang disetujui |
 | 8 | Menjadi warga Surabaya sejak | Wajib |
-| 9 | Pekerjaan | Wajib; apakah menggunakan opsi terkontrol atau teks bebas perlu dipastikan |
+| 9 | Pekerjaan | Wajib; teks bebas pada prototype sampai daftar opsi disetujui (OUT-VAL-03) |
 | 10 | Status Hubungan dalam Keluarga | Wajib; daftar opsi perlu bersumber dari ketentuan yang disetujui |
 | 11 | Jumlah anggota keluarga dalam 1 KK | Wajib; berbeda dari jumlah KK dalam satu rumah |
 | 12 | Jumlah KK dalam 1 rumah | Wajib; berbeda dari jumlah anggota keluarga dalam satu KK |
@@ -77,14 +79,29 @@ Template memiliki 23 field Data Klien.
 | 15 | No. telp yang bisa dihubungi | Wajib |
 | 16 | Status Perkawinan | Wajib; daftar opsi perlu bersumber dari ketentuan yang disetujui |
 | 17 | Pendidikan terakhir | Kondisional/opsional sesuai baseline; kondisi lebih rinci belum ditetapkan di dokumen ini |
-| 18 | Status Kesejahteraan | Wajib; mengikuti kesepakatan saat ini menggunakan desil 1–10 |
+| 18 | Status Kesejahteraan | Wajib; Petugas memilih desil 1–10; label diturunkan otomatis (lihat Pemetaan Status Kesejahteraan di bawah tabel; D-019) |
 | 19 | Jaminan Kesehatan yang dimiliki | Wajib; daftar opsi atau bentuk input harus ditetapkan dari sumber yang disetujui |
 | 20 | Apakah Klien merokok | Wajib; pilihan jawaban terbatas |
-| 21 | Bantuan yang pernah diterima | Wajib; bentuk input dan pilihan nilai perlu ditetapkan |
+| 21 | Bantuan yang pernah diterima | Wajib; pilihan Ya/Tidak (`bantuan_pernah_diterima`) dan uraian teks bebas (`bantuan_detail`) yang wajib bila Ya; PDF menampilkan uraian atau `Tidak ada` (D-027) |
 | 22 | Apakah klien punya pinjaman / hutang | Wajib; menentukan apakah field besar hutang berlaku |
 | 23 | Berapa besar pinjaman / hutang | Wajib jika field 22 menunjukkan klien memiliki hutang; tidak berlaku jika klien tidak memiliki hutang |
 
-**Catatan historis yang masih perlu divalidasi:** review contoh pengisian terdahulu mencatat nilai `Sejahtera` pada field Status Kesejahteraan, sedangkan spesifikasi aplikasi saat ini menggunakan desil 1–10. PDF yang menjadi sumber catatan tersebut telah dikeluarkan dari repository, sehingga temuan ini tidak dapat diperiksa ulang dari artefak aktif. Jangan mengganti aturan aplikasi menjadi `Sejahtera` atau menyatukan kedua representasi. Cari evidence aman yang dapat ditelusuri atau konfirmasikan perbedaannya kepada pihak yang berwenang sebelum menutup `OUT-VAL-01`.
+**Pemetaan Status Kesejahteraan (D-019).** Petugas memilih desil 1–10. Angka disimpan pada `desil_1_10`, dan label diturunkan otomatis ke `status_kesejahteraan` sehingga keduanya tidak dapat saling bertentangan. Tidak ada perubahan schema. Label berikut berasal dari sumber yang diberikan pemilik proyek; dokumen sumber resminya belum dilampirkan sebagai evidence, dan butir 1 pada bagian Pending Validation di `database.md` tetap menunggu evidence tersebut.
+
+| Desil | Label |
+|---:|---|
+| 1 | Sangat Miskin |
+| 2 | Miskin |
+| 3 | Hampir Miskin |
+| 4 | Rentan Miskin |
+| 5 | Transisi Menengah |
+| 6 | Menengah |
+| 7 | Menengah |
+| 8 | Menengah Atas |
+| 9 | Sejahtera |
+| 10 | Sangat Sejahtera |
+
+Desil 6 dan 7 sama-sama berlabel `Menengah` sesuai sumber. Catatan historis dari review contoh terisi yang mencatat nilai `Sejahtera` sesuai dengan label Desil 9; PDF historis itu telah dikeluarkan dari repository sehingga tidak dapat diperiksa ulang. Jangan menyatukan representasi desil dan label menjadi satu field input.
 
 ### 4.2 Pendapatan Keluarga dalam Sebulan
 
@@ -131,10 +148,14 @@ Total pengeluaran bukan source of truth yang disimpan terpisah dari komponennya.
 | 4 | Jenis atap bangunan | Wajib |
 | 5 | Daya listrik | Wajib |
 | 6 | Sumber air | Wajib |
-| 7 | Fasilitas MCK | Wajib |
-| 8 | Jumlah dan Jenis kendaraan yang dimiliki | Wajib |
+| 7 | Fasilitas MCK | Wajib; empat nilai: Layak, Kurang layak, Tidak layak, Tidak ada (D-021) |
+| 8 | Jumlah dan Jenis kendaraan yang dimiliki | Wajib; input angka per jenis (D-020) |
 | 9 | Perhiasan | Opsional |
 | 10 | Aset lainnya | Opsional |
+
+**Kendaraan (D-020).** Input berupa angka per jenis sesuai kolom Database v1.1: sepeda angin, sepeda listrik, becak, sepeda motor, roda 4, dan kendaraan lainnya beserta namanya. Petugas mengisi angka secara eksplisit (`0` bila tidak ada) tanpa auto-fill. Draft boleh kosong, sedangkan Finalisasi menuntut semua angka terisi. Nama kendaraan lainnya wajib bila jumlahnya lebih dari 0. PDF merangkai satu baris dari jenis yang bernilai lebih dari 0, atau `Tidak ada` bila semuanya 0. Ini berbeda dari pertanyaan Kepemilikan Kendaraan pada form Mustahik.
+
+**MCK (D-021).** Empat nilai: Layak, Kurang layak, Tidak layak, Tidak ada, disimpan pada kolom `mck_layak` (nama kolom tetap). Tipe kolom dan kode nilai internal ditetapkan saat desain migration setelah gate implementasi dibuka. Ini berbeda dari pertanyaan MCK pada form Mustahik, dan jawaban Mustahik tidak diisi otomatis dari Outreach.
 
 ### 4.5 Narasi
 
@@ -152,7 +173,7 @@ Narasi dapat memiliki panjang bervariasi. Isi tidak boleh dipotong hanya untuk m
 - Field dengan jawaban biner seperti pertanyaan merokok dapat menggunakan pilihan terkontrol. Pemilihan dropdown atau kontrol lain tidak mengubah makna jawaban.
 - Field narasi menggunakan area teks; field alamat menggunakan input teks yang sesuai; jumlah dan nilai uang menggunakan input dengan validasi sesuai jenis datanya.
 - Daftar opsi tidak boleh dibuat berdasarkan tebakan. Sumber opsi harus berasal dari dokumen referensi atau keputusan validasi yang disetujui.
-- Opsi final, termasuk apakah field Pekerjaan dan Bantuan yang pernah diterima berupa dropdown atau teks bebas dengan opsi lainnya, belum seluruhnya didefinisikan dalam referensi yang tersedia.
+- Kebijakan opsi (OUT-VAL-02 dan OUT-VAL-03): dropdown hanya digunakan bila opsinya tertulis pada PDF atau ketentuan yang disetujui; selain itu field memakai teks bebas pada prototype. Contoh opsi yang sudah tertulis pada dokumen yang disetujui: Status Kependudukan `WNI` atau `WNA` (Database v1.1), serta jawaban Ya/Tidak untuk merokok dan hutang. Pekerjaan menggunakan teks bebas, sedangkan Bantuan yang pernah diterima mengikuti D-027 (pilihan Ya/Tidak dan uraian teks bebas). Field lain yang pada bagian 4.1 menyebut "daftar opsi perlu bersumber" menggunakan teks bebas sampai daftarnya disetujui, lalu dapat dijadikan dropdown tanpa mengubah makna jawaban.
 
 ## 6. Semantik Nilai: Belum Diisi, Nol, dan Tidak Ada
 
@@ -253,13 +274,13 @@ Lampiran harus disertakan sebagai halaman setelah halaman utama PDF Outreach. Be
 
 | ID | Item | Status/catatan |
 |---|---|---|
-| OUT-VAL-01 | Pemetaan Status Kesejahteraan terhadap `status_kesejahteraan`, `desil_1_10`, dan label `Sejahtera` pada contoh | Spesifikasi saat ini menggunakan desil 1–10; makna dan pemetaan kedua kolom database serta perbedaan dengan label `Sejahtera` belum final. Jangan menyatukan representasi atau mengubah schema tanpa keputusan |
-| OUT-VAL-02 | Daftar opsi dropdown untuk field berkategori | Belum lengkap; harus bersumber dari ketentuan yang disetujui |
-| OUT-VAL-03 | Apakah Pekerjaan dan Bantuan yang pernah diterima menggunakan dropdown, teks bebas, atau kombinasi | Belum diputuskan |
+| OUT-VAL-01 | Pemetaan Status Kesejahteraan terhadap `status_kesejahteraan`, `desil_1_10`, dan label `Sejahtera` pada contoh | **CLOSED** — D-019. Desil 1–10 pada `desil_1_10`, label otomatis pada `status_kesejahteraan`; `Sejahtera` adalah label Desil 9. Evidence sumber resmi label belum dilampirkan |
+| OUT-VAL-02 | Daftar opsi dropdown untuk field berkategori | **Kebijakan diputuskan (D-025)** — dropdown hanya bila opsi tertulis pada PDF atau ketentuan yang disetujui, selain itu teks bebas (lihat bagian 5). Daftar opsi untuk field lain tetap menunggu ketentuan yang disetujui |
+| OUT-VAL-03 | Apakah Pekerjaan dan Bantuan yang pernah diterima menggunakan dropdown, teks bebas, atau kombinasi | **CLOSED** — D-025 dan D-027. Pekerjaan teks bebas; Bantuan mengisi dua kolom Database v1.1 dari pilihan Ya/Tidak dan uraian teks bebas. Tanpa perubahan schema |
 | OUT-VAL-04 | Lampiran tambahan berdasarkan Type | Empat lampiran wajib baseline serta lampiran tambahan per Type telah ditetapkan untuk kebutuhan prototype. Validasi/persetujuan formal pemilik formulir dan implementasi detail tetap harus dicatat dengan evidence yang dapat ditelusuri |
 | OUT-VAL-05 | Evidence persetujuan posisi Type dan layout adaptif | Pengguna mengonfirmasi keduanya sudah disetujui Kelurahan; tautkan bukti/artefak persetujuan di catatan evidence gate jika belum tersimpan |
-| OUT-VAL-06 | Pemetaan field kendaraan | PDF memiliki satu field gabungan `Jumlah dan Jenis kendaraan yang dimiliki`, sedangkan database menyediakan beberapa kolom kendaraan. Cara input, agregasi, dan render PDF perlu ditetapkan tanpa mengubah baseline schema secara diam-diam |
-| OUT-VAL-07 | Pemetaan `Fasilitas MCK` | Kesesuaian label PDF dengan kolom `mck_layak` perlu diperiksa. Jangan mengasumsikan bahwa field hanya menerima jawaban boolean sebelum makna dan pilihan nilainya dikonfirmasi |
+| OUT-VAL-06 | Pemetaan field kendaraan | **CLOSED** — D-020. Input angka per jenis pada kolom Database v1.1; PDF merangkai satu baris dari jenis bernilai lebih dari 0, atau `Tidak ada`. Tanpa perubahan schema |
+| OUT-VAL-07 | Pemetaan `Fasilitas MCK` | **CLOSED** — D-021. Empat nilai (Layak, Kurang layak, Tidak layak, Tidak ada) pada kolom `mck_layak`; nama kolom tetap, bukan boolean |
 | OUT-VAL-08 | Status dan penanganan contoh PDF terisi | Menurut klarifikasi pengguna, PDF terisi terdahulu berisi data warga nyata dan persetujuan warga telah diperoleh. File telah dikeluarkan dari direktori kerja dan tidak ditemukan dalam ZIP repository terbaru yang diaudit. Konten serta bukti persetujuan tidak diverifikasi secara independen. Jangan menambahkan kembali file nyata ke repository atau paket handover; gunakan template kosong, data sintetis, atau salinan yang telah disamarkan secara aman. |
 
 Item validasi harus ditutup melalui bukti atau keputusan yang bisa ditelusuri sebelum gate implementasi terkait dinyatakan selesai.
@@ -280,11 +301,13 @@ Sebelum output PDF dinyatakan memenuhi spesifikasi, periksa bahwa:
 10. Header, label, urutan bagian, dan karakter visual formulir resmi tetap terjaga.
 11. PDF Outreach memuat halaman lampiran setelah halaman utama; Source Baznas/CSR menghasilkan PDF Outreach, Mustahik, dan Kifayah secara terpisah, sedangkan Bangga Surabaya hanya menghasilkan PDF Outreach.
 12. Pengujian menggunakan data sintetis atau data yang telah disamarkan secara aman.
+13. Field kendaraan dirangkai dari jenis yang bernilai lebih dari 0, atau menampilkan `Tidak ada` bila semuanya 0.
+14. Bantuan yang pernah diterima menampilkan uraian bila jawabannya Ya, atau `Tidak ada` bila Tidak.
 
 ---
 
 ## Catatan Perubahan untuk Review
 
-Draf ini memperluas spesifikasi v1.5 dengan pemetaan field per bagian, aturan nilai `NULL`/`0`/`-`, penggunaan dropdown sebagai pendekatan UI untuk field berkategori, perilaku PDF adaptif, lampiran tambahan per Type, serta komposisi tiga PDF terpisah yang mengikuti Workflow v2.1. Contoh PDF terisi yang pernah digunakan dalam review terdahulu tidak disertakan karena memuat data warga nyata; gunakan template kosong dan data sintetis atau salinan yang telah disamarkan untuk review lanjutan. Draf ini tetap perlu ditinjau sebelum dipromosikan menjadi baseline form yang aktif.
+Draf ini memperluas spesifikasi v1.5 dengan pemetaan field per bagian, aturan nilai `NULL`/`0`/`-`, penggunaan dropdown sebagai pendekatan UI untuk field berkategori, perilaku PDF adaptif, lampiran tambahan per Type, serta komposisi tiga PDF terpisah yang mengikuti Workflow v2.1. Contoh PDF terisi yang pernah digunakan dalam review terdahulu tidak disertakan karena memuat data warga nyata; gunakan template kosong dan data sintetis atau salinan yang telah disamarkan untuk review lanjutan. Draf ini tetap perlu ditinjau sebelum dipromosikan menjadi baseline form yang aktif. Revisi Oktober 2026 menutup OUT-VAL-01, OUT-VAL-03, OUT-VAL-06, dan OUT-VAL-07 serta memutuskan kebijakan opsi formulir (D-019 sampai D-021, D-025, dan D-027); evidence sumber resmi label desil belum dilampirkan.
 
 Draf ini belum menjadi baseline baru. Sebelum dipromosikan, periksa kesesuaian dengan `workflow.md` v2.1, `database.md` v1.1, `mustahik.md`, `kifayah.md`, dan proses rekonsiliasi proyek. Jangan membuka gate implementasi hanya karena draf ini sudah tersedia.

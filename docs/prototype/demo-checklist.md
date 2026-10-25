@@ -9,7 +9,7 @@ Baseline aktif: Workflow v2.1 dan Database v1.1 (22 tabel). Demo menggunakan dat
 - [ ] Pastikan demo menggunakan database lokal non-production dan data dummy/sintetis; tidak ada data pribadi warga nyata.
 - [ ] Pastikan tiga akun dummy tersedia: PETUGAS, KEPALA, dan ADMIN.
 - [ ] Siapkan data dummy untuk Source Baznas/CSR dan Bangga Surabaya, termasuk skenario lengkap dan skenario yang sengaja belum lengkap.
-- [ ] Siapkan empat lampiran dummy wajib: KTP, KK, foto penerima, dan foto rumah.
+- [ ] Siapkan empat lampiran dummy wajib: KTP, KK, foto klien, dan foto rumah.
 - [ ] Siapkan skenario pembuatan PDF berhasil serta skenario kegagalan PDF wajib selama approval.
 - [ ] Catat versi aplikasi, tanggal walkthrough, peserta, dan lingkungan pengujian.
 
@@ -21,7 +21,7 @@ Baseline aktif: Workflow v2.1 dan Database v1.1 (22 tabel). Demo menggunakan dat
 - [ ] Untuk Baznas/CSR, memverifikasi form Mustahik dan Kifayah yang berlaku.
 - [ ] Memverifikasi bahwa Mustahik memiliki 25 pertanyaan single-choice; label/opsi yang belum dikonfirmasi dicatat sebagai `PENDING VALIDATION`.
 - [ ] Mengisi nilai Kifayah; `0` berarti tidak ada pengeluaran/kategori tidak berlaku, `NULL` berarti belum diisi, dan nilai kosong tidak otomatis menjadi `0`.
-- [ ] Mengunggah lampiran dummy dan memverifikasi empat lampiran wajib: KTP, KK, foto penerima, dan foto rumah.
+- [ ] Mengunggah lampiran dummy dan memverifikasi empat lampiran wajib: KTP, KK, foto klien, dan foto rumah.
 - [ ] Memverifikasi Draft dapat disimpan saat lampiran wajib belum lengkap, tetapi Finalisasi ditolak sampai semua lampiran wajib tersedia.
 - [ ] Memverifikasi preview, signature yang diwajibkan, Save Draft/autosave sesuai implementasi, dan penanda field yang belum lengkap.
 - [ ] Memverifikasi review menampilkan blocker yang jelas dan Finalisasi menghasilkan version baru.
@@ -86,7 +86,7 @@ Item berikut harus tetap diberi label `PENDING VALIDATION` sampai tersedia bukti
 ## Catatan Penyelarasan Cluster 5 — 18 Oktober 2026
 
 - Baseline aktif adalah Workflow v2.1 dan Database v1.1 dengan 22 tabel.
-- Empat lampiran wajib adalah KTP, KK, foto penerima, dan foto rumah.
+- Empat lampiran wajib adalah KTP, KK, foto klien, dan foto rumah.
 - PDF Baznas/CSR: Outreach dengan halaman lampiran wajib, Mustahik, dan Kifayah sebagai tiga PDF terpisah. PDF Bangga Surabaya: Outreach dengan halaman lampiran wajib.
 - Kegagalan PDF wajib selama approval menggagalkan approval; status tetap `MENUNGGU_PENGESAHAN`, tidak ada approval sukses yang dipersistenkan, dan `OUTREACH_COMPLETED` tidak dikirim.
 - Checklist ini merupakan alat walkthrough. Item hanya boleh ditandai selesai jika benar-benar diuji dan memiliki bukti.

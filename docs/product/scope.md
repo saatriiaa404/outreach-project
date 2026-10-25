@@ -18,7 +18,7 @@ Prototype mencakup:
 - Form kondisional berdasarkan Source dan Type.
 - Form Mustahik dan Kifayah untuk Baznas/CSR; Bangga Surabaya menggunakan Outreach tanpa form Mustahik/Kifayah.
 - Penyimpanan draft, autosave, persistence setelah aplikasi ditutup dan dibuka kembali, serta perlindungan optimistic concurrency.
-- Empat lampiran dasar wajib untuk finalisasi: KTP, KK, foto penerima, dan foto rumah. Draft tetap boleh disimpan sebelum lampiran lengkap.
+- Empat lampiran dasar wajib untuk finalisasi: KTP, KK, foto klien, dan foto rumah. Draft tetap boleh disimpan sebelum lampiran lengkap.
 - Lampiran tambahan per jenis bantuan sebagai kemampuan prototype apabila dibutuhkan; daftar resmi lampiran tambahan masih `PENDING VALIDATION`.
 - Signature dummy, preview, submission version, historical version, history/audit, dan notifikasi in-app.
 - Workflow Return/Revision/Approval dan pemeriksaan keberhasilan pembuatan semua PDF wajib sebelum approval berhasil.

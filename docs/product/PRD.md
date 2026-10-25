@@ -57,7 +57,7 @@ Detail field, label, dan aturan formulir mengikuti dokumen domain terkait. Hal y
 
 ### 4.3 Lampiran
 
-- Empat lampiran dasar wajib untuk finalisasi: **KTP, KK, foto penerima, dan foto rumah**.
+- Empat lampiran dasar wajib untuk finalisasi: **KTP, KK, foto klien, dan foto rumah**.
 - Draft boleh disimpan meskipun lampiran wajib belum lengkap. Finalisasi harus ditolak dengan pesan yang menjelaskan lampiran yang masih kurang.
 - Lampiran tambahan berdasarkan jenis bantuan dapat didukung pada prototype; daftar persyaratan resminya masih memerlukan validasi Kelurahan.
 - Foto dikompresi secara otomatis sesuai hasil pengujian prototype.

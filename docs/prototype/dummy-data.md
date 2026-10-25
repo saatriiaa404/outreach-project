@@ -33,7 +33,7 @@ Untuk setiap record yang diuji pada alur finalisasi, siapkan empat lampiran waji
 |---|---|---|
 | KTP | `DEMO-001-ktp-dummy.png` | Gambar sintetis ber-watermark DEMO |
 | KK | `DEMO-001-kk-dummy.png` | Gambar sintetis ber-watermark DEMO |
-| Foto penerima | `DEMO-001-penerima-dummy.jpg` | Ilustrasi/foto sintetis ber-label DEMO |
+| Foto klien | `DEMO-001-klien-dummy.jpg` | Ilustrasi/foto sintetis ber-label DEMO |
 | Foto rumah | `DEMO-001-rumah-dummy.jpg` | Ilustrasi/foto sintetis ber-label DEMO |
 
 Jangan memakai hasil scan KTP/KK asli, foto warga nyata, atau dokumen yang diambil dari internet dan dapat mengidentifikasi seseorang. Lampiran tambahan berdasarkan jenis bantuan boleh dipakai untuk demonstrasi jika diperlukan, tetapi persyaratan formalnya masih `PENDING VALIDATION` sampai dikonfirmasi Kelurahan.
@@ -78,7 +78,7 @@ Untuk setiap skenario, catat `PASS`, `FAIL`, atau `BLOCKED`, langkah reproduksi,
 ## Catatan Penyelarasan Cluster 5 — 18 Oktober 2026
 
 - Baseline aktif adalah Workflow v2.1 dan Database v1.1 dengan 22 tabel.
-- Empat lampiran wajib adalah KTP, KK, foto penerima, dan foto rumah.
+- Empat lampiran wajib adalah KTP, KK, foto klien, dan foto rumah.
 - Baznas/CSR menghasilkan tiga PDF terpisah: Outreach dengan halaman lampiran wajib, Mustahik, dan Kifayah. Bangga Surabaya menghasilkan PDF Outreach dengan halaman lampiran wajib.
 - Kegagalan pembuatan PDF wajib selama approval menggagalkan approval; status tetap `MENUNGGU_PENGESAHAN`, tidak ada approval sukses yang dipersistenkan, dan `OUTREACH_COMPLETED` tidak dikirim.
 - Data dan lampiran di dokumen ini adalah contoh skenario, bukan data warga, bukan hasil pengujian yang telah lulus, dan bukan izin membuka gate implementasi.

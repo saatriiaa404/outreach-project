@@ -1,5 +1,7 @@
 # Mustahik Form Specification — v1.7
 
+Revisi Oktober 2026: register 25 pertanyaan dilengkapi dan diselaraskan secara literal dengan PDF sumber (D-022); `docs/project-management/decisions.md` memuat keputusannya.
+
 ## 1. Authority dan Batasan
 
 Mustahik berlaku hanya untuk Source **Baznas** dan **CSR**. Source **Bangga Surabaya** tidak menggunakan form Mustahik.
@@ -31,38 +33,43 @@ PDF kosong adalah sumber label dan opsi untuk prototipe. Tabel di bawah membedak
 
 | question_code | Label / bagian pada sumber | Opsi yang terlihat pada PDF sumber | Cardinality | Required/conditional | Snapshot/PDF |
 |---|---|---|---|---|---|
-| `HOUSE_BUILDING_AREA` | Luas bangunan | Sangat kecil (`<4x4`); kecil (`4x4–5x6`); sedang (`5x7–5x15`); lebar (`>5x15`) | Single | Wajib | Perlu validasi |
-| `HOUSE_WALL_TYPE` | Dinding | Triplek/sesek; papan; tembok; tembok keramik | Single | Wajib | Perlu validasi |
-| `HOUSE_OWNERSHIP_STATUS` | Status tempat tinggal | Kost; kontrak; menumpang/keluarga; milik sendiri | Single | Wajib | Perlu validasi |
-| `HOUSE_MCK` | MCK | Tidak punya; WC umum; punya tidak layak; punya layak | Single | Wajib | Perlu validasi |
-| `HOUSE_DRINKING_WATER` | Sumber air minum | Bukan air bersih; air bersih (beli); sumur; sumur air bersih | Single | Wajib | Perlu validasi |
-| `HOUSE_KITCHEN` | Kondisi dapur | Kayu bakar; kompor minyak; LPG 3 kg; LPG 12 kg | Single | Wajib | Perlu validasi |
-| `HOUSE_ASSET_OWNERSHIP` | Label perlu dicocokkan kembali dengan posisi/teks PDF | Belum ditranskripsikan secara pasti dalam spesifikasi ini | Single | Wajib | Perlu validasi |
-| `HOUSE_VEHICLE_OWNERSHIP` | Label perlu dicocokkan kembali dengan posisi/teks PDF | Belum ditranskripsikan secara pasti dalam spesifikasi ini | Single | Wajib | Perlu validasi |
-| `HOUSE_FLOOR_TYPE` | Jenis lantai | Belum ditranskripsikan secara pasti dalam spesifikasi ini | Single | Wajib | Perlu validasi |
-| `HOUSE_ROOF_TYPE` | Jenis atap | Belum ditranskripsikan secara pasti dalam spesifikasi ini | Single | Wajib | Perlu validasi |
-| `ECONOMIC_HEAD_EDUCATION` | Pendidikan kepala keluarga | Tidak sekolah; SD–SMP; SMA; perguruan tinggi | Single | Wajib | Perlu validasi |
-| `ECONOMIC_HEAD_OCCUPATION` | Pekerjaan kepala keluarga | Tidak bekerja; buruh tani/serabutan; petani; karyawan/tukang | Single | Wajib | Perlu validasi |
-| `ECONOMIC_MONTHLY_INCOME` | Pendapatan per bulan | `<300.000`; `<750.000`; `<1.500.000`; `>3.500.000` | Single | Wajib | Perlu validasi |
-| `ECONOMIC_FOOD_PURCHASE` | Kemampuan membeli daging/ayam/susu per minggu | Tidak mampu; 1x; 2x; 3x | Single | Wajib | Perlu validasi |
-| `ECONOMIC_CLOTHING_PURCHASE` | Pembelian pakaian per tahun | 1x; 2x; 3x; 5x | Single | Wajib | Perlu validasi |
-| `ECONOMIC_OTHER_SUBSIDY` | Bantuan/sumbangan lain | Tidak ada; sumbangan rutin; kerabat/orang lain | Single | Wajib | Perlu validasi |
-| `ECONOMIC_MEAL_FREQUENCY` | Frekuensi makan | Belum ditranskripsikan secara pasti dalam spesifikasi ini | Single | Wajib | Perlu validasi |
-| `ECONOMIC_LIGHTING` | Penerangan | Belum ditranskripsikan secara pasti dalam spesifikasi ini | Single | Wajib | Perlu validasi |
-| `ECONOMIC_SIDE_BUSINESS` | Usaha sampingan | Belum ditranskripsikan secara pasti dalam spesifikasi ini | Single | Wajib | Perlu validasi |
-| `ECONOMIC_GOVERNMENT_AID` | Bantuan pemerintah | Belum ditranskripsikan secara pasti dalam spesifikasi ini | Single | Wajib | Perlu validasi |
-| `PHYSICAL_CONDITION` | Kondisi fisik | Manula sakit; manula; cacat produktif; sehat/produktif | Single | Wajib | Perlu validasi |
-| `PHYSICAL_DEPENDENTS` | Tanggungan | Anak masih sekolah; lansia tidak produktif; keluarga lainnya; tidak ada | **Single** | Wajib | Perlu validasi |
-| `PHYSICAL_DEBT` | Hutang | Rentenir; nonrentenir; tidak ada; bank | **Single** | Wajib | Perlu validasi |
-| `PHYSICAL_HEALTH_CAPABILITY` | Kemampuan/akses kesehatan | Tidak ada; KIS/PBI JKN; BPJS kelas 3; BPJS kelas 2 | Single | Wajib | Perlu validasi |
-| `PHYSICAL_SAVINGS` | Tabungan | Tidak ada; emas `<5gr`; emas `>5gr`; emas `>10gr` | Single | Wajib | Perlu validasi |
+| `HOUSE_BUILDING_AREA` | luas Bangunan | sangat Kecil (`<4x4`); Kecil (`4x 4 - 5x6`); sedang (`5 x 7 -5 x 15`); Lebar (`>5 x 15`) | Single | Wajib | Perlu validasi |
+| `HOUSE_WALL_TYPE` | Jenis Dinding | Triplek/Sesek; Papan; Tembok; Tembok Keramik | Single | Wajib | Perlu validasi |
+| `HOUSE_OWNERSHIP_STATUS` | Status Tempat Tinggal | Kost; Kontrak; Menumpang/keluarga; Milik Sendiri | Single | Wajib | Perlu validasi |
+| `HOUSE_MCK` | Fasilitas MCK | Tidak Punya; WC Umum; Punya Tidak Layak; Punya Layak | Single | Wajib | Perlu validasi |
+| `HOUSE_DRINKING_WATER` | Sumber Air Minum | Bukan Air bersih; Air Bersih (beli); Sumur; Sumur Air bersih | Single | Wajib | Perlu validasi |
+| `HOUSE_KITCHEN` | Kondisi Dapur | Kayu Bakar; Kompor Minyak; LPG 3 KG; LPG 12 KG | Single | Wajib | Perlu validasi |
+| `HOUSE_ASSET_OWNERSHIP` | Kepemilikan Aset | Tidak Punya; Sawah/Kebun `< 500 m2`; Sawah/Kebun `> 500 m2`; Sawah/Kebun `> 1000 m2` | Single | Wajib | Perlu validasi |
+| `HOUSE_VEHICLE_OWNERSHIP` | Kepemilikan Kendaraan | tidak Punya; Ontel; Sepeda Motr/+Ontel; Mobil | Single | Wajib | Perlu validasi |
+| `HOUSE_FLOOR_TYPE` | Jenis Lantai | Tanah; Plester; Tekel/Ubin; Keramik | Single | Wajib | Perlu validasi |
+| `HOUSE_ROOF_TYPE` | Jenis Atap | Genting/Asbas (bocor); Asbas; Genting; Dak/cor | Single | Wajib | Perlu validasi |
+| `ECONOMIC_HEAD_EDUCATION` | Pendidikan Kepala Rumah tangga | Tidak Sekolah; Sd-smp; SMA; Perguruan Tinggi | Single | Wajib | Perlu validasi |
+| `ECONOMIC_HEAD_OCCUPATION` | Pekerjaan Kepala Rumah Tangga | Tidak bekerja; Buruh tani/Serabutan; Petani; Karyawan/Tukang | Single | Wajib | Perlu validasi |
+| `ECONOMIC_MONTHLY_INCOME` | Total Pendapatan 1 bulan | `< 300.000`; `< 750.000,-`; `< 1.500.000`; `> 3.500.000,-` | Single | Wajib | Perlu validasi |
+| `ECONOMIC_FOOD_PURCHASE` | Kemampuan Membeli daging/ayam/Susu dalam Seminggu | Tidak Mampu; 1 kali; 2 Kali; 3 Kali | Single | Wajib | Perlu validasi |
+| `ECONOMIC_CLOTHING_PURCHASE` | Kemampuan Membeli Pakaian Baru | 1 kali Setahun; 2 Kali Setahun; 3 Kali Setahun; 5 Kali Setahun | Single | Wajib | Perlu validasi |
+| `ECONOMIC_OTHER_SUBSIDY` | Asumsi Subsidi Lain | Tidak Ada; Sumbangan Rutin; Kerabat /Orang lain; Anak | Single | Wajib | Perlu validasi |
+| `ECONOMIC_MEAL_FREQUENCY` | Frekuensi Makan dalam sehari | 1 kali; 2 Kali; 3 Kali; 4 Kali | Single | Wajib | Perlu validasi |
+| `ECONOMIC_LIGHTING` | Jenis Penerangan | Tidak Ada; Listrik 450; Listrik 900; Listrik `> 900` | Single | Wajib | Perlu validasi |
+| `ECONOMIC_SIDE_BUSINESS` | Usaha Sampingan | Tidak ada; Ada, tidak jalan; Ada, hasil tidak rutin; Ada, hasil rutin | Single | Wajib | Perlu validasi |
+| `ECONOMIC_GOVERNMENT_AID` | Bansos Pemerintah | PKH; BPNT / Raskin; PBI JKN / KIS; Tidak Ada | Single | Wajib | Perlu validasi |
+| `PHYSICAL_CONDITION` | Keadaan Fisik | Manula Sakit; Manula; Cacat Produktif; Sehat/Produktif | Single | Wajib | Perlu validasi |
+| `PHYSICAL_DEPENDENTS` | Tanggungan | Anak Yang Masih Sekolah; Lansia (tidak produktif); Keluarga lainya; Tidak ada | **Single** | Wajib | Perlu validasi |
+| `PHYSICAL_DEBT` | Hutang | Rentenir; Nonrentenir; Tidak ada; Bank | **Single** | Wajib | Perlu validasi |
+| `PHYSICAL_HEALTH_CAPABILITY` | Kemampuan Memenuhi Kesehatan | Tidak ada; KIS/ PBI JKN; BPJS Kelas 3; BPJS Kelas 2 | Single | Wajib | Perlu validasi |
+| `PHYSICAL_SAVINGS` | Tabungan | Tidak ada; Emas `< 5 grm`; Emas `> 5 grm`; Emas `> 10 grm` | Single | Wajib | Perlu validasi |
 
 ### Catatan fidelitas sumber
 
 - Rentang luas bangunan dan pendapatan ditulis mengikuti teks PDF sumber. Rentang pendapatan yang tumpang tindih atau menyisakan celah tidak dinormalisasi.
-- Opsi tabungan `emas >5gr` dan `emas >10gr` beririsan; pertahankan sesuai sumber sampai ada klarifikasi resmi.
+- Opsi berikut beririsan atau menyisakan celah pada sumber dan dipertahankan apa adanya: tabungan `Emas > 5 grm` dan `Emas > 10 grm`; aset `Sawah/Kebun > 500 m2` dan `> 1000 m2`; pendapatan `< 300.000` dan `< 750.000,-` beririsan, serta tidak ada opsi untuk Rp1.500.000 sampai Rp3.500.000 maupun untuk nilai tepat di batas (mis. emas 5 gram). Klarifikasi ke pemilik form berstatus `PENDING VALIDATION` (D-023).
+- Opsi keempat `Anak` pada pertanyaan Asumsi Subsidi Lain, serta label dan opsi delapan pertanyaan lain yang sebelumnya belum ditranskripsikan, dicocokkan dengan teks dan tampilan visual PDF sumber (D-022). Ejaan sumber seperti `Tekel`, `Motr`, `Asbas`, dan `lainya` dipertahankan.
 - Ejaan, istilah, satuan, dan urutan opsi pada prototipe harus mengikuti PDF sumber. Bila pembacaan teks/OCR tidak cukup untuk memastikan posisi label atau opsi, periksa tampilan visual PDF; jangan menebak.
 - Kolom skor pada PDF sumber tidak berarti aplikasi harus menghitung atau memilih skor otomatis. Perilaku skor masih perlu dikonfirmasi kepada pemilik form jika diperlukan dalam alur kerja.
+
+### Petunjuk pengisian opsi yang beririsan
+
+Petugas memilih opsi yang paling mendekati kondisi sebenarnya (misalnya emas 12 gram memilih `Emas > 10 grm`). Ini panduan pengisian, bukan perubahan opsi, tidak menormalisasi rentang, dan bukan aturan scoring (D-022).
 
 ## 4. Data Konteks dan Batas Perilaku
 
@@ -73,10 +80,11 @@ Perubahan spesifikasi tidak mengubah jawaban pada versi historis. Jika label ata
 ## 5. Hal yang Masih Memerlukan Validasi
 
 1. Validasi pemilik form atas penerapan 25 pertanyaan wajib, termasuk penanganan input yang belum lengkap sebelum finalisasi.
-2. Transkripsi dan pemetaan visual final untuk label/opsi yang belum pasti pada register.
+2. Konfirmasi pemetaan `question_code` terhadap posisi pertanyaan pada PDF. Label dan opsi register telah dilengkapi dan dicocokkan dengan teks serta tampilan visual PDF (D-022); pemetaan kode ke posisi mengikuti nama dan urutan kode.
 3. Apakah kolom skor diisi manual, hanya dicetak, atau memiliki aturan lain. Tidak ada scoring otomatis sebelum ada keputusan eksplisit.
 4. Pemetaan metadata/header pada PDF dan representasi jawaban pada PDF hasil aplikasi.
 5. Persetujuan formal pemilik form terhadap PDF sumber yang dipakai sebagai acuan prototipe.
+6. Klarifikasi opsi yang beririsan atau menyisakan celah (D-023).
 
 Hal-hal yang belum divalidasi di atas tidak menghalangi pencatatan keputusan single-choice, tetapi harus diselesaikan sebelum perilaku final yang bergantung padanya dianggap disetujui.
 

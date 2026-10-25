@@ -147,6 +147,236 @@ rujuk keputusan pengganti.
                            dan bukan otomatis                                             
                            menjadi blocker                                                
                            menyeluruh.                                                    
+
+  D-013       LOCKED       Stack prototype lokal: Persetujuan     Menetapkan stack untuk  `docs/architecture/architecture.md`,
+                           Laravel 13, Vue 3 +    eksplisit       prototype lokal         `docs/architecture/database.md`,
+                           TypeScript, Inertia,   pemilik proyek, non-production. Tidak   `docs/prototype/prototype.md`
+                           Vite, MySQL, Dompdf,   23 Oktober      mengubah Database v1.1
+                           dan Laravel            2026. Sesuai    / 22 tabel dan tidak
+                           Filesystem. Tidak ada  architecture.md mengotorisasi
+                           framework frontend     dan             bootstrap, migration,
+                           tambahan atau          database.md.    schema, atau seed.
+                           pengganti.                             Versi dependensi
+                                                                  diverifikasi saat
+                                                                  bootstrap setelah gate
+                                                                  dibuka.
+
+  D-014       LOCKED       Autentikasi prototype  Persetujuan     Tidak ada kebijakan     `docs/architecture/security.md`,
+                           memakai mekanisme      eksplisit       password atau sesi      `docs/architecture/roles-permissions.md`,
+                           bawaan Laravel dengan  pemilik proyek, khusus di luar bawaan   `docs/product/scope.md`
+                           akun dummy. Akun       23 Oktober      Laravel pada prototype.
+                           dibuat dan dikelola    2026.           Otorisasi tetap
+                           ADMIN; registrasi                      server-side sesuai
+                           publik dinonaktifkan.                  roles-permissions.md
+                                                                  dan security.md.
+                                                                  Kebijakan production
+                                                                  tetap PENDING
+                                                                  VALIDATION.
+
+  D-015       LOCKED       Label lampiran dasar   Persetujuan     Tidak ada perubahan     `PRD.md`, `scope.md`, `tasks.md`,
+                           adalah "Foto Klien"    eksplisit       database (nilai         `reconciliation.md`, `prototype.md`,
+                           (bukan "foto           pemilik proyek, FOTO_KLIEN tetap).      `testing.md`, `dummy-data.md`,
+                           penerima"). Empat      23 Oktober      Istilah "foto penerima" `demo-checklist.md`
+                           lampiran dasar: KTP,   2026. Sesuai    pada dokumen pendukung
+                           KK, Foto Klien, Foto   formulir PDF,   diselaraskan. Frasa
+                           Rumah.                 outreach.md,    seperti "foto penerima
+                                                  dan enum        beasiswa" pada lampiran
+                                                  FOTO_KLIEN.     tambahan per Type tidak
+                                                                  terdampak.
+
+  D-016       LOCKED       Batas peran ADMIN:     Persetujuan     Klarifikasi matriks     `docs/architecture/roles-permissions.md`,
+                           tidak dapat membuat    eksplisit       peran, bukan perubahan  `docs/architecture/workflow.md` (hanya
+                           Outreach dari nol dan  pemilik proyek, baseline. Workflow v2.1 dibaca, tidak diubah), `docs/ux/design.md`
+                           tidak memiliki Draft.  23 Oktober      dan Database v1.1 tidak
+                           Edit data hanya selama 2026. Sesuai    berubah. Baris ADMIN
+                           Special Unlock dengan  Workflow v2.1   pada matriks (Draft,
+                           alasan wajib dicatat.  (Lock & Ajukan  Finalisasi, scope
+                           Lock & Ajukan adalah   sebagai         administratif) perlu
+                           submission action      submission      disesuaikan.
+                           setara Finalisasi:     action) dan
+                           validasi penuh,        checkpoint
+                           historical version     v1.6.
+                           baru, status
+                           MENUNGGU_PENGESAHAN.
+                           Lock mengembalikan ke
+                           PERLU_PERBAIKAN. Hanya
+                           Outreach yang telah
+                           difinalisasi muncul di
+                           antrean Kepala. ADMIN
+                           tidak melakukan
+                           Approve atau Return.
+                           Scope administratif:
+                           melihat seluruh
+                           Outreach dalam
+                           Kelurahan tanpa batas
+                           kepemilikan Petugas.
+
+  D-017       LOCKED       Alur kerja Claude      Persetujuan     Menggantikan aturan     `AGENTS.md`, `CLAUDE.md`, `docs/index.md`
+                           Code: Claude Code      eksplisit       lama "berikan file      (perlu disesuaikan, satu file per giliran)
+                           bekerja langsung pada  pemilik proyek, revisi yang dapat
+                           repo Git lokal di      23 Oktober      diunduh" untuk fase
+                           folder Project, dengan 2026.           Claude Code. Tidak
+                           commit per task dan                    membuka gate
+                           repo GitHub private.                   implementasi. Aturan
+                           Checkpoint tetap                       satu file Markdown per
+                           dikelola di luar repo                  giliran selama
+                           dan dirujuk lewat                      rekonsiliasi dan
+                           path.                                  persetujuan perubahan
+                                                                  substantif tetap
+                                                                  berlaku.
+
+  D-018       LOCKED       Pustaka UI prototype:  Persetujuan     Hanya lapisan tampilan; `docs/architecture/architecture.md`,
+                           Tailwind CSS +         eksplisit       tidak mengubah          `docs/ux/design.md`
+                           shadcn-vue, melalui    pemilik proyek, arsitektur. Verifikasi
+                           starter kit resmi      23 Oktober      kit untuk Laravel 13
+                           Laravel untuk Vue.     2026.           dan penonaktifan
+                                                                  registrasi publik
+                                                                  dilakukan saat
+                                                                  bootstrap setelah gate
+                                                                  dibuka. Dependensi
+                                                                  tambahan (mis. tanda
+                                                                  tangan) tetap butuh
+                                                                  alasan jelas.
+
+  D-019       LOCKED       Status Kesejahteraan   Persetujuan     Menutup OUT-VAL-01:     `docs/domain/forms/outreach.md`,
+                           memakai desil 1-10: 1  eksplisit       label "Sejahtera" pada  `docs/architecture/database.md` (catatan
+                           Sangat Miskin; 2       pemilik proyek, contoh lama adalah      PENDING VALIDASI, tanpa perubahan schema),
+                           Miskin; 3 Hampir       23 Oktober      label Desil 9. Tidak    `docs/ux/design.md`
+                           Miskin; 4 Rentan       2026. Daftar    ada perubahan schema.
+                           Miskin; 5 Transisi     label sesuai    Tautkan evidence sumber
+                           Menengah; 6 Menengah;  sumber menurut  resmi bila tersedia.
+                           7 Menengah; 8 Menengah pemilik proyek
+                           Atas; 9 Sejahtera; 10  (Desil 6 dan 7
+                           Sangat Sejahtera.      memang
+                           Petugas memilih desil; sama-sama
+                           angka disimpan di      "Menengah").
+                           desil_1_10 dan label   Dokumen sumber
+                           diisi otomatis ke      resmi belum
+                           status_kesejahteraan.  dilampirkan
+                                                  sebagai
+                                                  evidence.
+
+  D-020       LOCKED       Kendaraan pada         Persetujuan     Menutup OUT-VAL-06      `docs/domain/forms/outreach.md`,
+                           Outreach diinput       eksplisit       tanpa perubahan schema. `docs/ux/design.md`,
+                           sebagai angka per      pemilik proyek, Draft boleh kosong;     `docs/prototype/prototype.md`
+                           jenis (kolom jumlah_*  23 Oktober      Finalisasi menuntut
+                           terpisah di Database   2026.           semua angka terisi.
+                           v1.1) beserta nama                     Berbeda dari pertanyaan
+                           kendaraan lainnya.                     Kepemilikan Kendaraan
+                           Petugas mengisi angka                  pada form Mustahik.
+                           secara eksplisit (0
+                           bila tidak ada), tanpa
+                           auto-fill. Nama wajib
+                           bila jumlah lainnya
+                           lebih dari 0. PDF
+                           merangkai satu baris
+                           dari jenis bernilai
+                           lebih dari 0, atau
+                           "Tidak ada" bila
+                           semuanya 0.
+
+  D-021       LOCKED       Fasilitas MCK pada     Persetujuan     Menutup OUT-VAL-07      `docs/domain/forms/outreach.md`,
+                           Outreach memakai empat eksplisit       tanpa mengganti nama    `docs/architecture/database.md` (hanya
+                           nilai: Layak, Kurang   pemilik proyek, atau relasi kolom. Tipe dibaca)
+                           layak, Tidak layak,    23 Oktober      dan kode nilai internal
+                           Tidak ada. Nama kolom  2026.           ditetapkan saat desain
+                           mck_layak tetap (opsi                  migration setelah gate
+                           A); makna empat                        dibuka. Berbeda dari
+                           nilainya                               pertanyaan MCK pada
+                           didokumentasikan.                      Mustahik; jawaban
+                                                                  Mustahik tidak diisi
+                                                                  otomatis.
+
+  D-022       LOCKED       Register Mustahik      Persetujuan     Opsi tidak              `docs/domain/forms/mustahik.md` (termasuk
+                           mengikuti PDF sumber   eksplisit       dinormalisasi dan tidak ECONOMIC_OTHER_SUBSIDY),
+                           secara literal.        pemilik proyek, ada scoring otomatis.   `docs/reference/mustahik.pdf` (sumber)
+                           Delapan pertanyaan     23 Oktober      Petunjuk "paling
+                           yang belum             2026. Sumber:   mendekati" adalah
+                           ditranskripsikan       PDF Mustahik    panduan pengisian,
+                           dimasukkan ke          (teks dan       bukan perubahan opsi.
+                           register, dan opsi     tampilan visual Register di mustahik.md
+                           keempat "Anak"         diperiksa).     perlu diperbarui.
+                           ditambahkan pada
+                           pertanyaan Asumsi
+                           Subsidi Lain. Ejaan
+                           sumber dan opsi yang
+                           beririsan
+                           dipertahankan.
+                           Petunjuk pengisian:
+                           petugas memilih opsi
+                           yang paling mendekati.
+
+  D-023       PENDING      Klarifikasi ke pemilik Belum ada       Prototype tetap memakai `docs/domain/forms/mustahik.md`,
+              VALIDATION   form (di PDF tertera   jawaban pemilik opsi PDF apa adanya     `docs/project-management/reconciliation.md`
+                           BAZNAS Kota Surabaya): form; dicatat   sampai ada klarifikasi
+                           opsi Mustahik yang     sebagai bahan   resmi. Tidak ada
+                           beririsan atau         klarifikasi.    keputusan perilaku atau
+                           memiliki celah, yaitu                  scoring yang diambil.
+                           pendapatan Rp1,5-3,5
+                           juta tanpa opsi, dan
+                           nilai tepat di batas
+                           (mis. emas 5 gram).
+
+  D-024       LOCKED       Lingkungan lokal       Persetujuan     Tidak mengubah          `docs/engineering/setup.md` (dokumen baru,
+                           Windows memakai        eksplisit       baseline. Pemilik       draft dibuat), `docs/index.md`,
+                           Laragon (bukan Herd).  pemilik proyek, proyek telah memeriksa  `docs/project-management/tasks.md`
+                           Terverifikasi: PHP     23 Oktober      EULA Laragon dan
+                           8.5.12 (cadangan       2026. Evidence: memutuskan tetap
+                           8.3.36) dengan         keluaran        memakainya. Langkah
+                           ekstensi yang          perintah dari   rinci ditulis di
+                           dibutuhkan aktif       komputer        setup.md.
+                           termasuk zip, Composer pemilik proyek.
+                           2.10.3, Node v24.22.1,
+                           npm 11.19.1, MySQL
+                           8.4.3 berjalan. Web
+                           server bawaan Laragon;
+                           Apache atau Nginx
+                           tidak memengaruhi
+                           aplikasi.
+
+  D-025       LOCKED       Kebijakan opsi         Persetujuan     Agama, Status Hubungan  `docs/domain/forms/outreach.md`,
+                           formulir Outreach:     eksplisit       dalam Keluarga, Status  `docs/ux/design.md`
+                           dropdown hanya bila    pemilik proyek, tempat tinggal, Status
+                           opsinya tertulis pada  24 Oktober      Perkawinan, dan Jaminan
+                           PDF atau ketentuan     2026. Menutup   Kesehatan memakai teks
+                           yang disetujui; selain OUT-VAL-02      bebas sampai daftar
+                           itu teks bebas pada    sebagai         opsinya disetujui, lalu
+                           prototype. Pekerjaan   kebijakan.      dapat menjadi dropdown
+                           memakai teks bebas.                    tanpa mengubah makna
+                           Opsi yang sudah                        jawaban.
+                           tertulis pada dokumen
+                           yang disetujui (mis.
+                           Status Kependudukan
+                           WNI atau WNA pada
+                           Database v1.1;
+                           Ya/Tidak untuk merokok
+                           dan hutang) boleh
+                           berupa dropdown.
+
+  D-026       LOCKED       Peran file aturan      Persetujuan     Menggantikan duplikasi  `AGENTS.md`, `CLAUDE.md`, `docs/index.md`
+                           agent: AGENTS.md       eksplisit       aturan pada dua file.
+                           menjadi satu-satunya   pemilik proyek, Aturan tetap dapat
+                           sumber aturan kerja    24 Oktober      dipakai alat lain bila
+                           (bahasa Indonesia,     2026.           Claude tidak dipakai.
+                           target gabungan                        Aturan LOCKED dan gate
+                           sekitar 200 baris).                    tidak diperlemah.
+                           CLAUDE.md hanya
+                           mengimpor AGENTS.md
+                           dan memuat catatan
+                           khusus Claude Code.
+
+  D-027       LOCKED       Bantuan yang pernah    Persetujuan     Menutup OUT-VAL-03 dan  `docs/domain/forms/outreach.md` (kolom
+                           diterima (Outreach)    eksplisit       menyelesaikan DEC-001   `bantuan_pernah_diterima` dan
+                           mengisi dua kolom      pemilik proyek, tanpa perubahan schema. `bantuan_detail`), `docs/ux/design.md`
+                           Database v1.1 dari     25 Oktober      Tipe kolom ditetapkan
+                           satu isian formulir:   2026.           saat desain migration;
+                           pilihan Ya/Tidak, dan                  bila kolom Ya/Tidak
+                           uraian teks bebas yang                 ternyata tidak cocok,
+                           wajib bila Ya serta                    keputusan ditinjau
+                           tidak berlaku bila                     ulang.
+                           Tidak. PDF menampilkan
+                           uraian, atau "Tidak
+                           ada" bila Tidak.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru
@@ -189,3 +419,12 @@ Keputusan baru harus merujuk evidence atau persetujuan yang dapat
 ditelusuri. Perubahan dokumentasi biasa tidak otomatis mengubah baseline
 yang terkunci. Jangan mengotorisasi perubahan skema atau migrasi melalui
 implikasi dokumentasi.
+
+## Catatan Keputusan — 23 sampai 25 Oktober 2026
+
+D-013 sampai D-022 dan D-024 sampai D-027 dicatat berdasarkan persetujuan
+eksplisit pemilik proyek dalam percakapan pada 23 sampai 25 Oktober 2026.
+D-023 masih `PENDING VALIDATION`. Entri ini tidak mengubah Workflow v2.1 atau
+Database v1.1 / 22 tabel, dan tidak membuka gate implementasi. Dokumen
+yang terdampak disesuaikan satu file per giliran dengan persetujuan
+pemilik proyek.
