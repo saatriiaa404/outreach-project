@@ -1,8 +1,8 @@
-# Document Index — project1.1
+# Document Index — project
 
 ## Tujuan
 
-Indeks ini adalah registry dokumentasi dan router sumber kebenaran untuk `project1.1`. Satu jenis informasi hanya boleh memiliki satu rumah kanonis. Lokasi yang belum memiliki dokumen kanonis tidak boleh dianggap sudah selesai hanya karena direktori tujuannya tersedia.
+Indeks ini adalah registry dokumentasi dan router sumber kebenaran untuk `project`. Satu jenis informasi hanya boleh memiliki satu rumah kanonis. Lokasi yang belum memiliki dokumen kanonis tidak boleh dianggap sudah selesai hanya karena direktori tujuannya tersedia.
 
 ## Urutan Baca
 
@@ -15,7 +15,7 @@ Indeks ini adalah registry dokumentasi dan router sumber kebenaran untuk `projec
 7. [`project-management/tasks.md`](project-management/tasks.md) — status task dan dependency.
 8. Dokumen kanonis yang relevan dengan pekerjaan.
 
-Jika konteks historis atau keputusan sebelumnya diperlukan, periksa file checkpoint v1.6 (`.md`), yang disimpan di luar repositori pada folder `../checkpoint/` (relatif terhadap folder `project/`). Gunakan repo lokal (atau ZIP repositori jika agent tidak punya akses langsung) untuk memeriksa kondisi berkas proyek saat ini; jangan menganggap checkpoint berada di dalam repositori atau ZIP, dan jangan menggunakan keduanya sebagai pengganti checkpoint. Jika file checkpoint tidak tersedia atau tidak dapat dibaca, sampaikan keterbatasan tersebut dan jangan mengarang isinya. Checkpoint v1.6 tetap bernama v1.6 untuk revisi dokumentasi biasa; jangan membuat checkpoint bernomor baru tanpa keputusan eksplisit pengguna.
+Checkpoint v1.6 (`.md`) disimpan di luar repositori pada folder `../checkpoint/` (relatif terhadap folder `project/`) dan berfungsi sebagai memori perencanaan untuk AI percakapan, bukan sumber implementasi (D-029); agent implementasi tidak membacanya kecuali pengguna secara eksplisit memintanya. Gunakan repo lokal (atau ZIP repositori jika agent tidak punya akses langsung) untuk memeriksa kondisi berkas proyek saat ini. Jika file checkpoint diminta dibaca tetapi tidak tersedia atau tidak dapat dibaca, sampaikan keterbatasan tersebut dan jangan mengarang isinya. Checkpoint v1.6 tetap bernama v1.6 untuk revisi dokumentasi biasa; jangan membuat checkpoint bernomor baru tanpa keputusan eksplisit pengguna.
 
 ## Registry Sumber Kebenaran
 
@@ -76,7 +76,7 @@ docs/
 
 Status `ACTIVE` menunjukkan bahwa dokumen merupakan sumber kanonis untuk concern-nya, bukan bahwa seluruh isinya telah selesai direkonsiliasi atau divalidasi. Status rekonsiliasi, validasi, dan penyelesaian task harus mengikuti evidence serta catatan pada dokumen manajemen proyek yang relevan.
 
-- `project1.1` adalah workspace dokumentasi kanonis aktif.
+- `project` (sebelumnya `project1.1`) adalah workspace dokumentasi kanonis aktif.
 - Checkpoint v1.6 adalah snapshot perencanaan terbaru, bukan pengganti spesifikasi kanonis.
 - Checkpoint v1.5 dan versi sebelumnya tetap dipertahankan sebagai riwayat.
 - Nama checkpoint v1.6 tidak berubah hanya karena revisi dokumen kanonis.

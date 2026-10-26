@@ -9,15 +9,15 @@ ada di `docs/`; peta dokumen ada di `docs/index.md`. Status gate implementasi di
 1. `README.md` dan `docs/index.md`.
 2. `docs/project-management/decisions.md`, `reconciliation.md`, dan `tasks.md`.
 3. Dokumen kanonis yang relevan dengan tugas (lihat peta di bagian 10).
-4. Checkpoint v1.6 hanya untuk konteks historis:
-   `../checkpoint/README_Project_Outreach_Manukan_Kulon_v1.6_checkpoint.md` (di luar repo).
+4. Checkpoint (`../checkpoint/`, di luar repo) adalah memori perencanaan untuk AI percakapan dan
+   bukan sumber implementasi (D-029). Jangan membacanya kecuali pengguna secara eksplisit memintanya.
 
 - Muat konteks bertahap; jangan membaca semua dokumen untuk setiap tugas. Perubahan kecil dan jelas
   tidak perlu memuat seluruh dokumentasi.
 - Jangan memulai implementasi substansial hanya dari konteks percakapan bila dokumentasi tersedia.
-- Jika checkpoint tidak dapat diakses atau dibaca, sampaikan keterbatasan itu dan jangan mengarang
-  isinya. Checkpoint tetap bernama v1.6 untuk revisi dokumentasi biasa; jangan membuat atau
-  mengganti nomor checkpoint tanpa keputusan eksplisit pengguna.
+- Checkpoint tidak menjadi sumber kebenaran. Bila pengguna memintanya dibaca dan file tidak dapat
+  diakses, sampaikan keterbatasan itu dan jangan mengarang isinya. Nama checkpoint tetap v1.6 untuk
+  revisi dokumentasi biasa; jangan membuat checkpoint bernomor baru tanpa keputusan eksplisit pengguna.
 
 ## 2. Otoritas dan Baseline
 
@@ -32,7 +32,7 @@ ada di `docs/`; peta dokumen ada di `docs/index.md`. Status gate implementasi di
 - Klasifikasikan informasi bila perlu: KNOWN, CONFIRMED, LOCKED, PENDING VALIDATION, UNKNOWN. Jangan
   mengarang requirement; bila perilaku tidak diketahui, katakan dan tanyakan.
 - Jika dua sumber berbeda: catat konflik, sumber, evidence, dan dampaknya; jangan memilih diam-diam.
-  Periksa berurutan: checkpoint (bila relevan), `decisions.md`, dokumen kanonis, lalu implementasi.
+  Periksa berurutan: `decisions.md`, dokumen kanonis, lalu implementasi.
   Jika konflik konsekuensial belum terselesaikan, tanyakan kepada pengguna.
 - Jangan meminta pengguna mengulang keputusan yang sudah jelas, kecuali ada evidence baru yang
   benar-benar bertentangan.
@@ -109,8 +109,8 @@ implementasi → verifikasi → sinkronkan dokumen dan tugas.
 - Kode harus terbaca, konsisten, dan mudah diuji. Ikuti Modular Monolith di `architecture.md`;
   jangan menambah lapisan atau abstraksi tanpa kebutuhan nyata.
 - Selama rekonsiliasi dokumentasi: kerjakan satu file Markdown per giliran dan pertahankan nama
-  serta lokasi file. Jangan memperbarui checkpoint setiap satu file selesai; setelah satu klaster
-  dokumen ditinjau, beri tahu pengguna dan minta persetujuan sebelum checkpoint dibuat atau diubah.
+  serta lokasi file. Jangan membuat atau mengubah checkpoint; checkpoint dikelola pengguna di luar
+  repo (D-029).
 
 ## 7. Git dan Penyuntingan File (D-017)
 

@@ -4,7 +4,7 @@
 
 | Item | Nilai |
 |---|---|
-| Versi workspace | `project1.1` |
+| Versi workspace | `project` (sebelumnya `project1.1`) |
 | Status | ACTIVE — rekonsiliasi dokumen kanonis berlangsung |
 | Fase | Persiapan implementasi prototype |
 | Checkpoint aktif | v1.6 — Canonical Reconciliation Update |
@@ -13,7 +13,7 @@
 | Metode pengembangan | Prototype lokal |
 | Mitra | Kelurahan Manukan Kulon, Kota Surabaya |
 
-Dokumen ini adalah titik masuk untuk `project1.1`. Checkpoint v1.6 merupakan snapshot perencanaan. Dokumen kanonis di workspace menjadi sumber kebenaran untuk concern masing-masing.
+Dokumen ini adalah titik masuk untuk `project`. Checkpoint v1.6 merupakan snapshot perencanaan. Dokumen kanonis di workspace menjadi sumber kebenaran untuk concern masing-masing.
 
 ## Tujuan Proyek
 
@@ -23,7 +23,7 @@ Role yang digunakan dalam baseline proyek adalah PETUGAS, KEPALA, dan ADMIN. Det
 
 ## Aturan Versi dan Otoritas
 
-1. `project1.1` adalah workspace dokumentasi kanonis aktif.
+1. `project` (sebelumnya `project1.1`) adalah workspace dokumentasi kanonis aktif.
 2. `projectv1.0` dan checkpoint sebelum v1.6 tetap menjadi arsip historis, kecuali dirujuk secara eksplisit sebagai evidence atau riwayat.
 3. Checkpoint v1.6 adalah snapshot perencanaan. Nama checkpoint tetap `v1.6` untuk revisi dokumentasi biasa; jangan membuat checkpoint bernomor baru tanpa keputusan eksplisit pengguna.
 4. Dokumen kanonis di `docs/` menjadi sumber kebenaran untuk concern masing-masing. Checkpoint menjadi acuan perencanaan, bukan pengganti spesifikasi kanonis.

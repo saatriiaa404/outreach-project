@@ -81,8 +81,7 @@ Batas ukuran lampiran belum diputuskan (`database.md` bagian 25 butir 3), sehing
 3. Setujui impor `@AGENTS.md` pada `CLAUDE.md` bila muncul dialog persetujuan.
 4. Gunakan mode perencanaan untuk audit kesiapan; mode yang meminta izin untuk tindakan yang mengubah file.
 5. Jalankan satu sesi sekali waktu. Karena Desktop dapat memakai worktree Git, periksa lokasi perubahan melalui tampilan diff dan `git status` sebelum commit.
-6. Folder checkpoint (`../checkpoint/`) berada di luar repo; berikan izin akses saat diminta.
-7. Jangan menjalankan Claude Code atau PowerShell sebagai Administrator.
+6. Jangan menjalankan Claude Code atau PowerShell sebagai Administrator.
 
 ## 8. Keamanan dan Git
 

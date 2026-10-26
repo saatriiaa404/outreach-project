@@ -377,6 +377,30 @@ rujuk keputusan pengganti.
                            Tidak. PDF menampilkan
                            uraian, atau "Tidak
                            ada" bila Tidak.
+
+  D-028       LOCKED       Nama workspace         Persetujuan     Tidak mengubah          `README.md`, `docs/index.md`
+                           `project1.1` diganti   eksplisit       baseline. D-001 dan
+                           menjadi `project`;     pemilik proyek, D-009 tetap sebagai
+                           keduanya merujuk       25 Oktober      riwayat dan tidak
+                           folder yang sama.      2026.           ditulis ulang. Nama
+                           Rujukan `project1.1`                   lama dicatat pada
+                           pada dokumen historis                  README.md agar jejaknya
+                           dibaca sebagai                         tidak hilang.
+                           `project`.
+
+  D-029       LOCKED       Checkpoint berfungsi   Persetujuan     Merevisi bagian D-017   `AGENTS.md`, `CLAUDE.md`, `docs/index.md`,
+                           sebagai memori         eksplisit       tentang checkpoint yang `docs/engineering/setup.md`,
+                           perencanaan untuk AI   pemilik proyek, dirujuk lewat path.     `docs/project-management/tasks.md`
+                           percakapan yang        25 Oktober      Tidak mengubah
+                           membantu membahas dan  2026. Sesuai    baseline. Sumber
+                           menyusun dokumen.      Workflow v2.1   kebenaran tetap docs/
+                           Checkpoint berada di   (checkpoint di  dan decisions.md.
+                           luar repo, bukan       luar repository Checkpoint tetap
+                           sumber implementasi,   dan bukan       bernama v1.6 dan
+                           dan tidak dibaca agent sumber          dikelola pengguna.
+                           implementasi kecuali   implementasi).
+                           pengguna secara
+                           eksplisit memintanya.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru
@@ -422,7 +446,7 @@ implikasi dokumentasi.
 
 ## Catatan Keputusan — 23 sampai 25 Oktober 2026
 
-D-013 sampai D-022 dan D-024 sampai D-027 dicatat berdasarkan persetujuan
+D-013 sampai D-022 dan D-024 sampai D-029 dicatat berdasarkan persetujuan
 eksplisit pemilik proyek dalam percakapan pada 23 sampai 25 Oktober 2026.
 D-023 masih `PENDING VALIDATION`. Entri ini tidak mengubah Workflow v2.1 atau
 Database v1.1 / 22 tabel, dan tidak membuka gate implementasi. Dokumen
