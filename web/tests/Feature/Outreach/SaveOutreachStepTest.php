@@ -114,7 +114,6 @@ class SaveOutreachStepTest extends TestCase
         $this->assertSame('Surabaya', $outreach->getAttribute('tempat_lahir'));
         $this->assertSame('1980-10-28', $outreach->tanggal_lahir->toDateString());
         $this->assertSame(45, $outreach->ageOnOutreachDate(), 'Age counts full years up to the Outreach date.');
-        $this->assertNull($outreach->getAttribute('tempat_tgl_lahir_umur'));
 
         $outreach->forceFill(['tanggal_lahir' => '1980-10-27'])->save();
         $this->assertSame(46, $outreach->refresh()->ageOnOutreachDate());

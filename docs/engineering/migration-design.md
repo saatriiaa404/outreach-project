@@ -70,7 +70,7 @@ Seed baseline (BAZNAS, CSR, BANGGA_SURABAYA; lima Type) dijalankan melalui seede
 | `petugas_id` | FK `users` | | Pemilik |
 | `nama` | VARCHAR(255) | ✓ | |
 | `nik` | VARCHAR(32) | ✓ | Bukan identifier; data demo memakai token sintetis (Q-05) |
-| `tempat_tgl_lahir_umur` | VARCHAR(255) | ✓ | Tidak lagi diisi sejak D-045; dipertahankan sampai ada keputusan penghapusan |
+| ~~`tempat_tgl_lahir_umur`~~ | — | — | Dihapus pada D-046 setelah isinya dipindahkan ke `tempat_lahir` dan `tanggal_lahir` |
 | `tempat_lahir` | VARCHAR(100) | ✓ | D-045 (migration tambahan) |
 | `tanggal_lahir` | DATE | ✓ | D-045; umur dihitung terhadap `outreach_date`, tidak disimpan |
 | `agama`, `pekerjaan`, `status_hubungan_keluarga`, `status_tempat_tinggal`, `status_perkawinan`, `pendidikan_terakhir` | VARCHAR(100) | ✓ | Teks bebas (D-025) |

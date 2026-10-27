@@ -702,6 +702,24 @@ rujuk keputusan pengganti.
                            kalender) dan tidak
                            boleh setelah Tanggal
                            Outreach.
+
+  D-046       LOCKED       Amandemen Database     Persetujuan     Perubahan schema pada   `database.md`, `migration-design.md`,
+                           v1.1: kolom            eksplisit       baseline terkunci;      kode `web/`
+                           outreaches.tempat_tgl_lahir_umurpemilik proyek,jumlah tabel tetap 22.
+                           dihapus karena         27 Oktober      Isian yang tidak dapat
+                           digantikan             2026.           dibaca dibiarkan
+                           tempat_lahir dan                       kosong, bukan ditebak.
+                           tanggal_lahir (D-045).                 Rollback menambah
+                           Isian lama dipindahkan                 kembali kolom tanpa
+                           lebih dulu: bagian                     mengembalikan isinya.
+                           sebelum koma menjadi
+                           tempat_lahir, tanggal
+                           berformat "15 Juni
+                           2006" menjadi
+                           tanggal_lahir, dan
+                           bagian umur tidak
+                           disimpan karena
+                           dihitung.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru
