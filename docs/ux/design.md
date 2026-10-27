@@ -49,6 +49,7 @@ Desktop memakai vertical stepper; mobile memakai `Langkah X dari N`. Status step
 
 ## Field Formulir
 
+- **Tempat dan Tanggal Lahir / Umur:** tiga isian: Tempat lahir, Tanggal lahir (isian tanggal seperti Google Form: ketik dd/mm/yyyy atau pilih dari kalender), dan Umur read-only yang terisi otomatis terhadap Tanggal Outreach (D-045).
 - **Status Kesejahteraan:** pilihan desil 1–10; label pasangannya tampil otomatis dan tidak dapat diketik terpisah (D-019).
 - **Kendaraan:** input angka per jenis (sepeda angin, sepeda listrik, becak, sepeda motor, roda 4, lainnya) tanpa auto-fill; nama kendaraan lainnya wajib bila jumlahnya lebih dari 0 (D-020).
 - **Fasilitas MCK:** pilihan Layak, Kurang layak, Tidak layak, Tidak ada (D-021).

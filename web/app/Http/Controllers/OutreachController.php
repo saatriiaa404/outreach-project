@@ -95,6 +95,7 @@ class OutreachController extends Controller
                 'type' => $outreach->type->name,
                 'status' => $outreach->status->value,
                 'edit_version' => $outreach->edit_version,
+                'outreach_date' => $outreach->outreach_date->toDateString(),
             ],
             'steps' => [
                 ...collect($steps)->map(fn (array $definition, string $key) => [
@@ -139,6 +140,6 @@ class OutreachController extends Controller
     {
         $value = $outreach->getAttribute($name);
 
-        return $name === 'outreach_date' ? $value?->toDateString() : $value;
+        return in_array($name, ['outreach_date', 'tanggal_lahir'], true) ? $value?->toDateString() : $value;
     }
 }

@@ -30,7 +30,7 @@ class SaveOutreachStepRequest extends FormRequest
             'step' => ['required', Rule::in(array_keys(OutreachFormSchema::steps()))],
             'edit_version' => ['required', 'integer', 'min:0'],
             'next' => ['sometimes', 'boolean'],
-            ...($step ? OutreachFormSchema::rules($step) : []),
+            ...($step ? OutreachFormSchema::rules($step, $this->route('outreach')) : []),
         ];
     }
 

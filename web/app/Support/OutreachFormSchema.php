@@ -72,7 +72,9 @@ class OutreachFormSchema
                 'fields' => [
                     'nama' => $text('Nama'),
                     'nik' => $text('NIK'),
-                    'tempat_tgl_lahir_umur' => $text('Tempat dan Tanggal Lahir / Umur'),
+                    // Template field 3 is entered as separate parts; age is derived (D-045).
+                    'tempat_lahir' => $text('Tempat lahir'),
+                    'tanggal_lahir' => ['label' => 'Tanggal lahir', 'input' => 'date', 'required' => true, 'showsAge' => true],
                     'agama' => $text('Agama'),
                     'alamat_ktp' => ['label' => 'Alamat KTP', 'input' => 'textarea', 'required' => true],
                     'alamat_domisili' => ['label' => 'Alamat Domisili', 'input' => 'textarea', 'required' => true],
@@ -170,7 +172,7 @@ class OutreachFormSchema
      *
      * @return array<string, array<int, mixed>>
      */
-    public static function rules(string $step): array
+    public static function rules(string $step, ?Outreach $outreach = null): array
     {
         $rules = [];
 
@@ -180,11 +182,16 @@ class OutreachFormSchema
                 'textarea' => ['nullable', 'string', 'max:'.self::MAX_TEXT],
                 'integer' => ['nullable', 'integer', 'min:0', 'max:65535'],
                 'money' => ['nullable', 'integer', 'min:0', 'max:'.self::MAX_RUPIAH],
-                'date' => ['required', 'date_format:Y-m-d'],
+                'date' => [$name === 'outreach_date' ? 'required' : 'nullable', 'date_format:Y-m-d'],
                 'select' => ['nullable', 'in:'.implode(',', array_keys($field['options']))],
                 'boolean' => ['nullable', 'boolean'],
                 default => throw new InvalidArgumentException("Unknown input type for field [{$name}]."),
             };
+        }
+
+        if (isset($rules['tanggal_lahir']) && $outreach) {
+            // A birth date after the Outreach date would give a negative age (D-045).
+            $rules['tanggal_lahir'][] = 'before_or_equal:'.$outreach->outreach_date->toDateString();
         }
 
         return $rules;
@@ -240,6 +247,7 @@ class OutreachFormSchema
     {
         return match ($name) {
             'nik' => 32,
+            'tempat_lahir' => 100,
             'no_telp' => 30,
             'tahun_warga_surabaya' => 50,
             'agama', 'pekerjaan', 'status_hubungan_keluarga', 'status_tempat_tinggal', 'status_perkawinan', 'pendidikan_terakhir',

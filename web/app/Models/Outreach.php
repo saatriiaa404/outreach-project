@@ -24,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $outreach_date
  * @property int $petugas_id
  * @property string|null $nama
+ * @property Carbon|null $tanggal_lahir
  * @property-read OutreachSource $source
  * @property-read OutreachType $type
  * @property OutreachStatus $status
@@ -48,7 +49,20 @@ class Outreach extends Model
             'bantuan_pernah_diterima' => 'boolean',
             'punya_hutang' => 'boolean',
             'desil_1_10' => 'integer',
+            'tanggal_lahir' => 'date',
         ];
+    }
+
+    /**
+     * Age in full years on the Outreach date (D-045); null without a birth date.
+     */
+    public function ageOnOutreachDate(): ?int
+    {
+        if ($this->tanggal_lahir === null || $this->tanggal_lahir->gt($this->outreach_date)) {
+            return null;
+        }
+
+        return (int) $this->tanggal_lahir->diffInYears($this->outreach_date);
     }
 
     /**

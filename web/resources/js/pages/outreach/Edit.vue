@@ -34,6 +34,7 @@ type Field = {
     requiredIf?: [string, boolean | string];
     options?: Record<string, string>;
     group?: string;
+    showsAge?: boolean;
     value: string | number | boolean | null;
 };
 
@@ -45,6 +46,7 @@ type Props = {
         type: string;
         status: string;
         edit_version: number;
+        outreach_date: string;
     };
     steps: { key: string; title: string; state: StepState }[];
     step: string;
@@ -100,6 +102,19 @@ const sum = (group: string) =>
     props.fields
         .filter((field) => field.group === group)
         .reduce((total, field) => total + Number(values[field.name] || 0), 0);
+
+// Age in full years on the Outreach date (D-045); empty until a valid birth date is entered.
+const ageOnOutreachDate = (birthDate: string) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) {
+        return '';
+    }
+
+    const [by, bm, bd] = birthDate.split('-').map(Number);
+    const [oy, om, od] = props.outreach.outreach_date.split('-').map(Number);
+    const age = oy - by - (om < bm || (om === bm && od < bd) ? 1 : 0);
+
+    return age >= 0 ? `${age} tahun` : '';
+};
 
 const rupiah = (amount: number) =>
     new Intl.NumberFormat('id-ID', {
@@ -278,6 +293,21 @@ const stateLabel: Record<StepState, string> = {
                         />
 
                         <InputError :message="errors[field.name]" />
+                    </div>
+
+                    <div v-if="field.showsAge" class="grid gap-2">
+                        <Label for="umur">Umur</Label>
+                        <Input
+                            id="umur"
+                            :model-value="ageOnOutreachDate(values[field.name])"
+                            readonly
+                            placeholder="Terisi otomatis dari Tanggal lahir"
+                            class="bg-muted/50"
+                        />
+                        <p class="text-xs text-muted-foreground">
+                            Dihitung terhadap Tanggal Outreach
+                            {{ outreach.outreach_date }}.
+                        </p>
                     </div>
                 </template>
 

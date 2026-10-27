@@ -674,6 +674,34 @@ rujuk keputusan pengganti.
                            data akun dan                          pada R9.1.
                            penonaktifan dikelola
                            ADMIN.
+
+  D-045       LOCKED       Amandemen Database     Persetujuan     Perubahan schema pada   `database.md`, `migration-design.md`,
+                           v1.1: field Outreach   eksplisit       baseline terkunci;      `outreach.md`, `design.md`, kode `web/`
+                           "Tempat dan Tanggal    pemilik proyek, jumlah tabel tetap 22.
+                           Lahir / Umur" diisi    27 Oktober 2026 Kolom lama
+                           terpisah pada form     (pilihan kolom  tempat_tgl_lahir_umur
+                           melalui kolom baru     baru dan acuan  tidak lagi diisi dan
+                           outreaches.tempat_lahirumur Tanggal    dipertahankan sampai
+                           (VARCHAR(100),         Outreach).      ada keputusan
+                           nullable) dan                          penghapusan terpisah.
+                           outreaches.tanggal_lahir               Format rangkaian baris
+                           (DATE, nullable). Umur                 PDF ditetapkan saat
+                           tidak disimpan;                        template PDF dibuat
+                           dihitung otomatis                      (R7.2).
+                           dalam tahun penuh
+                           terhadap Tanggal
+                           Outreach. Template PDF
+                           tidak berubah: tetap
+                           satu baris yang
+                           dirangkai dari
+                           ketiganya. Tanggal
+                           lahir memakai isian
+                           tanggal seperti Google
+                           Form (ketik dd/mm/yyyy
+                           atau pilih dari
+                           kalender) dan tidak
+                           boleh setelah Tanggal
+                           Outreach.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

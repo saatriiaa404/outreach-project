@@ -64,7 +64,7 @@ Template memiliki 23 field Data Klien.
 |---:|---|---|
 | 1 | Nama | Wajib |
 | 2 | NIK | Wajib |
-| 3 | Tempat dan Tanggal Lahir / Umur | Wajib |
+| 3 | Tempat dan Tanggal Lahir / Umur | Wajib; diisi terpisah pada form (D-045): Tempat lahir (teks) dan Tanggal lahir (isian tanggal, tidak setelah Tanggal Outreach). Umur tampil otomatis dalam tahun penuh terhadap Tanggal Outreach dan tidak disimpan. PDF tetap satu baris sesuai template |
 | 4 | Agama | Wajib; daftar opsi perlu bersumber dari ketentuan yang disetujui |
 | 5 | Alamat KTP | Wajib |
 | 6 | Alamat Domisili | Wajib |

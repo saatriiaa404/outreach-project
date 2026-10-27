@@ -10,10 +10,11 @@
 | Status | ACTIVE — Technical Baseline |
 | Database Engine | MySQL |
 | Application | Laravel 13 |
-| Amandemen | D-030, D-031, D-041, dan D-043 (27 Oktober 2026); lihat `docs/project-management/decisions.md` |
+| Amandemen | D-030, D-031, D-041, D-043, dan D-045 (27 Oktober 2026); lihat `docs/project-management/decisions.md` |
 
-Amandemen D-041 menambah kolom `users.nip`; jumlah tabel tetap 22 dan label versi
-tetap Database v1.1. D-030 dan D-031 hanya memperjelas tafsir dan teks, tanpa
+Amandemen D-041 menambah kolom `users.nip` dan D-045 menambah kolom
+`outreaches.tempat_lahir` serta `outreaches.tanggal_lahir`; jumlah tabel tetap 22
+dan label versi tetap Database v1.1. D-030 dan D-031 hanya memperjelas tafsir dan teks, tanpa
 perubahan kolom.
 
 ### Document Responsibility
@@ -252,7 +253,9 @@ petugas_id                 FK -> users.id
 # identity / client snapshot
 nama
 nik
-tempat_tgl_lahir_umur
+tempat_tgl_lahir_umur      tidak lagi diisi (D-045)
+tempat_lahir               D-045
+tanggal_lahir              D-045; umur dihitung terhadap outreach_date
 agama
 alamat_ktp
 alamat_domisili
@@ -1766,8 +1769,8 @@ Sebelum implementasi dianggap sesuai baseline, pastikan:
 
 # 29. Status Dokumen
 
-**Database Specification v1.1 — ACTIVE** (dengan amandemen D-030, D-031, dan
-D-041).
+**Database Specification v1.1 — ACTIVE** (dengan amandemen D-030, D-031, D-041,
+dan D-045).
 
 Dokumen ini menjadi canonical database baseline untuk pengembangan prototype.
 Perubahan requirement atau hasil validasi Kelurahan yang memengaruhi persistence

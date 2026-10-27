@@ -31,7 +31,7 @@ class SaveOutreachStepTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page
                 ->component('outreach/Edit')
                 ->where('step', 'klien')
-                ->has('fields', 24)
+                ->has('fields', 25)
                 ->where('steps.0.key', 'identitas')
                 ->where('steps.1.state', 'untouched'));
     }
@@ -96,6 +96,42 @@ class SaveOutreachStepTest extends TestCase
 
         $event = HistoryEvent::query()->where('event_type', HistoryEventType::SectionSaved)->sole();
         $this->assertSame(['step' => 'klien'], $event->metadata);
+    }
+
+    public function test_birth_place_and_date_are_saved_separately_and_age_is_derived()
+    {
+        $outreach = $this->draft();
+        $outreach->forceFill(['outreach_date' => '2026-10-27'])->save();
+
+        $this->actingAs($outreach->petugas)->put(route('outreaches.update', $outreach), [
+            'step' => 'klien',
+            'edit_version' => 0,
+            'tempat_lahir' => 'Surabaya',
+            'tanggal_lahir' => '1980-10-28',
+        ])->assertSessionHasNoErrors();
+
+        $outreach->refresh();
+        $this->assertSame('Surabaya', $outreach->getAttribute('tempat_lahir'));
+        $this->assertSame('1980-10-28', $outreach->tanggal_lahir->toDateString());
+        $this->assertSame(45, $outreach->ageOnOutreachDate(), 'Age counts full years up to the Outreach date.');
+        $this->assertNull($outreach->getAttribute('tempat_tgl_lahir_umur'));
+
+        $outreach->forceFill(['tanggal_lahir' => '1980-10-27'])->save();
+        $this->assertSame(46, $outreach->refresh()->ageOnOutreachDate());
+    }
+
+    public function test_birth_date_can_not_be_after_the_outreach_date()
+    {
+        $outreach = $this->draft();
+        $outreach->forceFill(['outreach_date' => '2026-10-27'])->save();
+
+        $this->actingAs($outreach->petugas)->put(route('outreaches.update', $outreach), [
+            'step' => 'klien',
+            'edit_version' => 0,
+            'tanggal_lahir' => '2026-10-28',
+        ])->assertSessionHasErrors(['tanggal_lahir']);
+
+        $this->assertNull($outreach->refresh()->tanggal_lahir);
     }
 
     public function test_money_and_counts_keep_zero_distinct_from_empty()
