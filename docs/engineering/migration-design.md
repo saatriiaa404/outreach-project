@@ -255,6 +255,8 @@ FK melingkar `mustahik_forms`/`kifayah_forms` → `signatures` tidak ada (signat
 
 Setiap kelompok satu berkas migration dengan `down()` yang menghapus tabel dalam urutan terbalik. Migration dijalankan hanya setelah persetujuan R1.2.
 
+**Hasil R1.2 (27 Oktober 2026, atas persetujuan pemilik proyek):** sebelas berkas di `web/database/migrations/` dijalankan pada MySQL lokal `outreach_prototype`. Terverifikasi melalui `information_schema`: 23 tabel (22 tabel domain + `migrations`), kolom setiap tabel identik dengan `database.md`, 43 foreign key dengan aturan `RESTRICT`, 17 constraint UNIQUE (15 baseline + 2 dari D-043), InnoDB dan `utf8mb4_unicode_ci`. Uji `migrate:rollback` lalu `migrate` berhasil. Tidak ada seed yang dijalankan.
+
 ## 5. Pertanyaan Keputusan
 
 Seluruh usulan di bawah disetujui pada D-043.
