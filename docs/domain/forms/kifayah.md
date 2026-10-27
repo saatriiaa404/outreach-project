@@ -247,44 +247,33 @@ Pertanyaan pilihan bersifat **single-choice**: satu jawaban aktif untuk
 setiap `question_code`. Nama kode mengikuti baseline Database v1.1 yang
 terkunci.
 
-  ----------------------------------------------------------------------------------
-  `question_code`     Label pada     Opsi yang         Cardinality   Applicability
-                      Form Had       tercetak pada                   
-                      Kifayah        sumber                          
-  ------------------- -------------- ----------------- ------------- ---------------
-  `HOUSE_OWNERSHIP`   Kepemilikan    Tidak memiliki    Single        Baznas/CSR
-                      Tempat Tinggal rumah;                          
-                                     menyewa/kontrak                 
+Label dan opsi di bawah ditranskripsi secara literal dari `kifayah.pdf`
+(D-037) dengan pemeriksaan teks dan tampilan visual PDF: ejaan, kapitalisasi,
+dan urutan opsi mengikuti sumber dari atas ke bawah. Transkripsi dikerjakan
+agent atas izin pemilik proyek (27 Oktober 2026) dan menunggu konfirmasi
+pemilik proyek (VAL-003).
 
-  `ELECTRICITY`       Daya Listrik   450 watt; 900     Single        Baznas/CSR
-                                     watt; lebih dari                
-                                     900 watt                        
+| `question_code` | Bagian pada sumber | Label pada sumber | Opsi pada sumber (urutan sumber) | Cardinality |
+|---|---|---|---|---|
+| `HOUSE_OWNERSHIP` | STATUS TEMPAT TINGGAL | Kepemilikan Rumah/Kontrakan | Tidak Memiliki Tempat Tinggal; Sewa/Kontrak; Memiliki Tempat Tinggal Sendiri | Single |
+| `ELECTRICITY` | STATUS TEMPAT TINGGAL | Penerangan Listrik | 450 Watt; 900 Watt; Lebih dari 900 Watt | Single |
+| `GOVERNMENT_AID` | MENERIMA BANTUAN PEMERINTAH | Bansos | Tidak Menerima Bansos; Menerima Bansos | Single |
+| `BPJS_KIS_PBI` | MENERIMA BANTUAN PEMERINTAH | Penerima BPJS | Bukan Penerima BPJS/KIS/PBI; Penerima BPJS/KIS/PBI | Single |
+| `MOTOR_VEHICLE` | KEPEMILIKAN ASET | Memiliki Kendaraan Bermotor | Tidak Memiliki Kendaraan Bermotor; Memiliki Kendaraan Bermotor | Single |
+| `SAVINGS` | KEPEMILIKAN ASET | Memiliki Tabungan | Tidak Memiliki Tabungan; Memiliki Tabungan | Single |
+| `DEBT` | BEBAN KEUANGAN | Memiliki Hutang | Tidak Memiliki Hutang; Memiliki Hutang | Single |
 
-  `GOVERNMENT_AID`    Bantuan        Ya; Tidak         Single        Baznas/CSR
-                      Pemerintah                                     
+**Catatan transkripsi:**
 
-  `BPJS_KIS_PBI`      BPJS/KIS/PBI   Ya; Tidak         Single        Baznas/CSR
-
-  `MOTOR_VEHICLE`     Kendaraan      Ya; Tidak         Single        Baznas/CSR
-                      Bermotor                                       
-
-  `SAVINGS`           Tabungan       Ya; Tidak         Single        Baznas/CSR
-
-  `DEBT`              Hutang         Ya; Tidak         Single        Baznas/CSR
-  ----------------------------------------------------------------------------------
-
-**Catatan validasi sumber (D-037):** daftar di atas adalah rangkuman
-sementara, bukan transkripsi final. Opsi ketujuh pertanyaan akan
-ditranskripsi secara literal dari `kifayah.pdf` dengan pendekatan D-022
-(ejaan, urutan, dan frasa sumber dipertahankan; tidak dinormalisasi), dan
-seluruhnya tetap single-choice. Transkripsi beserta pencocokan visual
-dikerjakan pemilik proyek. Sampai hasilnya tercatat, register ini
-`PENDING VALIDATION`. Perbedaan yang sudah terlihat pada audit kesiapan:
-pertanyaan Kepemilikan Rumah/Kontrakan pada PDF memiliki tiga pilihan,
-sedangkan tabel ini baru mencatat dua; pertanyaan lain pada PDF memakai
-frasa lengkap (mis. "Tidak Menerima Bansos" / "Menerima Bansos"), bukan
-"Ya; Tidak". Jangan menambah atau mengubah opsi berdasarkan asumsi sebelum
-transkripsi selesai.
+-   Pemetaan label ke `question_code` mengikuti makna label dan urutan kode
+    pada Database v1.1; tidak ada kode baru.
+-   Sumber menandai pilihan dengan petunjuk "Centang ✔ pada kotak pilihan".
+    Pada aplikasi, pilihan tetap single-choice tanpa default; jawaban tidak
+    diisi otomatis dari data Outreach.
+-   Beberapa label fixed field pada sumber memuat salah ketik (mis.
+    "Ibu Menyusi", "Pendidika Tinggi", "PENGELURAN TAMBAHAN"). D-037 hanya
+    mencakup opsi pertanyaan pilihan; penulisan label fixed field pada
+    tampilan dan PDF belum diputuskan dan tidak diubah oleh catatan ini.
 
 ## 4. Identitas Mustahik dan Penggunaan Data Outreach
 
@@ -371,8 +360,8 @@ bukan dari data Outreach terkini.
 
 ## 7. Hal yang Masih Perlu Validasi
 
--   Transkripsi final label dan opsi tiap pertanyaan dengan pemeriksaan
-    visual terhadap PDF sumber, dikerjakan pemilik proyek (D-037).
+-   Konfirmasi pemilik proyek atas transkripsi literal opsi pada bagian 3
+    (VAL-003).
 -   Makna kotak centang di samping setiap nominal pengeluaran pada PDF
     sumber; jangan menafsirkannya sebagai pengganti aturan `0`/`NULL`
     sebelum dikonfirmasi.

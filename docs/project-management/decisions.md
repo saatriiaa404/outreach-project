@@ -697,3 +697,10 @@ kolom. Teks Workflow v2.1 diselaraskan pada bagian yang disebut D-031,
 D-033, D-034, D-035, dan D-038. Tidak ada keputusan yang membuka gate
 implementasi atau mengotorisasi bootstrap, migration, atau seed sebelum gate
 dibuka. Dokumen terdampak disesuaikan satu file per giliran.
+
+Tambahan 27 Oktober 2026 (setelah gate dibuka): pemilik proyek mengizinkan
+agent mengerjakan transkripsi literal opsi Kifayah yang pada D-037 semula
+dikerjakan pemilik proyek; hasilnya menunggu konfirmasi pemilik (VAL-003).
+Tata letak blok pengesahan untuk D-041 dikonfirmasi dan dicatat pada
+`outreach.md` bagian 8.4 tanpa mencantumkan nama atau NIP pejabat nyata;
+sumber tanggal pada blok tersebut masih menunggu keputusan (VAL-004).

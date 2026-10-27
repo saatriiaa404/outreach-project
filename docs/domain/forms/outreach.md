@@ -242,7 +242,19 @@ Tanggal pada kalimat pembuka berasal dari Tanggal Outreach yang tersimpan. Hari,
 Mengikuti keputusan yang telah dibahas sebelumnya:
 
 - Identitas pejabat mengikuti Kepala Kelurahan yang aktif, bukan nama/NIP yang dikunci dari contoh PDF.
-- Nama diambil dari akun Kepala yang mengesahkan dan NIP dari kolom `users.nip` (D-041). Format dan posisi cetak NIP pada blok pengesahan masih `PENDING VALIDATION` (OUT-VAL-09).
+- Nama diambil dari akun Kepala yang mengesahkan dan NIP dari kolom `users.nip` (D-041).
+- Tata letak blok pengesahan (dikonfirmasi pemilik proyek, 27 Oktober 2026; VAL-004) berupa blok rata tengah dengan urutan baris:
+
+  ```text
+  Surabaya, <tanggal>
+  Mengetahui,
+  Lurah Manukan Kulon
+  <ruang tanda tangan Kepala>
+  <nama Kepala>
+  NIP. <nip Kepala>
+  ```
+
+  Nama dicetak sesuai data akun Kepala, termasuk gelar (contoh tata letak memakai huruf kapital). Letak tanda tangan di antara jabatan dan nama mengikuti kelaziman blok pengesahan dan perlu dicek pada hasil render. Sumber `<tanggal>` (tanggal pengesahan atau Tanggal Outreach) masih `PENDING VALIDATION` (OUT-VAL-09). Nama dan NIP pejabat nyata tidak dicantumkan pada dokumen, kode, atau data prototype; data demo memakai nilai sintetis.
 - Tanda tangan Kepala Kelurahan menggunakan template tanda tangan tersimpan sesuai aturan workflow dan user management.
 - Identitas atau tanda tangan tidak boleh dikarang atau diambil dari data contoh sebagai nilai permanen.
 - Detail sumber data dan pembaruan identitas pejabat harus konsisten dengan dokumen role/user management dan workflow.
@@ -282,7 +294,7 @@ Lampiran harus disertakan sebagai halaman setelah halaman utama PDF Outreach. Pa
 | OUT-VAL-05 | Evidence persetujuan posisi Type dan layout adaptif | Pengguna mengonfirmasi keduanya sudah disetujui Kelurahan; tautkan bukti/artefak persetujuan di catatan evidence gate jika belum tersimpan |
 | OUT-VAL-06 | Pemetaan field kendaraan | **CLOSED** — D-020. Input angka per jenis pada kolom Database v1.1; PDF merangkai satu baris dari jenis bernilai lebih dari 0, atau `Tidak ada`. Tanpa perubahan schema |
 | OUT-VAL-07 | Pemetaan `Fasilitas MCK` | **CLOSED** — D-021. Empat nilai (Layak, Kurang layak, Tidak layak, Tidak ada) pada kolom `mck_layak`; nama kolom tetap, bukan boolean |
-| OUT-VAL-09 | Format dan posisi cetak NIP Kepala pada blok pengesahan | `PENDING VALIDATION` — kolom `users.nip` ditetapkan pada D-041; tata letak cetak menunggu konfirmasi pemilik proyek tanpa menyertakan dokumen berisi data warga nyata |
+| OUT-VAL-09 | Format dan posisi cetak NIP Kepala pada blok pengesahan | Tata letak dikonfirmasi pemilik proyek (bagian 8.4, VAL-004). Masih `PENDING VALIDATION`: sumber tanggal pada baris `Surabaya, <tanggal>` |
 | OUT-VAL-08 | Status dan penanganan contoh PDF terisi | Menurut klarifikasi pengguna, PDF terisi terdahulu berisi data warga nyata dan persetujuan warga telah diperoleh. File telah dikeluarkan dari direktori kerja dan tidak ditemukan dalam ZIP repository terbaru yang diaudit. Konten serta bukti persetujuan tidak diverifikasi secara independen. Jangan menambahkan kembali file nyata ke repository atau paket handover; gunakan template kosong, data sintetis, atau salinan yang telah disamarkan secara aman. |
 
 Item validasi harus ditutup melalui bukti atau keputusan yang bisa ditelusuri sebelum gate implementasi terkait dinyatakan selesai.
@@ -306,7 +318,7 @@ Sebelum output PDF dinyatakan memenuhi spesifikasi, periksa bahwa:
 13. Field kendaraan dirangkai dari jenis yang bernilai lebih dari 0, atau menampilkan `Tidak ada` bila semuanya 0.
 14. Bantuan yang pernah diterima menampilkan uraian bila jawabannya Ya, atau `Tidak ada` bila Tidak.
 15. Lampiran gambar tercetak pada halaman lampiran; lampiran berformat PDF tampil sebagai halaman rujukan berisi nama berkas (D-034).
-16. Nama Kepala yang mengesahkan tercetak; NIP dicetak sesuai format yang telah dikonfirmasi (D-041, OUT-VAL-09).
+16. Blok pengesahan rata tengah memuat `Surabaya, <tanggal>`, `Mengetahui,`, `Lurah Manukan Kulon`, tanda tangan, nama Kepala yang mengesahkan, dan `NIP. <nip>` (D-041, bagian 8.4).
 
 ---
 
