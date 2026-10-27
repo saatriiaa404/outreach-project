@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Enums\AttachmentCategory;
 use App\Models\Outreach;
 use App\Models\OutreachAttachment;
 use Illuminate\Support\Carbon;
@@ -24,7 +25,8 @@ class OutreachDocument
      */
     public static function build(Outreach $outreach): array
     {
-        $attachments = $outreach->attachments()->with('file')->orderBy('category')->orderBy('sort_order')->get()
+        $attachments = $outreach->attachments()->with('file')->orderBy('sort_order')->get()
+            ->sortBy(fn ($attachment) => array_search($attachment->category, AttachmentCategory::cases(), true), SORT_NUMERIC)
             ->map(fn (OutreachAttachment $attachment) => [
                 'label' => $attachment->title ?: $attachment->category->label(),
                 'name' => $attachment->file->original_name,

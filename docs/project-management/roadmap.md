@@ -69,7 +69,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 | ID | Task | Persetujuan / ketergantungan |
 |---|---|---|
 | R7.1 | Pasang Dompdf (stack D-013) | ✅ Selesai 28 Oktober 2026: `dompdf/dompdf` 3.1.6 langsung (D-052) dan `PdfRenderer` tanpa akses remote/PHP/JavaScript, chroot ke `resources/views/pdf`, huruf DejaVu Sans, gambar privat sebagai data URI |
-| R7.2 | Template PDF Outreach (halaman lampiran gambar dan halaman rujukan PDF), Mustahik, Kifayah; `document_template_versions`; blok pengesahan sesuai VAL-004 | — |
+| R7.2 | Template PDF Outreach (halaman lampiran gambar dan halaman rujukan PDF), Mustahik, Kifayah; `document_template_versions`; blok pengesahan sesuai VAL-004 | ✅ Selesai 28 Oktober 2026: `OutreachPdf` merender PDF dari versi historis (snapshot, lampiran versi, tanda tangan versi) memakai view `pdf.v1.*` sesuai paket template versi tersebut; Outreach mengikuti template beserta halaman lampiran dan rujukan PDF serta blok pengesahan (diisi saat Approve, R7.4); Mustahik satu halaman tiga kolom dengan centang di kolom score; Kifayah dua halaman (D-053). Logo pada kop dan formulir belum dicetak karena berkas logonya belum tersedia di repo |
 | R7.3 | Antrean Kepala, Return dengan catatan wajib, `OUTREACH_RETURNED` | — |
 | R7.4 | Approve dengan PDF gate dan uji kegagalan | — |
 | R7.5 | Pengambilan PDF on-demand dari versi historis; PETUGAS tidak dapat mengunduh | — |

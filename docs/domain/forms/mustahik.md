@@ -97,7 +97,7 @@ Perubahan spesifikasi tidak mengubah jawaban pada versi historis. Jika label ata
 
 1. Validasi pemilik form atas penerapan 25 pertanyaan wajib, termasuk penanganan input yang belum lengkap sebelum finalisasi.
 2. Konfirmasi pemetaan `question_code` terhadap posisi pertanyaan pada PDF. Label dan opsi register telah dilengkapi dan dicocokkan dengan teks serta tampilan visual PDF (D-022); pemetaan kode ke posisi mengikuti nama dan urutan kode.
-3. Apakah kolom skor diisi manual, hanya dicetak, atau memiliki aturan lain. Tidak ada scoring otomatis sebelum ada keputusan eksplisit.
+3. ~~Apakah kolom skor diisi manual, hanya dicetak, atau memiliki aturan lain.~~ Diputuskan (D-053): kolom "score" pada PDF hanya berisi tanda centang pada baris opsi yang dipilih; tidak ada angka atau scoring.
 4. Representasi jawaban pada PDF hasil aplikasi. Sumber data header (D-036) dan aturan wajib header (D-048) sudah ditetapkan.
 5. Persetujuan formal pemilik form terhadap PDF sumber yang dipakai sebagai acuan prototipe.
 6. Klarifikasi opsi yang beririsan atau menyisakan celah (D-023).
@@ -110,7 +110,8 @@ Hal-hal yang belum divalidasi di atas tidak menghalangi pencatatan keputusan sin
 - PDF Mustahik dihasilkan sebagai file terpisah dari PDF Outreach dan PDF Kifayah untuk alur Baznas/CSR.
 - Jawaban yang dirender harus berasal dari jawaban yang tersimpan pada submission version terkait. Jangan mengambil jawaban terkini untuk mengganti isi PDF atau snapshot versi lama.
 - Jika PDF Mustahik yang diwajibkan gagal dibuat pada proses approval, approval harus gagal. Status Outreach tetap `MENUNGGU_PENGESAHAN` dan notifikasi `OUTREACH_COMPLETED` tidak dikirim.
-- Kolom skor pada PDF sumber tidak mengizinkan sistem menghitung skor atau memilih jawaban otomatis.
+- Kolom skor pada PDF sumber tidak mengizinkan sistem menghitung skor atau memilih jawaban otomatis. Kolom itu hanya berisi tanda centang pada opsi yang dipilih (D-053).
+- Tanggal "Surabaya, ..." di atas tanda tangan Surveyor memakai tanggal survei (D-053).
 
 ## 7. Batas Perubahan Database
 

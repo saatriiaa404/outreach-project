@@ -863,6 +863,36 @@ rujuk keputusan pengganti.
                            tangan sebagai data
                            URI dari storage
                            privat.
+
+  D-053       LOCKED       Tampilan PDF Mustahik  Persetujuan     Menutup butir validasi  `mustahik.md`, `kifayah.md`,
+                           dan Kifayah (R7.2):    eksplisit       kolom skor Mustahik     kode `web/`
+                           kolom "score"          pemilik         (mustahik.md bagian 5
+                           Mustahik hanya berisi  proyek, 28      butir 3) dan penulisan
+                           tanda centang (✓)      Oktober 2026.   label fixed field
+                           pada baris opsi yang                   Kifayah. Tidak ada
+                           dipilih, tidak pernah                  perhitungan skor.
+                           angka atau skor;                       VAL-006 tetap terbuka.
+                           tanggal "Surabaya,
+                           ..." di atas tanda
+                           tangan Surveyor
+                           memakai tanggal
+                           survei; kotak kecil
+                           di samping nominal
+                           pengeluaran Kifayah
+                           dicetak kosong
+                           seperti sumber sampai
+                           VAL-006 diputuskan;
+                           label fixed field
+                           Kifayah yang salah
+                           ketik di sumber
+                           dicetak dengan ejaan
+                           yang dibetulkan (Ibu
+                           Menyusui, Pendidikan
+                           Tinggi, PENGELUARAN
+                           TAMBAHAN), sedangkan
+                           opsi pertanyaan
+                           pilihan tetap literal
+                           (D-037).
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

@@ -41,18 +41,25 @@ class PdfRenderer
     /**
      * @param  view-string  $view
      * @param  array<string, mixed>  $data
+     * @param  string|null  $pageLabel  e.g. "{PAGE_NUM} dari {PAGE_COUNT}", printed bottom right
      */
-    public function view(string $view, array $data = []): string
+    public function view(string $view, array $data = [], ?string $pageLabel = null): string
     {
-        return $this->html(view($view, $data)->render());
+        return $this->html(view($view, $data)->render(), $pageLabel);
     }
 
-    public function html(string $html): string
+    public function html(string $html, ?string $pageLabel = null): string
     {
         $dompdf = $this->dompdf();
         $dompdf->loadHtml($html, 'UTF-8');
         $dompdf->setPaper('a4', 'portrait');
         $dompdf->render();
+
+        if ($pageLabel !== null) {
+            // Drawn on the canvas after layout, so PHP in the document stays disabled.
+            $canvas = $dompdf->getCanvas();
+            $canvas->page_text($canvas->get_width() - 110, $canvas->get_height() - 40, $pageLabel, $dompdf->getFontMetrics()->getFont('DejaVu Sans'), 9);
+        }
 
         return (string) $dompdf->output();
     }

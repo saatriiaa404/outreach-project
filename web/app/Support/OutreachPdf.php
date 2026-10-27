@@ -1,0 +1,241 @@
+<?php
+
+namespace App\Support;
+
+use App\Enums\AttachmentCategory;
+use App\Models\OutreachVersion;
+use App\Models\OutreachVersionAttachment;
+use App\Models\Signature;
+use Illuminate\Support\Carbon;
+use InvalidArgumentException;
+
+/**
+ * Renders the official PDFs of a historical version on demand (Database v1.1
+ * section 18): Outreach with attachment pages, and for Baznas/CSR also
+ * Mustahik and Kifayah (outreach.md 8.5). Everything comes from the stored
+ * version (snapshot_data, version attachments, version signatures) and the
+ * template version it recorded, never from the current Draft data.
+ */
+class OutreachPdf
+{
+    /**
+     * Blade view per document and template version; old versions stay
+     * available so historical documents keep their layout.
+     */
+    private const VIEWS = [
+        'outreach' => [1 => 'pdf.v1.outreach'],
+        'mustahik' => [1 => 'pdf.v1.mustahik'],
+        'kifayah' => [1 => 'pdf.v1.kifayah'],
+    ];
+
+    public function __construct(private PdfRenderer $renderer) {}
+
+    /**
+     * Documents of the version's template package (Q-09).
+     *
+     * @return list<string>
+     */
+    public function documents(OutreachVersion $version): array
+    {
+        $package = $version->documentTemplate->metadata ?? [];
+
+        // Fixed order; stored JSON keys are unordered.
+        return array_values(array_filter(array_keys(self::VIEWS), fn (string $document) => isset($package[$document])));
+    }
+
+    /**
+     * @param  array{date: string, name: string, nip: string|null, signature: string|null}|null  $approval
+     *                                                                                                      Approval block values (outreach.md 8.4); empty until the Kepala approves.
+     */
+    public function render(OutreachVersion $version, string $document, ?array $approval = null): string
+    {
+        return $this->renderer->html($this->html($version, $document, $approval), $document === 'kifayah' ? '{PAGE_NUM} dari {PAGE_COUNT}' : null);
+    }
+
+    /**
+     * The HTML handed to Dompdf, from the template version the document recorded.
+     *
+     * @param  array{date: string, name: string, nip: string|null, signature: string|null}|null  $approval
+     */
+    public function html(OutreachVersion $version, string $document, ?array $approval = null): string
+    {
+        $templateVersion = $version->documentTemplate->metadata[$document] ?? null;
+
+        if ($templateVersion === null) {
+            throw new InvalidArgumentException("The template package of version {$version->id} has no {$document} document.");
+        }
+
+        $view = self::VIEWS[$document][$templateVersion] ?? throw new InvalidArgumentException("No view for {$document} template v{$templateVersion}.");
+        $snapshot = $version->snapshot_data;
+
+        return view($view, match ($document) {
+            'outreach' => [
+                'document' => OutreachDocument::fromSnapshot($snapshot, $this->attachments($version)),
+                'approval' => $approval,
+            ],
+            'mustahik' => $this->mustahik($version, $snapshot),
+            default => $this->kifayah($version, $snapshot),
+        })->render();
+    }
+
+    /**
+     * @return array<int, array{label: string, name: string, is_image: bool, url: string}>
+     */
+    private function attachments(OutreachVersion $version): array
+    {
+        return $version->attachments()->with('file')->orderBy('sort_order')->get()
+            ->sortBy(fn ($attachment) => array_search($attachment->category, AttachmentCategory::cases(), true), SORT_NUMERIC)
+            ->map(fn (OutreachVersionAttachment $attachment) => [
+                'label' => $attachment->title ?: $attachment->category->label(),
+                'name' => $attachment->file->original_name,
+                'is_image' => $attachment->file->isImage(),
+                'url' => $attachment->file->isImage() ? PdfRenderer::dataUri($attachment->file) : '',
+            ])->values()->all();
+    }
+
+    /**
+     * @param  array<string, mixed>  $snapshot
+     * @return array<string, mixed>
+     */
+    private function mustahik(OutreachVersion $version, array $snapshot): array
+    {
+        $form = $snapshot['mustahik'];
+        $survey = $form['survey_date'] === null ? null : Carbon::parse($form['survey_date']);
+        $sections = [
+            'A. KONDISI RUMAH' => 'HOUSE_',
+            'B. KONDISI EKONOMI' => 'ECONOMIC_',
+            'C. KONDISI FISIK DAN TANGUNGAN' => 'PHYSICAL_',
+        ];
+
+        return [
+            'header' => [
+                'petugas' => $form['petugas']['name'],
+                'survey' => $survey ? $survey->translatedFormat('j F Y').' / '.$survey->translatedFormat('l') : '',
+                'kelurahan' => $snapshot['meta']['wilayah']['kelurahan'],
+                'kecamatan' => $snapshot['meta']['wilayah']['kecamatan'],
+                'kk_nama' => $form['kepala_keluarga']['nama'],
+                'kk_nik' => $form['kepala_keluarga']['nik_no_kk'],
+                'kk_alamat' => $form['kepala_keluarga']['alamat'],
+                'kk_rt' => $form['kepala_keluarga']['rt'],
+                'kk_rw' => $form['kepala_keluarga']['rw'],
+                // Outreach contact, not a verified Kepala Keluarga number (D-036).
+                'no_hp' => $snapshot['client']['no_telp'],
+            ],
+            'sections' => array_map(fn (string $title, string $prefix) => [
+                'title' => $title,
+                'questions' => $this->questions(MustahikFormSchema::QUESTIONS, $form['answers'], $prefix),
+            ], array_keys($sections), $sections),
+            'signature' => [
+                'date' => $survey?->translatedFormat('j F Y') ?? '',
+                'name' => $form['petugas']['name'],
+                'image' => $this->signatureImage($version->mustahik_signature_id),
+            ],
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $snapshot
+     * @return array<string, mixed>
+     */
+    private function kifayah(OutreachVersion $version, array $snapshot): array
+    {
+        $form = $snapshot['kifayah'];
+        $client = $snapshot['client'];
+        $amount = fn (string $name) => self::amount($form[$name]);
+        $rows = fn (array $names) => array_map(fn (string $name) => ['label' => KifayahFormSchema::FIELDS[$name]['label'], 'value' => $amount($name)], $names);
+        $signature = $version->kifayah_signature_id ? Signature::query()->find($version->kifayah_signature_id) : null;
+        $sections = [];
+
+        foreach (KifayahFormSchema::QUESTIONS as $code => $question) {
+            $sections[$question['section']][] = $this->question($question, $form['answers'][$code]['option'] ?? null);
+        }
+
+        return [
+            // Identity read from the Outreach snapshot (D-036).
+            'identitas' => [
+                'Nama' => $client['nama'],
+                'NIK' => $client['nik'],
+                'Alamat Tempat Tinggal' => $client['alamat_domisili'],
+                'Kelurahan' => $snapshot['meta']['wilayah']['kelurahan'],
+                'Kecamatan' => $snapshot['meta']['wilayah']['kecamatan'],
+                'No. HP' => $client['no_telp'],
+            ],
+            'income' => $rows(['income_head_family', 'income_other_members']),
+            'expenseGroups' => [
+                ['title' => 'PENGELUARAN KELUARGA PER BULAN', 'rows' => $rows([
+                    'expense_head_household', 'expense_housewife', 'expense_adult_working', 'expense_adult_not_working',
+                    'expense_school_sma', 'expense_school_smp', 'expense_school_sd', 'expense_baby_not_school',
+                ])],
+                ['title' => 'PENGELUARAN TAMBAHAN PER BULAN', 'rows' => $rows([
+                    'expense_disability', 'expense_breastfeeding', 'expense_pregnant', 'expense_widow_not_working',
+                ])],
+            ],
+            'education' => [
+                'label' => KifayahFormSchema::FIELDS['higher_education_count']['label'],
+                'value' => $form['higher_education_count'],
+            ],
+            'questionSections' => array_map(fn (string $title, array $questions) => ['title' => $title, 'questions' => $questions], array_keys($sections), $sections),
+            // The date follows the Outreach date (kifayah.md 5).
+            'signature' => [
+                'date' => Carbon::parse($snapshot['meta']['outreach_date'])->translatedFormat('j F Y'),
+                'name' => $signature->signer_name_snapshot ?? $client['nama'],
+                'image' => $this->signatureImage($version->kifayah_signature_id),
+            ],
+        ];
+    }
+
+    /**
+     * Mustahik questions of one section, numbered within the section, with
+     * the chosen option marked.
+     *
+     * @param  array<string, array{label: string, options: array<int, string>}>  $questions
+     * @param  array<string, array{option: string, label: string|null}>  $answers
+     * @return list<array<string, mixed>>
+     */
+    private function questions(array $questions, array $answers, string $prefix): array
+    {
+        $result = [];
+
+        foreach ($questions as $code => $question) {
+            if (str_starts_with($code, $prefix)) {
+                $result[] = ['no' => count($result) + 1, ...$this->question($question, $answers[$code]['option'] ?? null)];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param  array{label: string, options: array<int, string>}  $question
+     * @return array{label: string, options: list<array{letter: string, label: string, checked: bool}>}
+     */
+    private function question(array $question, ?string $chosen): array
+    {
+        $options = [];
+
+        foreach ($question['options'] as $code => $label) {
+            $options[] = ['letter' => range('a', 'z')[$code - 1], 'label' => $label, 'checked' => (string) $code === $chosen];
+        }
+
+        return ['label' => $question['label'], 'options' => $options];
+    }
+
+    private function signatureImage(?int $signatureId): ?string
+    {
+        $signature = $signatureId ? Signature::query()->with('file')->find($signatureId) : null;
+
+        return $signature ? PdfRenderer::dataUri($signature->file) : null;
+    }
+
+    /**
+     * Rupiah amount printed after "Rp." on the Kifayah form; 0 reads "-" (D-050).
+     */
+    private static function amount(?int $value): string
+    {
+        return match (true) {
+            $value === null => '',
+            $value === 0 => '-',
+            default => number_format($value, 0, ',', '.'),
+        };
+    }
+}

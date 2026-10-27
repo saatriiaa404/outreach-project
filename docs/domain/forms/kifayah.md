@@ -272,8 +272,9 @@ pada 27 Oktober 2026 (VAL-003 selesai).
     diisi otomatis dari data Outreach.
 -   Beberapa label fixed field pada sumber memuat salah ketik (mis.
     "Ibu Menyusi", "Pendidika Tinggi", "PENGELURAN TAMBAHAN"). D-037 hanya
-    mencakup opsi pertanyaan pilihan; penulisan label fixed field pada
-    tampilan dan PDF belum diputuskan dan tidak diubah oleh catatan ini.
+    mencakup opsi pertanyaan pilihan. Penulisan label fixed field pada
+    tampilan dan PDF memakai ejaan yang dibetulkan ("Ibu Menyusui",
+    "Pendidikan Tinggi", "PENGELUARAN TAMBAHAN"; D-053).
 
 ## 4. Identitas Mustahik dan Penggunaan Data Outreach
 
@@ -365,7 +366,8 @@ bukan dari data Outreach terkini.
 
 -   Makna kotak centang di samping setiap nominal pengeluaran pada PDF
     sumber; jangan menafsirkannya sebagai pengganti aturan `0`/`NULL`
-    sebelum dikonfirmasi.
+    sebelum dikonfirmasi. Sampai diputuskan, PDF mencetak kotak kosong
+    seperti sumber (D-053).
 -   Format dan posisi tanda tangan pada PDF keluaran.
 -   Validasi formal oleh Kelurahan bahwa spesifikasi ini sesuai dengan
     formulir Had Kifayah yang digunakan.
