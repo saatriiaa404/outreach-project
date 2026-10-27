@@ -86,6 +86,8 @@ Desktop memakai vertical stepper; mobile memakai `Langkah X dari N`. Status step
 
 - Perubahan data formulir setelah tanda tangan atau persetujuan harus mengikuti alur pembaruan tanda tangan dan persetujuan yang relevan.
 - Perubahan lampiran saja tidak otomatis mewajibkan tanda tangan ulang.
+- Penerapan prototype untuk workflow 16.4 sebelum Finalisasi: tanda tangan Petugas dihapus bila isian Mustahik atau No. telp Outreach berubah; tanda tangan Warga dihapus bila isian Kifayah atau Nama, NIK, Alamat Domisili, atau No. telp Outreach berubah (data yang tercetak pada form yang ditandatangani). Menyimpan data yang sama tidak menghapus tanda tangan. Halaman Mustahik dan Kifayah memperingatkan bila form sudah ditandatangani.
+- Signature pad (D-049) menyediakan tombol "Ulangi" dan "Batalkan goresan terakhir"; tanda tangan selalu dibuat baru untuk setiap Outreach.
 - Riwayat versi, tanda tangan, persetujuan, dan referensi lampiran historis harus tetap dapat ditelusuri sesuai hak akses.
 - UI harus membedakan data operasional yang masih dapat diedit dari historical version yang tidak dapat diubah.
 

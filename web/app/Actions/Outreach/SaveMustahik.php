@@ -8,6 +8,7 @@ use App\Models\MustahikAnswer;
 use App\Models\MustahikForm;
 use App\Models\Outreach;
 use App\Models\User;
+use App\Support\FormSignatures;
 use App\Support\MustahikFormSchema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -42,20 +43,27 @@ class SaveMustahik
                 'petugas_id' => $form->petugas_id ?? $outreach->petugas_id,
                 ...array_intersect_key($data, MustahikFormSchema::HEADER),
             ])->save();
+            $changed = $form->wasChanged() && array_keys($form->getChanges()) !== ['updated_at'];
 
             foreach (array_keys(MustahikFormSchema::QUESTIONS) as $code) {
                 $option = $data[$code] ?? null;
 
                 if ($option === null) {
-                    MustahikAnswer::query()->where('mustahik_form_id', $form->id)->where('question_code', $code)->delete();
+                    $changed = MustahikAnswer::query()->where('mustahik_form_id', $form->id)->where('question_code', $code)->delete() > 0 || $changed;
 
                     continue;
                 }
 
-                MustahikAnswer::query()->updateOrCreate(
+                $answer = MustahikAnswer::query()->updateOrCreate(
                     ['mustahik_form_id' => $form->id, 'question_code' => $code],
                     ['answer' => ['option' => $option]],
                 );
+                $changed = $answer->wasRecentlyCreated || $answer->wasChanged() || $changed;
+            }
+
+            // The signer no longer signed this data (Workflow v2.1 16.4).
+            if ($changed) {
+                FormSignatures::invalidate($outreach, 'mustahik');
             }
 
             if (! $autosave) {

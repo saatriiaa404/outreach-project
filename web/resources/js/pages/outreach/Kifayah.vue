@@ -46,6 +46,7 @@ const props = defineProps<{
     fields: Field[];
     questions: Question[];
     missingForFinalization: string[];
+    signed: boolean;
 }>();
 
 defineOptions({
@@ -197,6 +198,16 @@ const saveStatus = computed(() => {
                         </Button>
                     </AlertDescription>
                 </Alert>
+
+                <p
+                    v-if="signed"
+                    class="rounded-md border border-dashed p-3 text-sm"
+                    data-test="signed-notice"
+                >
+                    Form ini sudah ditandatangani Warga. Mengubah isian akan
+                    menghapus tanda tangan tersebut sehingga perlu
+                    ditandatangani ulang di langkah Tanda Tangan.
+                </p>
 
                 <input
                     type="hidden"

@@ -766,6 +766,25 @@ rujuk keputusan pengganti.
                            data Kepala Keluarga;
                            tidak pernah
                            otomatis.
+
+  D-049       LOCKED       Signature pad Petugas  Persetujuan     Dependensi frontend     `architecture.md`,
+                           dan Warga (R5.1)       eksplisit       baru. Hasil pad         `roadmap.md`, kode `web/`
+                           memakai pustaka npm    pemilik         dikirim sebagai PNG
+                           signature_pad versi    proyek, 28      dan disimpan privat
+                           5.1.4 (MIT, tanpa      Oktober 2026    melalui registry
+                           dependensi turunan),   (opsi B).       files; validasi dan
+                           versi dikunci. Di                      aturan tanda tangan
+                           bawah pad tersedia                     ulang tetap di server.
+                           tombol "Ulangi"
+                           (hapus semua) dan
+                           "Batalkan goresan
+                           terakhir". Tanda
+                           tangan dibuat baru
+                           untuk setiap
+                           Outreach; tanda
+                           tangan sebelumnya
+                           tidak dapat dipakai
+                           ulang.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

@@ -14,6 +14,8 @@ use App\Models\Outreach;
 use App\Models\OutreachAttachment;
 use App\Models\OutreachSource;
 use App\Models\OutreachType;
+use App\Models\Signature;
+use App\Support\FormSignatures;
 use App\Support\KifayahFormSchema;
 use App\Support\MustahikFormSchema;
 use App\Support\OutreachFormSchema;
@@ -143,6 +145,8 @@ class OutreachController extends Controller
                     'value' => $form?->answers->firstWhere('question_code', $code)?->answer['option'],
                 ])->values(),
                 'missingForFinalization' => MustahikFormSchema::missing($form),
+                // Changing the data clears this signature (Workflow v2.1 16.4).
+                'signed' => $form?->signature_id !== null,
             ]);
         }
 
@@ -171,6 +175,29 @@ class OutreachController extends Controller
                     'value' => $form?->answers->firstWhere('question_code', $code)?->answer['option'],
                 ])->values(),
                 'missingForFinalization' => KifayahFormSchema::missing($form),
+                'signed' => $form?->signature_id !== null,
+            ]);
+        }
+
+        if ($step === 'tanda_tangan') {
+            return Inertia::render('outreach/Signatures', [
+                ...$shared,
+                'parties' => collect(FormSignatures::FORMS)->map(function (array $definition, string $form) use ($outreach, $request) {
+                    $record = FormSignatures::form($outreach, $form);
+                    $signature = $record?->signature_id ? Signature::query()->find($record->signature_id) : null;
+                    $missing = $form === 'mustahik' ? MustahikFormSchema::missing($outreach->mustahikForm) : KifayahFormSchema::missing($outreach->kifayahForm);
+
+                    return [
+                        'form' => $form,
+                        'title' => $definition['title'],
+                        'document' => $definition['document'],
+                        // Petugas signs as the logged-in user; the Warga is the Klien (16.1).
+                        'signer' => $signature->signer_name_snapshot ?? ($form === 'mustahik' ? $request->user()->name : $outreach->nama),
+                        'signed_at' => $signature?->signed_at->toIso8601String(),
+                        'url' => $signature ? route('outreaches.signatures.show', [$outreach, $form]).'?v='.$signature->id : null,
+                        'formMissing' => count($missing),
+                    ];
+                })->values(),
             ]);
         }
 

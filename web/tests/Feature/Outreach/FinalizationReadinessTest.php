@@ -44,7 +44,7 @@ class FinalizationReadinessTest extends TestCase
     {
         $missing = OutreachFormSchema::missingForFinalization(Outreach::factory()->create());
 
-        $this->assertSame(['klien', 'keluarga', 'rumah', 'narasi', 'mustahik', 'kifayah', 'lampiran'], array_keys($missing), 'The factory Source uses Mustahik and Kifayah.');
+        $this->assertSame(['klien', 'keluarga', 'rumah', 'narasi', 'mustahik', 'kifayah', 'lampiran', 'tanda_tangan'], array_keys($missing), 'The factory Source uses Mustahik and Kifayah.');
         $this->assertSame(['KTP', 'Kartu Keluarga (KK)', 'Foto Klien', 'Foto Rumah'], $missing['lampiran']);
         $this->assertCount(21, $missing['klien']);
         $this->assertCount(17, $missing['keluarga']);
@@ -58,7 +58,7 @@ class FinalizationReadinessTest extends TestCase
     {
         $outreach = Outreach::factory()->create($this->completeData());
 
-        $this->assertSame(['mustahik', 'kifayah', 'lampiran'], array_keys(OutreachFormSchema::missingForFinalization($outreach)));
+        $this->assertSame(['mustahik', 'kifayah', 'lampiran', 'tanda_tangan'], array_keys(OutreachFormSchema::missingForFinalization($outreach)));
         $this->assertSame('complete', OutreachFormSchema::completion($outreach, 'rumah'));
     }
 

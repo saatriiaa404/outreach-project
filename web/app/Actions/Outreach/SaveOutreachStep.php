@@ -6,6 +6,7 @@ use App\Enums\HistoryEventType;
 use App\Models\HistoryEvent;
 use App\Models\Outreach;
 use App\Models\User;
+use App\Support\FormSignatures;
 use App\Support\OutreachFormSchema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -27,6 +28,8 @@ class SaveOutreachStep
         $data = $this->normalize($data);
 
         DB::transaction(function () use ($outreach, $actor, $step, $data, $expectedVersion, $autosave) {
+            $before = (array) DB::table('outreaches')->where('id', $outreach->id)->first(array_keys($data));
+
             $updated = Outreach::query()
                 ->whereKey($outreach->id)
                 ->where('edit_version', $expectedVersion)
@@ -40,6 +43,16 @@ class SaveOutreachStep
                 throw ValidationException::withMessages([
                     'edit_version' => 'Data Outreach telah berubah di tab atau sesi lain. Muat ulang halaman, lalu ulangi perubahan Anda.',
                 ]);
+            }
+
+            // Data printed on a signed form changed, so that signature no longer applies (16.4).
+            foreach (FormSignatures::OUTREACH_FIELDS as $form => $fields) {
+                $changed = collect($fields)->contains(fn (string $field) => array_key_exists($field, $data)
+                    && (string) ($before[$field] ?? '') !== (string) ($data[$field] ?? ''));
+
+                if ($changed) {
+                    FormSignatures::invalidate($outreach, $form);
+                }
             }
 
             if (! $autosave) {

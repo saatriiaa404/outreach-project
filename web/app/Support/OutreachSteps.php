@@ -42,6 +42,7 @@ class OutreachSteps
                     'missing' => count(KifayahFormSchema::missing($outreach->kifayahForm)),
                 ],
                 'lampiran' => self::attachmentStep($outreach, $title),
+                'tanda_tangan' => self::signatureStep($outreach, $title),
                 default => ['key' => $key, 'title' => $title, 'state' => 'upcoming'],
             };
         }
@@ -59,6 +60,25 @@ class OutreachSteps
         $next = $position === false ? null : ($steps[$position + 1] ?? null);
 
         return $next && $next['state'] !== 'upcoming' ? $next['key'] : null;
+    }
+
+    /**
+     * @return array{key: string, title: string, state: string, missing: int}
+     */
+    private static function signatureStep(Outreach $outreach, string $title): array
+    {
+        $missing = count(FormSignatures::missing($outreach));
+
+        return [
+            'key' => 'tanda_tangan',
+            'title' => $title,
+            'state' => match ($missing) {
+                0 => 'complete',
+                count(FormSignatures::FORMS) => 'untouched',
+                default => 'incomplete',
+            },
+            'missing' => $missing,
+        ];
     }
 
     /**

@@ -8,6 +8,7 @@ use App\Models\KifayahAnswer;
 use App\Models\KifayahForm;
 use App\Models\Outreach;
 use App\Models\User;
+use App\Support\FormSignatures;
 use App\Support\KifayahFormSchema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -39,20 +40,27 @@ class SaveKifayah
 
             $form = KifayahForm::query()->firstOrNew(['outreach_id' => $outreach->id]);
             $form->forceFill(array_intersect_key($data, KifayahFormSchema::FIELDS))->save();
+            $changed = $form->wasChanged() && array_keys($form->getChanges()) !== ['updated_at'];
 
             foreach (array_keys(KifayahFormSchema::QUESTIONS) as $code) {
                 $option = $data[$code] ?? null;
 
                 if ($option === null) {
-                    KifayahAnswer::query()->where('kifayah_form_id', $form->id)->where('question_code', $code)->delete();
+                    $changed = KifayahAnswer::query()->where('kifayah_form_id', $form->id)->where('question_code', $code)->delete() > 0 || $changed;
 
                     continue;
                 }
 
-                KifayahAnswer::query()->updateOrCreate(
+                $answer = KifayahAnswer::query()->updateOrCreate(
                     ['kifayah_form_id' => $form->id, 'question_code' => $code],
                     ['answer' => ['option' => (string) $option]],
                 );
+                $changed = $answer->wasRecentlyCreated || $answer->wasChanged() || $changed;
+            }
+
+            // The signer no longer signed this data (Workflow v2.1 16.4).
+            if ($changed) {
+                FormSignatures::invalidate($outreach, 'kifayah');
             }
 
             if (! $autosave) {

@@ -27,7 +27,8 @@ konstanta wilayah (D-036), dan lokasi kode (D-042). Keputusan tercatat pada
 -   Stack prototype: Laravel 13, Vue 3 + TypeScript, Inertia, Vite,
     MySQL, Dompdf, dan Laravel Filesystem (D-013). Lapisan tampilan
     memakai Tailwind CSS + shadcn-vue melalui starter kit resmi Laravel
-    untuk Vue (D-018).
+    untuk Vue (D-018). Signature pad Petugas/Warga memakai pustaka
+    `signature_pad` 5.1.4 dengan versi terkunci (D-049).
 -   Lokasi kode: aplikasi Laravel ditempatkan di `project/web/`, bukan
     di akar `project/`, agar tidak bertabrakan dengan `README.md`,
     `.gitignore`, dan `docs/` (D-042).

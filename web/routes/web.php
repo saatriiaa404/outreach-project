@@ -4,6 +4,7 @@ use App\Http\Controllers\KifayahController;
 use App\Http\Controllers\MustahikController;
 use App\Http\Controllers\OutreachAttachmentController;
 use App\Http\Controllers\OutreachController;
+use App\Http\Controllers\SignatureController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'Welcome')->name('home');
@@ -30,6 +31,15 @@ Route::middleware(['auth'])->group(function () {
         ->name('outreaches.kifayah.update');
     Route::put('outreach/{outreach}/kifayah/autosave', [KifayahController::class, 'autosave'])
         ->name('outreaches.kifayah.autosave');
+    Route::post('outreach/{outreach}/signatures/{form}', [SignatureController::class, 'store'])
+        ->whereIn('form', ['mustahik', 'kifayah'])
+        ->name('outreaches.signatures.store');
+    Route::get('outreach/{outreach}/signatures/{form}', [SignatureController::class, 'show'])
+        ->whereIn('form', ['mustahik', 'kifayah'])
+        ->name('outreaches.signatures.show');
+    Route::delete('outreach/{outreach}/signatures/{form}', [SignatureController::class, 'destroy'])
+        ->whereIn('form', ['mustahik', 'kifayah'])
+        ->name('outreaches.signatures.destroy');
     Route::put('outreach/{outreach}/autosave', [OutreachController::class, 'autosave'])
         ->name('outreaches.autosave');
 });
