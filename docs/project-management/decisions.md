@@ -663,6 +663,17 @@ rujuk keputusan pengganti.
                            UNIQUE (template_key,
                            version_number) pada
                            document_template_versions.
+
+  D-044       LOCKED       Semua role boleh       Persetujuan     Menegakkan D-014 dan    `roles-permissions.md`, `roadmap.md`,
+                           mengganti password     eksplisit       aturan user tidak       kode `web/` (route dan halaman
+                           sendiri. Halaman ubah  pemilik proyek, dihapus (Database v1.1  pengaturan)
+                           profil sendiri (nama   27 Oktober 2026 bagian 20). Tanpa
+                           dan email) serta hapus (roadmap R9.1). perubahan schema.
+                           akun sendiri bawaan                    Pengelolaan akun oleh
+                           starter kit dihapus;                   ADMIN tetap dikerjakan
+                           data akun dan                          pada R9.1.
+                           penonaktifan dikelola
+                           ADMIN.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

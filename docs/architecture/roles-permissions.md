@@ -73,6 +73,11 @@ atau izin terhadap resource.
   Mengelola               Tidak             Tidak             Ya, termasuk NIP
   user/template/storage                                       Kepala (D-041)
 
+  Mengganti password      Password: Ya;     Password: Ya;     Password: Ya;
+  sendiri / mengubah      profil dan hapus  profil dan hapus  profil dan hapus
+  profil atau menghapus   akun: Tidak       akun: Tidak       akun: Tidak
+  akun sendiri            (D-044)           (D-044)           (D-044)
+
   Print / unduh PDF       Tidak, termasuk   Ya, dalam scope   Ya, dalam scope
                           PDF final (D-040) Kelurahan         administratif
 

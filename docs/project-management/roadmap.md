@@ -85,7 +85,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 
 | ID | Task | Persetujuan |
 |---|---|---|
-| R9.1 | Manajemen user: aktif/nonaktif, satu Kepala aktif, NIP dengan audit; penanganan fitur bawaan ubah profil dan hapus akun sendiri | 🔒 Keputusan |
+| R9.1 | Manajemen user: aktif/nonaktif, satu Kepala aktif, NIP dengan audit; fitur bawaan ubah profil dan hapus akun sendiri sudah dihapus, ganti password sendiri tetap ada | ✅ Keputusan D-044 (bagian halaman pengaturan selesai) |
 | R9.2 | Master Source/Type dengan `code` tidak dapat diubah | — |
 | R9.3 | Template tanda tangan Kepala dan template stempel berversi | — |
 | R9.4 | Penandaan arsip manual (D-038) | — |
@@ -108,6 +108,5 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 
 ## Keputusan Terbuka
 
-1. Ganti password sendiri (usulan: boleh); halaman ubah profil dan hapus akun sendiri (usulan: dihapus).
-2. Workflow CI bawaan `web/.github/workflows/tests.yml` sebelum ada push.
-3. Pustaka: kompresi gambar, signature pad, Dompdf (diajukan saat fasenya).
+1. Workflow CI bawaan `web/.github/workflows/tests.yml` sebelum ada push.
+2. Pustaka: kompresi gambar, signature pad, Dompdf (diajukan saat fasenya).

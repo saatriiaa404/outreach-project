@@ -23,6 +23,27 @@ class SecurityTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page->component('settings/Security'));
     }
 
+    public function test_settings_redirects_to_security_page()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get('/settings')
+            ->assertRedirect('/settings/security');
+    }
+
+    public function test_profile_editing_and_account_deletion_are_not_available()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->get('/settings/profile')->assertNotFound();
+        $this->actingAs($user)->patch('/settings/profile', ['name' => 'Changed'])->assertNotFound();
+        $this->actingAs($user)->delete('/settings/profile', ['password' => 'password'])->assertNotFound();
+
+        $this->assertNotNull($user->fresh());
+        $this->assertNotSame('Changed', $user->fresh()->name);
+    }
+
     public function test_password_can_be_updated()
     {
         $user = User::factory()->create();
