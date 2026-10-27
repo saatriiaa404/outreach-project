@@ -153,7 +153,7 @@ class AttachmentUploadTest extends TestCase
 
         $this->actingAs($outreach->petugas)->get($url)
             ->assertOk()
-            ->assertHeader('Content-Type', 'image/png')
+            ->assertHeader('Content-Type', 'image/jpeg')
             ->assertHeader('X-Content-Type-Options', 'nosniff');
 
         $this->actingAs(User::factory()->create())->get($url)->assertForbidden();

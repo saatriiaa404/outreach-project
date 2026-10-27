@@ -9,7 +9,9 @@ use App\Models\Outreach;
 use App\Models\OutreachAttachment;
 use App\Models\StoredFile;
 use App\Models\User;
+use App\Support\ImageOptimizer;
 use finfo;
+use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -21,7 +23,8 @@ use Throwable;
 /**
  * Upload pipeline for Outreach attachments (Workflow v2.1 section 15.3):
  * content validation, SHA-256 duplicate check, private storage, file
- * registry, then the attachment relation. Compression is added by R3.2.
+ * registry, then the attachment relation. Images are compressed to JPEG
+ * (ImageOptimizer); the original upload is not kept. PDFs are stored as is.
  */
 class AttachFileToOutreach
 {
@@ -34,6 +37,8 @@ class AttachFileToOutreach
         'application/pdf' => 'pdf',
     ];
 
+    public function __construct(private ImageOptimizer $optimizer) {}
+
     /**
      * @param  int|null  $replaces  attachment that the new file replaces
      */
@@ -43,8 +48,15 @@ class AttachFileToOutreach
         $hash = hash_file('sha256', $upload->getRealPath());
         $storedKey = null;
 
+        // Compressed before the row lock so the lock stays short; the hash above
+        // still identifies the original content (D-047).
+        $optimized = $mime === 'application/pdf' ? null : $this->optimizer->optimize($upload->getRealPath(), $mime);
+        $source = $optimized['path'] ?? $upload->getRealPath();
+        $storedMime = $optimized ? 'image/jpeg' : $mime;
+        [$width, $height] = $optimized ? [$optimized['width'], $optimized['height']] : [$width, $height];
+
         try {
-            return DB::transaction(function () use ($outreach, $actor, $upload, $category, $title, $replaces, $mime, $width, $height, $hash, &$storedKey) {
+            return DB::transaction(function () use ($outreach, $actor, $upload, $category, $title, $replaces, $source, $storedMime, $width, $height, $hash, &$storedKey) {
                 // Serializes uploads to one Outreach so the duplicate check holds.
                 Outreach::query()->whereKey($outreach->id)->lockForUpdate()->first();
 
@@ -72,9 +84,9 @@ class AttachFileToOutreach
                     $existing->forceFill($attributes)->save();
                     $attachment = $existing;
                 } else {
-                    $storedKey = "attachments/{$outreach->id}/".Str::uuid().'.'.self::EXTENSIONS[$mime];
+                    $storedKey = "attachments/{$outreach->id}/".Str::uuid().'.'.self::EXTENSIONS[$storedMime];
 
-                    if (! Storage::disk(self::DISK)->putFileAs(dirname($storedKey), $upload, basename($storedKey))) {
+                    if (! Storage::disk(self::DISK)->putFileAs(dirname($storedKey), new File($source), basename($storedKey))) {
                         throw new RuntimeException('The attachment could not be stored.');
                     }
 
@@ -83,9 +95,9 @@ class AttachFileToOutreach
                         'storage_disk' => self::DISK,
                         'storage_key' => $storedKey,
                         'original_name' => Str::limit($upload->getClientOriginalName(), 250, ''),
-                        'mime_type' => $mime,
-                        'extension' => self::EXTENSIONS[$mime],
-                        'size_bytes' => $upload->getSize(),
+                        'mime_type' => $storedMime,
+                        'extension' => self::EXTENSIONS[$storedMime],
+                        'size_bytes' => (int) filesize($source),
                         'sha256_hash' => $hash,
                         'width' => $width,
                         'height' => $height,
@@ -111,6 +123,10 @@ class AttachFileToOutreach
             }
 
             throw $e;
+        } finally {
+            if ($optimized !== null) {
+                @unlink($optimized['path']);
+            }
         }
     }
 

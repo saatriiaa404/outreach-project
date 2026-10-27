@@ -628,6 +628,11 @@ Registry `files` dapat digunakan untuk:
 - Batas teknis prototype (D-047): gambar JPEG, PNG, WEBP; PDF hanya untuk
   kategori `TAMBAHAN`; maksimal 10 MB per berkas sebelum kompresi; jenis
   berkas ditentukan dari isi, bukan ekstensi.
+- Pada prototype, gambar dikompresi dengan GD bawaan PHP dan selalu disimpan
+  sebagai JPEG (sisi terpanjang maksimal 2.000 px, kualitas 80, orientasi
+  EXIF diterapkan, metadata dibuang). `mime_type`, `extension`, `size_bytes`,
+  `width`, dan `height` menggambarkan berkas tersimpan; `original_name`
+  tetap nama unggahan. PDF disimpan tanpa perubahan.
 
 ---
 
