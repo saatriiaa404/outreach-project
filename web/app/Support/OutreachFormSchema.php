@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Enums\AttachmentCategory;
 use App\Models\Outreach;
 use InvalidArgumentException;
 
@@ -233,8 +234,33 @@ class OutreachFormSchema
     }
 
     /**
-     * The form-data part of Finalisasi validation, per step. Mustahik,
-     * Kifayah, attachments, and signatures are checked by their own phases.
+     * Labels of the baseline attachments (KTP, KK, Foto Klien, Foto Rumah)
+     * that are still missing as images (Workflow v2.1 15.2, D-034). Additional
+     * attachments never block Finalisasi (D-033).
+     *
+     * @return list<string>
+     */
+    public static function missingAttachments(Outreach $outreach): array
+    {
+        $present = $outreach->attachments()
+            ->whereHas('file', fn ($query) => $query->where('mime_type', 'like', 'image/%')->whereNull('purged_at'))
+            ->distinct()
+            ->pluck('category');
+
+        $missing = [];
+
+        foreach (AttachmentCategory::cases() as $category) {
+            if ($category->isBaseline() && ! $present->contains($category)) {
+                $missing[] = $category->label();
+            }
+        }
+
+        return $missing;
+    }
+
+    /**
+     * What Finalisasi still needs, per step: form fields and the baseline
+     * attachments. Mustahik, Kifayah, and signatures are added by their phases.
      *
      * @return array<string, list<string>>
      */
@@ -242,6 +268,7 @@ class OutreachFormSchema
     {
         return collect(array_keys(self::steps()))
             ->mapWithKeys(fn (string $step) => [$step => self::missingFields($outreach, $step)])
+            ->put('lampiran', self::missingAttachments($outreach))
             ->filter()
             ->all();
     }

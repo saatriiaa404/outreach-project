@@ -41,7 +41,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 |---|---|---|
 | R3.1 | Pipeline unggah: validasi isi file, hash SHA-256, penyimpanan privat, `files`/`outreach_attachments`, reaktivasi soft delete | ✅ Selesai 28 Oktober 2026 (batas teknis D-047; langkah Lampiran di stepper dengan ambil foto/pilih berkas, ganti, hapus; berkas privat hanya lewat route berotorisasi; tolak duplikat per Outreach dan pulihkan relasi lama bila berkas yang sama diunggah lagi) |
 | R3.2 | Kompresi gambar (usulan: GD bawaan) | ✅ Selesai 28 Oktober 2026 dengan GD bawaan PHP, tanpa pustaka baru (JPEG, sisi terpanjang 2.000 px tanpa upscale, kualitas 80, orientasi EXIF, metadata dibuang; berkas asli tidak disimpan; PDF tidak diubah; uji: foto 4000×3000 3 MB menjadi 2000×1500 652 KB) |
-| R3.3 | Empat lampiran wajib berupa gambar, lampiran tambahan tidak memblokir, lampiran PDF diterima (D-033, D-034) | — |
+| R3.3 | Empat lampiran wajib berupa gambar, lampiran tambahan tidak memblokir, lampiran PDF diterima (D-033, D-034) | ✅ Selesai 28 Oktober 2026 (empat lampiran dasar berupa gambar masuk pemeriksaan kelengkapan Finalisasi bersama data form; lampiran tambahan dan PDF tidak memblokir; saran lampiran tambahan per Jenis dari `outreach.md` 7.2 ditampilkan berlabel `PENDING VALIDATION`; lampiran PDF ditandai sebagai halaman rujukan. Ganti Jenis tidak menghapus lampiran tambahan karena kategorinya umum) |
 
 ## Fase 4 — Mustahik dan Kifayah
 

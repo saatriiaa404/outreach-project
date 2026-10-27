@@ -42,6 +42,8 @@ const props = defineProps<{
     categories: Category[];
     attachments: Attachment[];
     maxKilobytes: number;
+    missingForFinalization: string[];
+    additionalHint: string | null;
 }>();
 
 defineOptions({
@@ -173,6 +175,21 @@ const remove = () => {
                 belum lengkap. Ukuran maksimal 10 MB per berkas.
             </p>
 
+            <div
+                v-if="missingForFinalization.length"
+                class="rounded-md border border-dashed p-3 text-sm"
+                data-test="missing-attachments"
+            >
+                <p class="font-medium">
+                    Belum lengkap untuk Finalisasi ({{
+                        missingForFinalization.length
+                    }}):
+                </p>
+                <p class="text-muted-foreground">
+                    {{ missingForFinalization.join(', ') }}
+                </p>
+            </div>
+
             <section
                 v-for="category in categories"
                 :key="category.value"
@@ -205,6 +222,19 @@ const remove = () => {
                     </span>
                 </div>
 
+                <p
+                    v-if="!category.baseline && additionalHint"
+                    class="text-sm"
+                    data-test="additional-hint"
+                >
+                    Disarankan untuk Jenis {{ outreach.type }}:
+                    {{ additionalHint }}.
+                    <span
+                        class="ml-1 rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground"
+                        title="Persyaratan lampiran tambahan per Jenis belum dikonfirmasi Kelurahan"
+                        >PENDING VALIDATION</span
+                    >
+                </p>
                 <p
                     v-if="!category.baseline"
                     class="text-xs text-muted-foreground"
@@ -244,6 +274,10 @@ const remove = () => {
                             </p>
                             <p class="text-xs text-muted-foreground">
                                 {{ size(item.size_bytes) }}
+                                <template v-if="!item.is_image">
+                                    · tampil sebagai halaman rujukan di PDF
+                                    Outreach
+                                </template>
                             </p>
                         </div>
                         <Button

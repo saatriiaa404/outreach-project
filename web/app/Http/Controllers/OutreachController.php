@@ -90,7 +90,7 @@ class OutreachController extends Controller
         Gate::authorize('update', $outreach);
 
         $steps = OutreachFormSchema::steps();
-        $outreach->load(['source:id,code,name', 'type:id,name']);
+        $outreach->load(['source:id,code,name', 'type:id,code,name']);
         $stepList = $this->stepList($outreach);
         $step = $request->query('step');
         $step = is_string($step) && collect($stepList)->contains(fn (array $item) => $item['key'] === $step && $item['state'] !== 'upcoming') ? $step : 'klien';
@@ -131,6 +131,9 @@ class OutreachController extends Controller
                         'url' => route('outreaches.attachments.show', [$outreach, $attachment]),
                     ]),
                 'maxKilobytes' => StoreAttachmentRequest::MAX_KILOBYTES,
+                'missingForFinalization' => OutreachFormSchema::missingAttachments($outreach),
+                // Suggestion only; PENDING VALIDATION until Kelurahan confirms (D-033).
+                'additionalHint' => AttachmentCategory::additionalFor($outreach->type->code),
             ]);
         }
 
@@ -224,10 +227,8 @@ class OutreachController extends Controller
      */
     private function stepList(Outreach $outreach): array
     {
-        $present = $outreach->attachments()->distinct()->pluck('category');
-        $missingAttachments = collect(AttachmentCategory::cases())
-            ->filter(fn (AttachmentCategory $category) => $category->isBaseline() && ! $present->contains($category))
-            ->count();
+        $hasAttachments = $outreach->attachments()->exists();
+        $missingAttachments = count(OutreachFormSchema::missingAttachments($outreach));
 
         return [
             ...collect(OutreachFormSchema::steps())->map(fn (array $definition, string $key) => [
@@ -240,7 +241,7 @@ class OutreachController extends Controller
                 'key' => $key,
                 'title' => $title,
                 'state' => match (true) {
-                    $present->isEmpty() => 'untouched',
+                    ! $hasAttachments => 'untouched',
                     $missingAttachments > 0 => 'incomplete',
                     default => 'complete',
                 },

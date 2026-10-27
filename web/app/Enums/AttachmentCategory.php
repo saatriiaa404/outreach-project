@@ -33,6 +33,22 @@ enum AttachmentCategory: string
     }
 
     /**
+     * Suggested additional attachment per Jenis Outreach (outreach.md 7.2).
+     * Never required: PENDING VALIDATION until Kelurahan confirms (D-033).
+     */
+    public static function additionalFor(string $typeCode): ?string
+    {
+        return match ($typeCode) {
+            'RUTILAHU' => 'Foto tambahan rumah; dapat lebih dari satu',
+            'ALAT_KESEHATAN' => 'Foto orang yang membutuhkan alat kesehatan',
+            'BEASISWA' => 'Foto penerima beasiswa',
+            'PENDIDIKAN_KEJAR_PAKET' => 'Foto orang yang membutuhkan bantuan pendidikan',
+            'BANTUAN_MODAL_USAHA' => 'Foto penerima bantuan',
+            default => null,
+        };
+    }
+
+    /**
      * Content types accepted for the category (D-047), detected from the
      * file content rather than the name or the client's Content-Type.
      *

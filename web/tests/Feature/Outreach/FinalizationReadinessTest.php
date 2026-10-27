@@ -44,7 +44,8 @@ class FinalizationReadinessTest extends TestCase
     {
         $missing = OutreachFormSchema::missingForFinalization(Outreach::factory()->create());
 
-        $this->assertSame(['klien', 'keluarga', 'rumah', 'narasi'], array_keys($missing));
+        $this->assertSame(['klien', 'keluarga', 'rumah', 'narasi', 'lampiran'], array_keys($missing));
+        $this->assertSame(['KTP', 'Kartu Keluarga (KK)', 'Foto Klien', 'Foto Rumah'], $missing['lampiran']);
         $this->assertCount(21, $missing['klien']);
         $this->assertCount(17, $missing['keluarga']);
         $this->assertNotContains('Penghasilan klien sebulan', $missing['klien'], 'Field 14 is optional (D-032).');
@@ -57,7 +58,7 @@ class FinalizationReadinessTest extends TestCase
     {
         $outreach = Outreach::factory()->create($this->completeData());
 
-        $this->assertSame([], OutreachFormSchema::missingForFinalization($outreach));
+        $this->assertSame(['lampiran'], array_keys(OutreachFormSchema::missingForFinalization($outreach)));
         $this->assertSame('complete', OutreachFormSchema::completion($outreach, 'rumah'));
     }
 
