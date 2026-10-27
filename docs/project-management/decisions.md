@@ -635,6 +635,34 @@ rujuk keputusan pengganti.
                            di akar project/.      (jawaban audit  tidak mengotorisasi
                                                   kesiapan Tahap  bootstrap.
                                                   1, F-14).
+
+  D-043       LOCKED       Desain migration R1.1  Persetujuan     Dua constraint UNIQUE   `docs/engineering/migration-design.md`,
+                           (docs/engineering/migration-design.md)eksplisitmenambah daftar `docs/architecture/database.md` (bagian
+                           disetujui beserta      pemilik proyek, uniqueness Database     21.1), `roadmap.md`
+                           usulan Q-01 sampai     27 Oktober 2026 v1.1 bagian 21.1; tidak
+                           Q-11: enum sebagai     (roadmap R1.1). ada tabel atau kolom
+                           VARCHAR dengan PHP                     baru. Tidak
+                           backed enum, nominal                   mengotorisasi pembuatan
+                           rupiah BIGINT                          atau menjalankan
+                           UNSIGNED, NIP 18                       migration; R1.2
+                           digit, format                          memerlukan persetujuan
+                           draft_code dan                         terpisah.
+                           outreach_number, NIK
+                           tanpa paksaan 16 digit
+                           pada prototype,
+                           tahun_warga_surabaya
+                           VARCHAR(50), JSON
+                           answer {"option":
+                           kode}, satu baris
+                           document_template_versions
+                           sebagai paket template
+                           per Source, serta dua
+                           constraint tambahan:
+                           UNIQUE
+                           files.storage_key dan
+                           UNIQUE (template_key,
+                           version_number) pada
+                           document_template_versions.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

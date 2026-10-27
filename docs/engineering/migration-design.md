@@ -1,8 +1,8 @@
 # Desain Migration — Database v1.1 (R1.1)
 
-> **Status dokumen:** DRAFT — menunggu persetujuan pemilik proyek (roadmap R1.1)  
+> **Status dokumen:** ACTIVE — disetujui pemilik proyek pada 27 Oktober 2026 beserta Q-01 sampai Q-11 (D-043)  
 > **Sumber kebenaran:** `docs/architecture/database.md` (Database v1.1, 22 tabel domain, amandemen D-030, D-031, D-041)  
-> **Penting:** Dokumen ini hanya menerjemahkan model logis ke tipe fisik MySQL/Laravel sesuai ruang yang diberikan `database.md` bagian 26 (tipe, nullable, panjang, index tambahan, penamaan FK). Tidak ada tabel, kolom, relasi, atau aturan bisnis baru. Persetujuan dokumen ini belum mengizinkan menjalankan migration (R1.2 memerlukan persetujuan terpisah).
+> **Penting:** Dokumen ini hanya menerjemahkan model logis ke tipe fisik MySQL/Laravel sesuai ruang yang diberikan `database.md` bagian 26 (tipe, nullable, panjang, index tambahan, penamaan FK). Tidak ada tabel, kolom, relasi, atau aturan bisnis baru. Persetujuan dokumen ini tidak mengizinkan membuat atau menjalankan migration; R1.2 memerlukan persetujuan terpisah.
 
 ## 1. Prinsip Fisik
 
@@ -256,6 +256,8 @@ FK melingkar `mustahik_forms`/`kifayah_forms` → `signatures` tidak ada (signat
 Setiap kelompok satu berkas migration dengan `down()` yang menghapus tabel dalam urutan terbalik. Migration dijalankan hanya setelah persetujuan R1.2.
 
 ## 5. Pertanyaan Keputusan
+
+Seluruh usulan di bawah disetujui pada D-043.
 
 | ID | Pertanyaan | Usulan |
 |---|---|---|

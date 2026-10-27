@@ -10,7 +10,7 @@
 | Status | ACTIVE — Technical Baseline |
 | Database Engine | MySQL |
 | Application | Laravel 13 |
-| Amandemen | D-030, D-031, dan D-041 (27 Oktober 2026); lihat `docs/project-management/decisions.md` |
+| Amandemen | D-030, D-031, D-041, dan D-043 (27 Oktober 2026); lihat `docs/project-management/decisions.md` |
 
 Amandemen D-041 menambah kolom `users.nip`; jumlah tabel tetap 22 dan label versi
 tetap Database v1.1. D-030 dan D-031 hanya memperjelas tafsir dan teks, tanpa
@@ -1451,7 +1451,12 @@ outreach_approvals.outreach_version_id
 outreach_version_attachments (outreach_version_id, file_id)
 signature_templates (head_user_id, version_number)
 stamp_templates.version_number
+files.storage_key                                   (D-043)
+document_template_versions (template_key, version_number)   (D-043)
 ```
+
+Tipe fisik, panjang kolom, dan index tambahan mengikuti
+`docs/engineering/migration-design.md` yang disetujui pada D-043.
 
 ## 21.2 Important lookup indexes
 

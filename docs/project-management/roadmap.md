@@ -18,7 +18,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 
 | ID | Task | Persetujuan |
 |---|---|---|
-| R1.1 | Dokumen desain migration (`docs/engineering/migration-design.md`) 22 tabel domain + `users.nip`: tipe kolom (termasuk `mck_layak` dan kolom uang), FK, index, kode nilai enum; revisi migration `users` bawaan (`password_hash`, tanpa `remember_token`/`email_verified_at`, tanpa tabel `sessions` dan `password_reset_tokens`) sesuai D-030 dan D-041 | 🔒 Desain disetujui |
+| R1.1 | Dokumen desain migration (`docs/engineering/migration-design.md`) 22 tabel domain + `users.nip`: tipe kolom (termasuk `mck_layak` dan kolom uang), FK, index, kode nilai enum; revisi migration `users` bawaan (`password_hash`, tanpa `remember_token`/`email_verified_at`, tanpa tabel `sessions` dan `password_reset_tokens`) sesuai D-030 dan D-041 | ✅ Disetujui (D-043) |
 | R1.2 | Implementasi migration per kelompok: master dan akun, Outreach, form, file dan lampiran, versi dan approval, history/audit/notifikasi/arsip/special unlock | 🔒 Menjalankan migration |
 | R1.3 | Model User memakai `password_hash`, role, dan status; akun `INACTIVE` tidak dapat login; checkbox "remember me" dibuang | Ikut R1.1 |
 | R1.4 | Kerangka otorisasi: policy per role, ownership/scope, status, dan resource, beserta tes akses ditolak | — |
@@ -108,8 +108,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 
 ## Keputusan Terbuka
 
-1. Desain migration R1.1.
-2. Basis data uji: MySQL terpisah (usulan) atau SQLite in-memory.
-3. Ganti password sendiri (usulan: boleh); halaman ubah profil dan hapus akun sendiri (usulan: dihapus).
-4. Workflow CI bawaan `web/.github/workflows/tests.yml` sebelum ada push.
-5. Pustaka: kompresi gambar, signature pad, Dompdf (diajukan saat fasenya).
+1. Basis data uji: MySQL terpisah (usulan) atau SQLite in-memory.
+2. Ganti password sendiri (usulan: boleh); halaman ubah profil dan hapus akun sendiri (usulan: dihapus).
+3. Workflow CI bawaan `web/.github/workflows/tests.yml` sebelum ada push.
+4. Pustaka: kompresi gambar, signature pad, Dompdf (diajukan saat fasenya).
