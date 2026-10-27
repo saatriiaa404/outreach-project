@@ -61,7 +61,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 
 | ID | Task | Persetujuan |
 |---|---|---|
-| R6.1 | Kontrak JSON `snapshot_data` | 🔒 Kontrak disetujui |
+| R6.1 | Kontrak JSON `snapshot_data` | ✅ Disetujui 28 Oktober 2026 (D-051; `migration-design.md` 3.12.1) |
 | R6.2 | Finalisasi dan Finalisasi Ulang transaksional, `outreach_number`, versi, lampiran versi, history, notifikasi `OUTREACH_FINALIZED`, proteksi double submit | — |
 
 ## Fase 7 — Approval dan PDF gate

@@ -1664,8 +1664,8 @@ penetapan teknis yang memang belum tersedia:
 12. Kebijakan retensi data Outreach.
 13. Format dan posisi cetak NIP Kepala pada blok pengesahan (D-041).
 
-Kontrak JSON terperinci untuk `snapshot_data` belum ditetapkan. Jangan mengarang
-struktur finalnya sebelum kebutuhan rekonstruksi snapshot dipastikan.
+Kontrak JSON `snapshot_data` ditetapkan pada D-051 (lihat
+`docs/engineering/migration-design.md` bagian 3.12.1).
 
 Hal-hal berikut **sudah diputuskan dan bukan lagi pending validation**: koreksi
 setelah Finalisasi melalui Special Unlock; aturan template tanda tangan Kepala

@@ -176,12 +176,27 @@ Kolom sama dengan 3.10 tanpa `deleted_at` dan `updated_at`; FK `outreach_version
 | `outreach_id` | FK | | |
 | `version_number` | INT UNSIGNED | | UNIQUE `(outreach_id, version_number)` |
 | `status` | VARCHAR(20) | | `PENDING_APPROVAL`, `RETURNED`, `APPROVED` |
-| `snapshot_data` | JSON | | Kontrak isi disetujui terpisah (R6.1) |
+| `snapshot_data` | JSON | | Kontrak D-051, lihat 3.12.1 |
 | `document_template_version_id` | FK | | Lihat Q-09 |
 | `mustahik_signature_id`, `kifayah_signature_id` | FK `signatures` | ✓ | `NULL` untuk Bangga Surabaya |
 | `created_by` | FK `users` | | Petugas atau Admin (Lock & Ajukan) |
 | `created_at` | TIMESTAMP | ✓ | |
 | `finalized_at` | TIMESTAMP | | |
+
+#### 3.12.1 Kontrak `snapshot_data` (D-051)
+
+- `schema_version`: `1`. Snapshot tidak pernah dimigrasi; perubahan struktur menaikkan versi dan renderer mendukung versi lama.
+- Kelompok tingkat atas: `meta`, `client`, `family_income`, `expenses`, `house`, `assets`, `narrative`, `mustahik`, `kifayah`. `mustahik` dan `kifayah` bernilai `null` untuk Bangga Surabaya.
+- `meta`: `outreach_id`, `outreach_number`, `draft_code`, `version_number`, `outreach_date`, `source` dan `type` (`id`, `code`, `name`), `petugas` (`id`, `name`), `wilayah` (`kelurahan`, `kecamatan`), `finalized_at`.
+- `client`: kolom Data Klien dengan nama kolom yang sama; `desil_1_10` dan `status_kesejahteraan` digabung menjadi `status_kesejahteraan: {desil, label}`.
+- `family_income`: empat kolom `penghasilan_*` keluarga; `expenses`: tiga belas kolom `pengeluaran_*`.
+- `house`: `luas_bangunan`, `jenis_lantai`, `jenis_dinding`, `jenis_atap`, `daya_listrik`, `sumber_air`, `mck_layak: {code, label}`.
+- `assets`: enam kolom `jumlah_*` kendaraan, `nama_kendaraan_lainnya`, `perhiasan`, `aset_lainnya`.
+- `narrative`: `upaya_dilakukan`, `harapan_klien`, `uraian_alasan_intervensi`.
+- `mustahik`: `survey_date`, `petugas` (`id`, `name`), `kepala_keluarga` (`nama`, `nik_no_kk`, `alamat`, `rt`, `rw`), `answers` per `question_code` berbentuk `{option, label}`.
+- `kifayah`: lima belas kolom nominal dan hitungan dengan nama kolom yang sama, `answers` per `question_code` berbentuk `{option, label}`.
+- Nilai mentah: angka sebagai integer, tanggal `YYYY-MM-DD`, Ya/Tidak sebagai boolean, `null` berarti belum diisi; `0` tetap `0`. Format tampilan (D-050) diterapkan saat render.
+- Tidak disimpan: nilai turunan (umur, total), label pertanyaan (ikut template), byte berkas, tanda tangan (`mustahik_signature_id`, `kifayah_signature_id`), lampiran (`outreach_version_attachments`), dan approval.
 
 ### 3.13 `outreach_approvals`
 

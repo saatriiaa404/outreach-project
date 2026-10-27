@@ -810,6 +810,36 @@ rujuk keputusan pengganti.
                            memakai namanya,
                            "Tidak ada" bila
                            semuanya 0.
+
+  D-051       LOCKED       Kontrak snapshot_data  Persetujuan     Tanpa perubahan         `migration-design.md`,
+                           (R6.1) schema_version  eksplisit       schema. Preview dan     `database.md`, `roadmap.md`,
+                           1: kelompok meta,      pemilik         PDF historis dirender   kode `web/`
+                           client,                proyek, 28      dari snapshot.
+                           family_income,         Oktober 2026,   Finalisasi membutuhkan
+                           expenses, house,       termasuk empat  baris document_templat
+                           assets, narrative,     keputusan       e_versions per Source;
+                           mustahik, kifayah      usulan.         seed-nya memerlukan
+                           (null untuk Bangga                     persetujuan terpisah
+                           Surabaya); nilai                       (R6.2).
+                           mentah dengan nama
+                           kunci = nama kolom;
+                           pilihan berkode
+                           disimpan dengan
+                           labelnya; hanya label
+                           opsi yang disimpan,
+                           label pertanyaan ikut
+                           template; nilai
+                           turunan tidak
+                           disimpan; tanda
+                           tangan, lampiran,
+                           template, dan
+                           approval tetap di
+                           tabel masing-masing;
+                           snapshot immutable
+                           dan dibangun oleh
+                           satu builder yang
+                           diuji terhadap
+                           kontrak.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru
