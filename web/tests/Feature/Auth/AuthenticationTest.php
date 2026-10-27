@@ -39,7 +39,7 @@ class AuthenticationTest extends TestCase
         $this->post(route('login.store'), [
             'email' => $user->email,
             'password' => 'password',
-        ]);
+        ])->assertSessionHasErrors(['email' => 'Email atau password tidak sesuai.']);
 
         $this->assertGuest();
         $this->assertNull($user->refresh()->last_login_at);

@@ -49,6 +49,18 @@ class SaveOutreachStepRequest extends FormRequest
     }
 
     /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'tanggal_lahir.before_or_equal' => 'Tanggal lahir tidak boleh setelah Tanggal Outreach.',
+        ];
+    }
+
+    /**
      * The validated values of the step's fields, cast to their stored types.
      *
      * @return array<string, mixed>

@@ -128,7 +128,7 @@ class SaveOutreachStepTest extends TestCase
             'step' => 'klien',
             'edit_version' => 0,
             'tanggal_lahir' => '2026-10-28',
-        ])->assertSessionHasErrors(['tanggal_lahir']);
+        ])->assertSessionHasErrors(['tanggal_lahir' => 'Tanggal lahir tidak boleh setelah Tanggal Outreach.']);
 
         $this->assertNull($outreach->refresh()->tanggal_lahir);
     }
@@ -158,7 +158,10 @@ class SaveOutreachStepTest extends TestCase
             'edit_version' => 0,
             'mck_layak' => 'BAGUS',
             'jumlah_becak' => '-1',
-        ])->assertSessionHasErrors(['mck_layak', 'jumlah_becak']);
+        ])->assertSessionHasErrors([
+            'mck_layak' => 'Fasilitas MCK yang dipilih tidak valid.',
+            'jumlah_becak' => 'Becak minimal 0.',
+        ]);
 
         $this->put(route('outreaches.update', $outreach), [
             'step' => 'keluarga',
