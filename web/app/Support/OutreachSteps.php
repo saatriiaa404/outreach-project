@@ -43,6 +43,7 @@ class OutreachSteps
                 ],
                 'lampiran' => self::attachmentStep($outreach, $title),
                 'tanda_tangan' => self::signatureStep($outreach, $title),
+                'review' => self::reviewStep($outreach, $title),
                 default => ['key' => $key, 'title' => $title, 'state' => 'upcoming'],
             };
         }
@@ -60,6 +61,23 @@ class OutreachSteps
         $next = $position === false ? null : ($steps[$position + 1] ?? null);
 
         return $next && $next['state'] !== 'upcoming' ? $next['key'] : null;
+    }
+
+    /**
+     * Review summarizes everything Finalisasi still needs (17.1).
+     *
+     * @return array{key: string, title: string, state: string, missing: int}
+     */
+    private static function reviewStep(Outreach $outreach, string $title): array
+    {
+        $missing = array_sum(array_map('count', OutreachFormSchema::missingForFinalization($outreach)));
+
+        return [
+            'key' => 'review',
+            'title' => $title,
+            'state' => $missing === 0 ? 'complete' : 'incomplete',
+            'missing' => $missing,
+        ];
     }
 
     /**

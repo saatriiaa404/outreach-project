@@ -55,7 +55,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 | ID | Task | Persetujuan |
 |---|---|---|
 | R5.1 | Signature pad Petugas (Mustahik) dan Warga (Kifayah) | ✅ Selesai 28 Oktober 2026 dengan pustaka `signature_pad` 5.1.4 (D-049): langkah Tanda Tangan untuk Baznas/CSR dengan tombol Ulangi dan Batalkan goresan terakhir; PNG divalidasi, dibersihkan, dan disimpan privat; tanda tangan dibuat baru per Outreach; dihapus otomatis bila data yang tercetak pada form yang ditandatangani berubah; masuk pemeriksaan kelengkapan Finalisasi |
-| R5.2 | Halaman Review dan preview HTML/CSS | — |
+| R5.2 | Halaman Review dan preview HTML/CSS | ✅ Selesai 28 Oktober 2026: langkah Review berisi status siap/belum, kelengkapan per bagian dengan tautan Lengkapi, status tanda tangan, preview Laporan Hasil Outreach (kop, judul, Jenis, kalimat pembuka dari Tanggal Outreach, empat tabel, narasi, blok Mengetahui, halaman lampiran dan rujukan PDF) yang dibangun dari `OutreachDocument` agar dipakai ulang oleh PDF R7.2, serta hasil Mustahik dan Kifayah. Format nilai mengikuti D-050. Tombol Finalisasi menyusul di R6.2 |
 
 ## Fase 6 — Finalisasi dan versi
 

@@ -142,6 +142,19 @@ return [
         'kecamatan' => 'Tandes',
     ],
 
+    /*
+    | Letterhead printed on the Outreach document, as on the blank template
+    | (docs/reference/blank_outreach.pdf).
+    */
+    'letterhead' => [
+        'PEMERINTAH KOTA SURABAYA',
+        'KECAMATAN TANDES',
+        'KELURAHAN MANUKAN KULON',
+        'JL. MANUKAN ASRI I-A Surabaya',
+        'Telepon. (031) 7411895',
+        'Laman surabaya.go.id, Pos-el: kel_manukankulon@surabaya.go.id',
+    ],
+
     'demo_user_password' => env('DEMO_USER_PASSWORD'),
 
 ];

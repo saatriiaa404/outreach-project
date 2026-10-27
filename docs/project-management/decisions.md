@@ -785,6 +785,31 @@ rujuk keputusan pengganti.
                            tangan sebelumnya
                            tidak dapat dipakai
                            ulang.
+
+  D-050       LOCKED       Format tampilan nilai  Persetujuan     Hanya representasi      `outreach.md`, kode `web/`
+                           Outreach pada preview  eksplisit       tampilan; nilai
+                           Review dan PDF (R5.2,  pemilik         tersimpan tidak
+                           R7.2): field 3         proyek, 28      berubah. Field yang
+                           "Surabaya, 15 Juni     Oktober 2026.   belum diisi tidak
+                           2006 / 20 tahun"                       pernah tampil sebagai
+                           (umur terhadap                         "-" (outreach.md 6).
+                           Tanggal Outreach);
+                           field 18 "Sejahtera
+                           (Desil 9)"; nominal
+                           rupiah yang diisi 0
+                           tampil "-" sedangkan
+                           nominal lain tampil
+                           "Rp 1.500.000" dan
+                           total tetap dihitung
+                           dari angka; baris
+                           kendaraan "Sepeda
+                           motor 2, Sepeda angin
+                           1" dari jenis
+                           bernilai lebih dari
+                           0, kendaraan lainnya
+                           memakai namanya,
+                           "Tidak ada" bila
+                           semuanya 0.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

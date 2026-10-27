@@ -182,6 +182,7 @@ Narasi dapat memiliki panjang bervariasi. Isi tidak boleh dipotong hanya untuk m
 - Tanda `-` pada representasi PDF digunakan untuk keadaan yang secara eksplisit berarti **tidak ada** atau **tidak berlaku**, bukan untuk menyamarkan field yang belum diisi.
 - Untuk komponen numerik yang secara eksplisit tidak memiliki nilai/pengeluaran, nilai harus tetap dapat dihitung dengan benar. Jika kondisi tersebut berarti nominal nol, nilai numeriknya adalah `0`; tanda `-` hanya merupakan representasi tampilan yang dipakai pada dokumen.
 - Untuk field kondisional yang tidak berlaku—misalnya besar hutang ketika klien menyatakan tidak memiliki hutang—PDF dapat menampilkan `-`. Representasi persistence harus mengikuti kontrak database; dokumen ini tidak menetapkan sendiri nilai penyimpanannya.
+- Format tampilan pada preview dan PDF (D-050): field 3 `Surabaya, 15 Juni 2006 / 20 tahun`; field 18 `Sejahtera (Desil 9)`; nominal rupiah bernilai `0` tampil `-`, nominal lain `Rp 1.500.000`; baris kendaraan `Sepeda motor 2, Sepeda angin 1` atau `Tidak ada`.
 - Draft boleh belum lengkap. Pada tahap finalisasi, validasi harus membedakan field yang belum diisi dari field yang secara sah bernilai nol atau tidak berlaku.
 
 ## 7. Lampiran dan Aturan Lock

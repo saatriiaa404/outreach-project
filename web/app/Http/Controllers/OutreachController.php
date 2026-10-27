@@ -18,6 +18,7 @@ use App\Models\Signature;
 use App\Support\FormSignatures;
 use App\Support\KifayahFormSchema;
 use App\Support\MustahikFormSchema;
+use App\Support\OutreachDocument;
 use App\Support\OutreachFormSchema;
 use App\Support\OutreachSteps;
 use Illuminate\Http\JsonResponse;
@@ -179,6 +180,30 @@ class OutreachController extends Controller
             ]);
         }
 
+        if ($step === 'review') {
+            $missing = OutreachFormSchema::missingForFinalization($outreach);
+            $usesForms = $outreach->source->usesMustahikKifayah();
+
+            return Inertia::render('outreach/Review', [
+                ...$shared,
+                // Every step except Review itself, with what Finalisasi still needs (17.1).
+                'checklist' => collect($stepList)->reject(fn (array $item) => $item['key'] === 'review')->map(fn (array $item) => [
+                    'key' => $item['key'],
+                    'title' => $item['title'],
+                    'missing' => $missing[$item['key']] ?? [],
+                ])->values(),
+                'ready' => $missing === [],
+                'document' => OutreachDocument::build($outreach),
+                'mustahik' => $usesForms ? $this->mustahikResult($outreach) : null,
+                'kifayah' => $usesForms ? $this->kifayahResult($outreach) : null,
+                'signatures' => $usesForms ? collect(FormSignatures::FORMS)->map(fn (array $definition, string $form) => [
+                    'title' => $definition['title'],
+                    'signed' => FormSignatures::form($outreach, $form)?->signature_id !== null,
+                    'url' => FormSignatures::form($outreach, $form)?->signature_id ? route('outreaches.signatures.show', [$outreach, $form]) : null,
+                ])->values() : [],
+            ]);
+        }
+
         if ($step === 'tanda_tangan') {
             return Inertia::render('outreach/Signatures', [
                 ...$shared,
@@ -305,6 +330,59 @@ class OutreachController extends Controller
         }
 
         return response()->json(['edit_version' => $version, 'saved_at' => now()->toIso8601String()]);
+    }
+
+    /**
+     * Mustahik answers as the labels printed on the source form.
+     *
+     * @return array{header: list<array{label: string, value: string|null}>, answers: list<array{label: string, value: string|null}>}
+     */
+    private function mustahikResult(Outreach $outreach): array
+    {
+        $form = $outreach->mustahikForm;
+        $header = [];
+        $answers = [];
+
+        foreach (MustahikFormSchema::HEADER as $name => $field) {
+            $value = $name === 'survey_date'
+                ? $form?->survey_date?->translatedFormat('l, j F Y')
+                : $form?->getAttribute($name);
+            $header[] = ['label' => $field['label'], 'value' => $value === '' ? null : $value];
+        }
+
+        foreach (MustahikFormSchema::QUESTIONS as $code => $question) {
+            $option = $form?->answers->firstWhere('question_code', $code)?->answer['option'];
+            $answers[] = ['label' => $question['label'], 'value' => $option === null ? null : $question['options'][(int) $option] ?? null];
+        }
+
+        return ['header' => $header, 'answers' => $answers];
+    }
+
+    /**
+     * Kifayah values (0 shown as "-", empty as not filled) and answer labels.
+     *
+     * @return array{fields: list<array{label: string, value: string|null}>, answers: list<array{label: string, value: string|null}>}
+     */
+    private function kifayahResult(Outreach $outreach): array
+    {
+        $form = $outreach->kifayahForm;
+        $fields = [];
+        $answers = [];
+
+        foreach (KifayahFormSchema::FIELDS as $name => $field) {
+            $value = $form?->getAttribute($name);
+            $fields[] = [
+                'label' => $field['label'],
+                'value' => $field['input'] === 'money' ? OutreachDocument::rupiah($value) : ($value === null ? null : (string) $value),
+            ];
+        }
+
+        foreach (KifayahFormSchema::QUESTIONS as $code => $question) {
+            $option = $form?->answers->firstWhere('question_code', $code)?->answer['option'];
+            $answers[] = ['label' => $question['label'], 'value' => $option === null ? null : $question['options'][(int) $option] ?? null];
+        }
+
+        return ['fields' => $fields, 'answers' => $answers];
     }
 
     private function fieldValue(Outreach $outreach, string $name): mixed
