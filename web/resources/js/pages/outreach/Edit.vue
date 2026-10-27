@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Form, Head, Link } from '@inertiajs/vue3';
-import { computed, reactive, ref } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import OutreachController from '@/actions/App/Http/Controllers/OutreachController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
@@ -15,6 +15,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import type { AutosaveState } from '@/composables/useAutosave';
+import { useAutosave } from '@/composables/useAutosave';
 import { edit, index } from '@/routes/outreaches';
 
 type StepState = 'complete' | 'incomplete' | 'untouched' | 'upcoming';
@@ -75,6 +77,38 @@ const values = reactive<Record<string, string>>(
         ]),
     ),
 );
+
+const autosave = useAutosave({
+    url: OutreachController.autosave.url(props.outreach.id),
+    step: props.step,
+    version: props.outreach.edit_version,
+    values,
+});
+
+watch(
+    () => props.outreach.edit_version,
+    (version) => autosave.markSaved(version),
+);
+
+const time = (date: Date | null) =>
+    date?.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+const saveStatus = computed(() => {
+    const labels: Record<AutosaveState, string> = {
+        IDLE: 'Belum ada perubahan.',
+        SAVING: 'Menyimpan…',
+        SAVED: `Tersimpan otomatis pukul ${time(autosave.savedAt.value)}.`,
+        FAILED: `Gagal menyimpan. ${autosave.message.value}`,
+        CONFLICT: 'Konflik: data diubah di tab atau sesi lain.',
+        CONNECTION_LOST:
+            'Koneksi terputus. Perubahan sejak penyimpanan terakhir belum ada di server; akan dicoba lagi.',
+    };
+    const state = autosave.state.value;
+
+    return autosave.isDirty.value && (state === 'IDLE' || state === 'SAVED')
+        ? 'Ada perubahan yang belum disimpan.'
+        : labels[state];
+});
 
 const goNext = ref(false);
 const stepIndex = computed(() =>
@@ -187,6 +221,40 @@ const stateLabel: Record<StepState, string> = {
                 class="space-y-6"
                 v-slot="{ errors, processing }"
             >
+                <p
+                    class="text-sm"
+                    :class="
+                        ['FAILED', 'CONFLICT', 'CONNECTION_LOST'].includes(
+                            autosave.state.value,
+                        )
+                            ? 'text-destructive'
+                            : 'text-muted-foreground'
+                    "
+                    role="status"
+                    aria-live="polite"
+                    data-test="autosave-status"
+                >
+                    {{ saveStatus }}
+                </p>
+
+                <Alert
+                    v-if="autosave.state.value === 'CONFLICT'"
+                    variant="destructive"
+                >
+                    <AlertDescription class="flex flex-col gap-2">
+                        {{ autosave.message.value }}
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            class="w-fit"
+                            @click="autosave.reload()"
+                        >
+                            Muat ulang data terbaru
+                        </Button>
+                    </AlertDescription>
+                </Alert>
+
                 <Alert v-if="errors.edit_version" variant="destructive">
                     <AlertDescription>{{
                         errors.edit_version
@@ -197,7 +265,7 @@ const stateLabel: Record<StepState, string> = {
                 <input
                     type="hidden"
                     name="edit_version"
-                    :value="outreach.edit_version"
+                    :value="autosave.version.value"
                 />
                 <input type="hidden" name="next" :value="goNext ? 1 : 0" />
 
@@ -292,7 +360,12 @@ const stateLabel: Record<StepState, string> = {
                             "
                         />
 
-                        <InputError :message="errors[field.name]" />
+                        <InputError
+                            :message="
+                                errors[field.name] ??
+                                autosave.errors.value[field.name]
+                            "
+                        />
                     </div>
 
                     <div v-if="field.showsAge" class="grid gap-2">
@@ -333,14 +406,18 @@ const stateLabel: Record<StepState, string> = {
                 <div class="flex flex-wrap gap-3">
                     <Button
                         variant="outline"
-                        :disabled="processing"
+                        :disabled="
+                            processing || autosave.state.value === 'SAVING'
+                        "
                         @click="goNext = false"
                     >
                         Simpan Draft
                     </Button>
                     <Button
                         v-if="hasNext"
-                        :disabled="processing"
+                        :disabled="
+                            processing || autosave.state.value === 'SAVING'
+                        "
                         data-test="save-and-continue"
                         @click="goNext = true"
                     >

@@ -10,9 +10,11 @@ use App\Models\Outreach;
 use App\Models\OutreachSource;
 use App\Models\OutreachType;
 use App\Support\OutreachFormSchema;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -134,6 +136,28 @@ class OutreachController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Draft tersimpan.']);
 
         return to_route('outreaches.edit', ['outreach' => $outreach, 'step' => $target]);
+    }
+
+    /**
+     * Autosave the current step in the background (Workflow v2.1 section 10.2).
+     * A stale edit_version answers 409 so the page can show CONFLICT.
+     */
+    public function autosave(SaveOutreachStepRequest $request, Outreach $outreach, SaveOutreachStep $saveStep): JsonResponse
+    {
+        try {
+            $version = $saveStep->handle(
+                $outreach,
+                $request->user(),
+                $request->string('step')->toString(),
+                $request->stepData(),
+                $request->integer('edit_version'),
+                autosave: true,
+            );
+        } catch (ValidationException $e) {
+            return response()->json(['message' => $e->getMessage()], 409);
+        }
+
+        return response()->json(['edit_version' => $version, 'saved_at' => now()->toIso8601String()]);
     }
 
     private function fieldValue(Outreach $outreach, string $name): mixed

@@ -13,18 +13,20 @@ use Illuminate\Validation\ValidationException;
 /**
  * Saves the fields of one stepper step as Draft data (Workflow v2.1 sections
  * 8.3 and 10.1) with optimistic concurrency on edit_version (section 12). Does
- * not create a historical version.
+ * not create a historical version. Autosave uses the same path but is not
+ * recorded in History (section 10.2).
  */
 class SaveOutreachStep
 {
     /**
      * @param  array<string, mixed>  $data  validated fields of the step
+     * @return int the new edit_version
      */
-    public function handle(Outreach $outreach, User $actor, string $step, array $data, int $expectedVersion): void
+    public function handle(Outreach $outreach, User $actor, string $step, array $data, int $expectedVersion, bool $autosave = false): int
     {
         $data = $this->normalize($data);
 
-        DB::transaction(function () use ($outreach, $actor, $step, $data, $expectedVersion) {
+        DB::transaction(function () use ($outreach, $actor, $step, $data, $expectedVersion, $autosave) {
             $updated = Outreach::query()
                 ->whereKey($outreach->id)
                 ->where('edit_version', $expectedVersion)
@@ -40,10 +42,14 @@ class SaveOutreachStep
                 ]);
             }
 
-            HistoryEvent::record($outreach, $actor, HistoryEventType::SectionSaved, [
-                'metadata' => ['step' => $step],
-            ]);
+            if (! $autosave) {
+                HistoryEvent::record($outreach, $actor, HistoryEventType::SectionSaved, [
+                    'metadata' => ['step' => $step],
+                ]);
+            }
         });
+
+        return $expectedVersion + 1;
     }
 
     /**

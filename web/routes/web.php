@@ -11,6 +11,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('outreach', OutreachController::class)
         ->only(['index', 'create', 'store', 'edit', 'update'])
         ->names('outreaches');
+    Route::put('outreach/{outreach}/autosave', [OutreachController::class, 'autosave'])
+        ->name('outreaches.autosave');
 });
 
 require __DIR__.'/settings.php';
