@@ -124,6 +124,8 @@ GRANT ALL PRIVILEGES ON outreach_prototype_test.* TO 'outreach_app'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
+Data demo (R1.6): isi `DEMO_USER_PASSWORD` (minimal 12 karakter) di `web/.env`, lalu jalankan `php artisan db:seed` dari `web/`. Seeder bersifat idempoten dan hanya membuat data sintetis sesuai `docs/prototype/dummy-data.md`.
+
 Catatan: `web/.env.example` terkena pola `.env.*` pada `.gitignore` akar repository sehingga perlu `git add -f` agar template (tanpa secret) ikut ter-commit. Dompdf belum dipasang; pemasangannya dilakukan pada task fitur PDF.
 
 ## 10. Perubahan Dokumen Ini

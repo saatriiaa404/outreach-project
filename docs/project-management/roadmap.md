@@ -23,7 +23,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 | R1.3 | Model User memakai `password_hash`, role, dan status; akun `INACTIVE` tidak dapat login; checkbox "remember me" dibuang | ✅ Selesai 27 Oktober 2026 (19 tes lulus pada `outreach_prototype_test`) |
 | R1.4 | Kerangka otorisasi: policy per role, ownership/scope, status, dan resource, beserta tes akses ditolak | ✅ Selesai 27 Oktober 2026 (`OutreachPolicy`, scope `visibleTo`, middleware akun INACTIVE; 165 tes lulus) |
 | R1.5 | Basis data uji dan menjalankan tes bawaan yang tersisa | ✅ Diputuskan: MySQL terpisah `outreach_prototype_test` (27 Oktober 2026); tes bawaan dijalankan ulang setelah R1.3 |
-| R1.6 | Seeder data dummy sesuai `docs/prototype/dummy-data.md` | 🔒 Seed |
+| R1.6 | Seeder data dummy sesuai `docs/prototype/dummy-data.md` | ✅ Selesai 27 Oktober 2026: master Source/Type, tiga akun demo, DEMO-001 dan DEMO-003 (DRAFT). DEMO-002 dan DEMO-004 menyusul setelah R6/R7 karena butuh versi, approval, dan lampiran |
 
 ## Fase 2 — Outreach inti
 

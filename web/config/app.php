@@ -123,4 +123,16 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Demo Account Password
+    |--------------------------------------------------------------------------
+    |
+    | Password for the synthetic demo accounts created by DemoSeeder. Set it
+    | only in the local .env; it is never committed.
+    |
+    */
+
+    'demo_user_password' => env('DEMO_USER_PASSWORD'),
+
 ];
