@@ -98,6 +98,26 @@ Bagian ini mencatat keputusan yang memengaruhi bootstrap (BOOT-001). Belum ada k
 - Migration bawaan starter kit ditinjau terhadap Database v1.1 (termasuk amandemen D-041) sebelum dijalankan; tabel infrastruktur yang tersisa praktis hanya `migrations`.
 - Konstanta wilayah (Kelurahan Manukan Kulon, Kecamatan Tandes) disimpan pada konfigurasi aplikasi (D-036), bukan di database.
 
+### Hasil BOOT-001 (27 Oktober 2026)
+
+| Komponen | Versi / kondisi |
+|---|---|
+| Starter kit | `laravel/vue-starter-kit` cabang `dev-main` (tag stabil v1.0.x masih Laravel 12, sehingga tidak dipakai) |
+| Laravel | 13.38.0 pada PHP 8.5.12 (tanpa peringatan deprecation) |
+| Inertia | `inertiajs/inertia-laravel` 3.5.2; `@inertiajs/vue3` 3.9.1 |
+| Fortify | 1.41.0; daftar fitur kosong (tanpa registrasi, reset password, verifikasi email, 2FA, passkeys) |
+| Frontend | Vue 3.5.44, TypeScript 5.9.3, Tailwind CSS 4.3.3, reka-ui 2.11.0 (shadcn-vue), vite-plus 1.4.0 |
+| Database | MySQL 8.4.3, database `outreach_prototype`, user `outreach_app`; 0 tabel (belum ada migration yang dijalankan) |
+
+Langkah yang dipakai, dijalankan dari `project/`:
+
+1. `composer create-project laravel/vue-starter-kit web dev-main --no-scripts` — opsi `--no-scripts` wajib karena skrip bawaan menjalankan `php artisan migrate` otomatis pada SQLite.
+2. Di `web/`: salin `.env.example` ke `.env`, `php artisan key:generate`, `npm install`.
+3. `php artisan install:features --answers='{"auth_features":["password-confirmation"]}'` untuk membuang registrasi, verifikasi email, 2FA, dan passkeys; reset password dihapus manual dari `config/fortify.php`, `FortifyServiceProvider`, halaman auth, dan tesnya.
+4. Buat database dan user MySQL seperti bagian 4; password hanya ditulis pada `web/.env`.
+
+Catatan: `web/.env.example` terkena pola `.env.*` pada `.gitignore` akar repository sehingga perlu `git add -f` agar template (tanpa secret) ikut ter-commit. Dompdf belum dipasang; pemasangannya dilakukan pada task fitur PDF.
+
 ## 10. Perubahan Dokumen Ini
 
 Perubahan versi alat, kebijakan PHP, atau pengaturan upload dicatat pada dokumen ini. Bila memengaruhi keputusan, catat juga di `decisions.md`.
