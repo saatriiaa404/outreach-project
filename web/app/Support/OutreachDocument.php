@@ -4,49 +4,66 @@ namespace App\Support;
 
 use App\Models\Outreach;
 use App\Models\OutreachAttachment;
+use Illuminate\Support\Carbon;
 
 /**
  * The logical Outreach document shared by the browser preview (Workflow v2.1
- * section 17.3) and, later, the PDF (R7.2). Structure and labels follow the
- * blank template (docs/reference/blank_outreach.pdf, outreach.md section 8);
+ * section 17.3) and the PDF (R7.2). It is always built from snapshot_data
+ * (D-051): the Draft preview from a snapshot of the current data, a
+ * historical document from the stored version. Structure and labels follow
+ * the blank template (docs/reference/blank_outreach.pdf, outreach.md 8);
  * value formats follow D-050. A value of null means "not filled" and is
  * never shown as "-"; "-" only marks an explicit "none" (outreach.md 6).
  */
 class OutreachDocument
 {
     /**
+     * Preview of the current (Draft) data with the current attachments.
+     *
      * @return array<string, mixed>
      */
     public static function build(Outreach $outreach): array
     {
-        $date = $outreach->outreach_date;
+        $attachments = $outreach->attachments()->with('file')->orderBy('category')->orderBy('sort_order')->get()
+            ->map(fn (OutreachAttachment $attachment) => [
+                'label' => $attachment->title ?: $attachment->category->label(),
+                'name' => $attachment->file->original_name,
+                'is_image' => $attachment->file->isImage(),
+                'url' => route('outreaches.attachments.show', [$outreach, $attachment]),
+            ])->values()->all();
+
+        return self::fromSnapshot(OutreachSnapshot::build($outreach), $attachments);
+    }
+
+    /**
+     * @param  array<string, mixed>  $snapshot  snapshot_data, schema version 1
+     * @param  array<int, array{label: string, name: string, is_image: bool, url: string}>  $attachments
+     * @return array<string, mixed>
+     */
+    public static function fromSnapshot(array $snapshot, array $attachments): array
+    {
+        $date = Carbon::parse($snapshot['meta']['outreach_date']);
 
         return [
             'letterhead' => config('app.letterhead'),
             'title' => 'LAPORAN HASIL OUTREACH',
             // Type under the title; the Source is not printed (outreach.md 8.2).
-            'type' => $outreach->type->name,
+            'type' => $snapshot['meta']['type']['name'],
             'opening' => "Berdasarkan hasil outreach yang telah dilaksanakan pada hari {$date->translatedFormat('l')} tanggal {$date->translatedFormat('j F Y')} Bersama ini kami laporkan sebagai berikut :",
             'sections' => [
-                self::klien($outreach),
-                self::familyMoney($outreach, 'PENDAPATAN KELUARGA DALAM SEBULAN', 'pendapatan', 'Total Pendapatan Keluarga'),
-                self::familyMoney($outreach, 'PENGELUARAN KELUARGA DALAM SEBULAN', 'pengeluaran', 'Total Pengeluaran Keluarga'),
-                self::rumah($outreach),
+                self::klien($snapshot),
+                self::money($snapshot['family_income'], 'PENDAPATAN KELUARGA DALAM SEBULAN', 'Total Pendapatan Keluarga'),
+                self::money($snapshot['expenses'], 'PENGELUARAN KELUARGA DALAM SEBULAN', 'Total Pengeluaran Keluarga'),
+                self::rumah($snapshot),
             ],
             'narratives' => [
-                ['title' => 'UPAYA YANG TELAH DILAKUKAN', 'value' => self::text($outreach, 'upaya_dilakukan')],
-                ['title' => 'HARAPAN KLIEN', 'value' => self::text($outreach, 'harapan_klien')],
-                ['title' => 'URAIAN DETAIL MENGAPA KLIEN DIUSULKAN INTERVENSI INI', 'value' => self::text($outreach, 'uraian_alasan_intervensi')],
+                ['title' => 'UPAYA YANG TELAH DILAKUKAN', 'value' => self::text($snapshot['narrative']['upaya_dilakukan'])],
+                ['title' => 'HARAPAN KLIEN', 'value' => self::text($snapshot['narrative']['harapan_klien'])],
+                ['title' => 'URAIAN DETAIL MENGAPA KLIEN DIUSULKAN INTERVENSI INI', 'value' => self::text($snapshot['narrative']['uraian_alasan_intervensi'])],
             ],
             // Filled at approval with the approving Kepala (outreach.md 8.4).
             'approval' => ['lines' => ['Mengetahui', 'Lurah Manukan Kulon']],
-            'attachments' => $outreach->attachments()->with('file')->orderBy('category')->orderBy('sort_order')->get()
-                ->map(fn (OutreachAttachment $attachment) => [
-                    'label' => $attachment->title ?: $attachment->category->label(),
-                    'name' => $attachment->file->original_name,
-                    'is_image' => $attachment->file->isImage(),
-                    'url' => route('outreaches.attachments.show', [$outreach, $attachment]),
-                ])->values()->all(),
+            'attachments' => $attachments,
         ];
     }
 
@@ -60,22 +77,24 @@ class OutreachDocument
     }
 
     /**
+     * @param  array<string, mixed>  $snapshot
      * @return array{title: string, rows: list<array{no: int|null, label: string, value: string|null, total?: bool}>}
      */
-    private static function klien(Outreach $outreach): array
+    private static function klien(array $snapshot): array
     {
-        $fields = OutreachFormSchema::steps()['klien']['fields'];
-        $value = fn (string $name) => self::text($outreach, $name);
-        $yesNo = fn (string $name) => match ($outreach->getAttribute($name)) {
+        $client = $snapshot['client'];
+        $value = fn (string $name) => self::text($client[$name] ?? null);
+        $yesNo = fn (string $name) => match ($client[$name] ?? null) {
             true => 'Ya',
             false => 'Tidak',
             default => null,
         };
+        $status = $client['status_kesejahteraan'];
 
         $rows = [
             'Nama' => $value('nama'),
             'NIK' => $value('nik'),
-            'Tempat dan Tanggal Lahir / Umur' => self::birth($outreach),
+            'Tempat dan Tanggal Lahir / Umur' => self::birth($client, $snapshot['meta']['outreach_date']),
             'Agama' => $value('agama'),
             'Alamat KTP' => $value('alamat_ktp'),
             'Alamat Domisili' => $value('alamat_domisili'),
@@ -86,26 +105,24 @@ class OutreachDocument
             'Jumlah anggota keluarga dalam 1 KK' => $value('jumlah_anggota_kk'),
             'Jumlah KK dalam 1 rumah' => $value('jumlah_kk_dalam_rumah'),
             'Status tempat tinggal' => $value('status_tempat_tinggal'),
-            $fields['penghasilan_klien']['label'] => self::rupiah($outreach->getAttribute('penghasilan_klien')),
+            'Penghasilan klien sebulan' => self::rupiah($client['penghasilan_klien']),
             'No. telp yang bisa dihubungi' => $value('no_telp'),
             'Status Perkawinan' => $value('status_perkawinan'),
             'Pendidikan terakhir' => $value('pendidikan_terakhir'),
-            'Status Kesejahteraan' => $outreach->desil_1_10 === null
-                ? null
-                : "{$outreach->getAttribute('status_kesejahteraan')} (Desil {$outreach->desil_1_10})",
+            'Status Kesejahteraan' => $status === null ? null : "{$status['label']} (Desil {$status['desil']})",
             'Jaminan Kesehatan yang dimiliki' => $value('jaminan_kesehatan'),
             'Apakah Klien merokok' => $yesNo('merokok'),
             // D-027: the description, or "Tidak ada" when no aid was received.
-            'Bantuan yang pernah diterima' => match ($outreach->getAttribute('bantuan_pernah_diterima')) {
+            'Bantuan yang pernah diterima' => match ($client['bantuan_pernah_diterima']) {
                 false => 'Tidak ada',
                 true => $value('bantuan_detail'),
                 default => null,
             },
             'Apakah klien punya pinjaman / hutang' => $yesNo('punya_hutang'),
             // Not applicable without a debt (outreach.md 6).
-            'Berapa besar pinjaman / hutang' => match ($outreach->getAttribute('punya_hutang')) {
+            'Berapa besar pinjaman / hutang' => match ($client['punya_hutang']) {
                 false => '-',
-                true => self::rupiah($outreach->getAttribute('besar_hutang')),
+                true => self::rupiah($client['besar_hutang']),
                 default => null,
             },
         ];
@@ -114,42 +131,49 @@ class OutreachDocument
     }
 
     /**
+     * Rows labelled as in the stepper, with the derived total that stays open
+     * while any component is empty (outreach.md 4.2, 4.3).
+     *
+     * @param  array<string, int|null>  $values
      * @return array{title: string, rows: list<array{no: int|null, label: string, value: string|null, total?: bool}>}
      */
-    private static function familyMoney(Outreach $outreach, string $title, string $group, string $totalLabel): array
+    private static function money(array $values, string $title, string $totalLabel): array
     {
+        $fields = OutreachFormSchema::steps()['keluarga']['fields'];
         $rows = [];
 
-        foreach (OutreachFormSchema::steps()['keluarga']['fields'] as $name => $field) {
-            if (($field['group'] ?? null) === $group) {
-                $rows[$field['label']] = self::rupiah($outreach->getAttribute($name));
-            }
+        foreach ($values as $name => $amount) {
+            $rows[$fields[$name]['label']] = self::rupiah($amount);
         }
+
+        $total = in_array(null, $values, true) ? null : array_sum($values);
 
         return ['title' => $title, 'rows' => [
             ...self::numbered($rows),
-            ['no' => null, 'label' => $totalLabel, 'value' => self::rupiah(OutreachFormSchema::total($outreach, $group)), 'total' => true],
+            ['no' => null, 'label' => $totalLabel, 'value' => self::rupiah($total), 'total' => true],
         ]];
     }
 
     /**
+     * @param  array<string, mixed>  $snapshot
      * @return array{title: string, rows: list<array{no: int|null, label: string, value: string|null, total?: bool}>}
      */
-    private static function rumah(Outreach $outreach): array
+    private static function rumah(array $snapshot): array
     {
-        $mck = $outreach->getAttribute('mck_layak');
+        $house = $snapshot['house'];
+        $assets = $snapshot['assets'];
 
         $rows = [
-            'Ukuran / Luas bangunan rumah' => self::text($outreach, 'luas_bangunan'),
-            'Jenis lantai' => self::text($outreach, 'jenis_lantai'),
-            'Jenis dinding' => self::text($outreach, 'jenis_dinding'),
-            'Jenis atap bangunan' => self::text($outreach, 'jenis_atap'),
-            'Daya listrik' => self::text($outreach, 'daya_listrik'),
-            'Sumber air' => self::text($outreach, 'sumber_air'),
-            'Fasilitas MCK' => $mck === null ? null : OutreachFormSchema::MCK_OPTIONS[$mck] ?? null,
-            'Jumlah dan Jenis kendaraan yang dimiliki' => self::vehicles($outreach),
-            'Perhiasan' => self::text($outreach, 'perhiasan'),
-            'Aset lainnya' => self::text($outreach, 'aset_lainnya'),
+            'Ukuran / Luas bangunan rumah' => self::text($house['luas_bangunan']),
+            'Jenis lantai' => self::text($house['jenis_lantai']),
+            'Jenis dinding' => self::text($house['jenis_dinding']),
+            'Jenis atap bangunan' => self::text($house['jenis_atap']),
+            'Daya listrik' => self::text($house['daya_listrik']),
+            'Sumber air' => self::text($house['sumber_air']),
+            'Fasilitas MCK' => $house['mck_layak']['label'] ?? null,
+            'Jumlah dan Jenis kendaraan yang dimiliki' => self::vehicles($assets),
+            'Perhiasan' => self::text($assets['perhiasan']),
+            'Aset lainnya' => self::text($assets['aset_lainnya']),
         ];
 
         return ['title' => 'KONDISI RUMAH DAN ASET YANG DIMILIKI', 'rows' => self::numbered($rows)];
@@ -158,25 +182,31 @@ class OutreachDocument
     /**
      * "Surabaya, 15 Juni 2006 / 20 tahun" (D-045, D-050); parts not yet
      * filled are left out, and nothing is shown while both are empty.
+     *
+     * @param  array<string, mixed>  $client
      */
-    private static function birth(Outreach $outreach): ?string
+    private static function birth(array $client, string $outreachDate): ?string
     {
-        $place = self::text($outreach, 'tempat_lahir');
-        $date = $outreach->tanggal_lahir?->translatedFormat('j F Y');
-        $age = $outreach->ageOnOutreachDate();
+        $place = self::text($client['tempat_lahir']);
+        $birth = $client['tanggal_lahir'] === null ? null : Carbon::parse($client['tanggal_lahir']);
 
-        if ($place === null && $date === null) {
+        if ($place === null && $birth === null) {
             return null;
         }
 
-        return implode(', ', array_filter([$place, $date])).($age === null ? '' : " / {$age} tahun");
+        $on = Carbon::parse($outreachDate);
+        $age = $birth === null || $birth->gt($on) ? null : (int) $birth->diffInYears($on);
+
+        return implode(', ', array_filter([$place, $birth?->translatedFormat('j F Y')])).($age === null ? '' : " / {$age} tahun");
     }
 
     /**
      * One line from the vehicle counts above 0 (D-020, D-050), or null while
      * any count is still empty.
+     *
+     * @param  array<string, mixed>  $assets
      */
-    private static function vehicles(Outreach $outreach): ?string
+    private static function vehicles(array $assets): ?string
     {
         $parts = [];
 
@@ -185,7 +215,7 @@ class OutreachDocument
                 continue;
             }
 
-            $count = $outreach->getAttribute($name);
+            $count = $assets[$name];
 
             if ($count === null) {
                 return null;
@@ -193,7 +223,7 @@ class OutreachDocument
 
             if ((int) $count > 0) {
                 $label = $name === 'jumlah_kendaraan_lainnya'
-                    ? (self::text($outreach, 'nama_kendaraan_lainnya') ?? $field['label'])
+                    ? (self::text($assets['nama_kendaraan_lainnya']) ?? $field['label'])
                     : $field['label'];
                 $parts[] = "{$label} {$count}";
             }
@@ -202,10 +232,8 @@ class OutreachDocument
         return $parts === [] ? 'Tidak ada' : implode(', ', $parts);
     }
 
-    private static function text(Outreach $outreach, string $name): ?string
+    private static function text(mixed $value): ?string
     {
-        $value = $outreach->getAttribute($name);
-
         return $value === null || $value === '' ? null : (string) $value;
     }
 

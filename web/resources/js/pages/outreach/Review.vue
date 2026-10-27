@@ -1,16 +1,34 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
+import FinalizeOutreachController from '@/actions/App/Http/Controllers/FinalizeOutreachController';
 import Heading from '@/components/Heading.vue';
 import OutreachDocumentPreview from '@/components/outreach/OutreachDocumentPreview.vue';
 import type { OutreachDocument } from '@/components/outreach/OutreachDocumentPreview.vue';
 import OutreachStepper from '@/components/outreach/OutreachStepper.vue';
 import type { Step } from '@/components/outreach/OutreachStepper.vue';
+import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { edit, index } from '@/routes/outreaches';
 
 type Row = { label: string; value: string | null };
 
-defineProps<{
-    outreach: { id: number; code: string; source: string; type: string };
+const props = defineProps<{
+    outreach: {
+        id: number;
+        code: string;
+        source: string;
+        type: string;
+        status: string;
+        edit_version: number;
+    };
     steps: Step[];
     step: string;
     checklist: { key: string; title: string; missing: string[] }[];
@@ -20,6 +38,27 @@ defineProps<{
     kifayah: { fields: Row[]; answers: Row[] } | null;
     signatures: { title: string; signed: boolean; url: string | null }[];
 }>();
+
+const confirming = ref(false);
+const processing = ref(false);
+const page = usePage();
+const serverError = computed(
+    () =>
+        (page.props.errors as Record<string, string>).finalize ??
+        (page.props.errors as Record<string, string>).edit_version,
+);
+
+// The server checks everything again; the button only reflects this page.
+const finalize = () => {
+    confirming.value = false;
+    processing.value = true;
+
+    router.post(
+        FinalizeOutreachController.url(props.outreach.id),
+        { edit_version: props.outreach.edit_version },
+        { preserveScroll: true, onFinish: () => (processing.value = false) },
+    );
+};
 
 defineOptions({
     layout: {
@@ -57,9 +96,24 @@ defineOptions({
                     }}
                 </p>
                 <p class="mt-1 text-sm text-muted-foreground">
-                    Review tidak mengubah data. Tombol Finalisasi belum tersedia
-                    pada tahap prototype ini.
+                    Review tidak mengubah data. Setelah Finalisasi, Outreach
+                    terkunci dan diajukan kepada Kepala untuk pengesahan.
                 </p>
+                <p
+                    v-if="serverError"
+                    class="mt-2 text-sm text-destructive"
+                    data-test="finalize-error"
+                >
+                    {{ serverError }}
+                </p>
+                <Button
+                    class="mt-3"
+                    :disabled="!ready || processing"
+                    data-test="finalize"
+                    @click="confirming = true"
+                >
+                    Finalisasi
+                </Button>
             </section>
 
             <section class="grid gap-2" data-test="checklist">
@@ -191,4 +245,26 @@ defineOptions({
             </section>
         </div>
     </div>
+
+    <Dialog v-model:open="confirming">
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Finalisasi Outreach ini?</DialogTitle>
+                <DialogDescription>
+                    Data, lampiran, dan tanda tangan saat ini dibekukan sebagai
+                    versi baru dan diajukan kepada Kepala. Outreach tidak dapat
+                    diubah lagi kecuali dikembalikan untuk perbaikan atau
+                    melalui Special Unlock.
+                </DialogDescription>
+            </DialogHeader>
+            <DialogFooter class="gap-2">
+                <Button variant="outline" @click="confirming = false">
+                    Batal
+                </Button>
+                <Button data-test="confirm-finalize" @click="finalize">
+                    Ya, finalisasi
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
 </template>

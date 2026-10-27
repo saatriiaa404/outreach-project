@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FinalizeOutreachController;
 use App\Http\Controllers\KifayahController;
 use App\Http\Controllers\MustahikController;
 use App\Http\Controllers\OutreachAttachmentController;
@@ -40,6 +41,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('outreach/{outreach}/signatures/{form}', [SignatureController::class, 'destroy'])
         ->whereIn('form', ['mustahik', 'kifayah'])
         ->name('outreaches.signatures.destroy');
+    Route::post('outreach/{outreach}/finalize', FinalizeOutreachController::class)
+        ->name('outreaches.finalize');
     Route::put('outreach/{outreach}/autosave', [OutreachController::class, 'autosave'])
         ->name('outreaches.autosave');
 });

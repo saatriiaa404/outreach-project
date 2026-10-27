@@ -62,7 +62,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 | ID | Task | Persetujuan |
 |---|---|---|
 | R6.1 | Kontrak JSON `snapshot_data` | ✅ Disetujui 28 Oktober 2026 (D-051; `migration-design.md` 3.12.1) |
-| R6.2 | Finalisasi dan Finalisasi Ulang transaksional, `outreach_number`, versi, lampiran versi, history, notifikasi `OUTREACH_FINALIZED`, proteksi double submit | — |
+| R6.2 | Finalisasi dan Finalisasi Ulang transaksional, `outreach_number`, versi, lampiran versi, history, notifikasi `OUTREACH_FINALIZED`, proteksi double submit | ✅ Selesai 28 Oktober 2026: tombol Finalisasi di Review dengan konfirmasi; satu transaksi dengan kunci baris memvalidasi ulang kelengkapan, membuat `OUT-<tahun>-<5 digit>` (Q-04) pada submission pertama, versi berurutan dengan snapshot D-051, salinan lampiran versi, referensi tanda tangan yang dicek `signer_type`, status `MENUNGGU_PENGESAHAN`, history `FINALIZED`/`REFINALIZED`, dan notifikasi ke setiap Kepala aktif. Seed paket template `PACKAGE_BAZNAS_CSR` dan `PACKAGE_BANGGA_SURABAYA` v1 disetujui dan dijalankan ke `outreach_prototype`. Preview Draft kini juga dirender dari snapshot |
 
 ## Fase 7 — Approval dan PDF gate
 
