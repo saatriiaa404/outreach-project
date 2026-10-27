@@ -29,7 +29,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 
 | ID | Task |
 |---|---|
-| R2.1 | Buat Outreach: Source → Type → Date, `draft_code`, status `DRAFT` |
+| R2.1 | Buat Outreach: Source → Type → Date, `draft_code`, status `DRAFT` — ✅ selesai 27 Oktober 2026 (halaman daftar dan buat, history `CREATED`) |
 | R2.2 | Stepper dan form Data Klien, Keluarga, Rumah & Aset, Narasi (D-019 sampai D-021, D-025, D-027, D-032) |
 | R2.3 | Save Draft dan autosave dengan `edit_version` serta state autosave |
 | R2.4 | Validasi Draft vs Finalisasi, semantik `NULL`/`0`/`-`, total turunan |

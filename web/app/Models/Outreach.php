@@ -23,6 +23,7 @@ use Illuminate\Support\Carbon;
  * @property int $type_id
  * @property Carbon $outreach_date
  * @property int $petugas_id
+ * @property string|null $nama
  * @property OutreachStatus $status
  * @property int $edit_version
  */
