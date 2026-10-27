@@ -335,7 +335,9 @@ bukan dari data Outreach terkini.
 2.  Satu Outreach memiliki maksimal satu form Kifayah aktif sesuai
     baseline database.
 3.  Setiap `question_code` memiliki satu jawaban aktif; jawaban harus
-    berasal dari opsi pertanyaan tersebut.
+    berasal dari opsi pertanyaan tersebut. Jawaban disimpan sebagai
+    `{"option": "<kode>"}` dengan kode = posisi opsi pada sumber dari atas
+    ke bawah (Q-07).
 4.  Data Outreach tidak boleh memilih jawaban Kifayah secara otomatis.
 5.  Semua kategori pengeluaran wajib diisi secara eksplisit sebelum
     finalisasi. `0` dapat dipakai ketika tidak ada pengeluaran atau
@@ -343,7 +345,8 @@ bukan dari data Outreach terkini.
     menyamakan keduanya.
 6.  Input nominal dan hitungan harus numerik dan minimal 0; tolak nilai
     negatif atau nonnumerik. Jangan menetapkan batas maksimum arbitrer
-    untuk jumlah anggota keluarga yang menempuh pendidikan tinggi.
+    untuk jumlah anggota keluarga yang menempuh pendidikan tinggi; batas
+    teknis 65.535 hanya mengikuti tipe kolom `SMALLINT UNSIGNED`.
 7.  Tahun/tanggal PDF Kifayah mengikuti tanggal Outreach yang tersimpan.
 8.  Kegagalan membuat PDF Kifayah yang diwajibkan menggagalkan approval;
     status tetap `MENUNGGU_PENGESAHAN` dan notifikasi

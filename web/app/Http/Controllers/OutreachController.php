@@ -14,6 +14,7 @@ use App\Models\Outreach;
 use App\Models\OutreachAttachment;
 use App\Models\OutreachSource;
 use App\Models\OutreachType;
+use App\Support\KifayahFormSchema;
 use App\Support\MustahikFormSchema;
 use App\Support\OutreachFormSchema;
 use App\Support\OutreachSteps;
@@ -142,6 +143,34 @@ class OutreachController extends Controller
                     'value' => $form?->answers->firstWhere('question_code', $code)?->answer['option'],
                 ])->values(),
                 'missingForFinalization' => MustahikFormSchema::missing($form),
+            ]);
+        }
+
+        if ($step === 'kifayah') {
+            $form = $outreach->kifayahForm;
+
+            return Inertia::render('outreach/Kifayah', [
+                ...$shared,
+                // Shown read-only from Outreach, never typed again (D-036).
+                'identitas' => [
+                    'nama' => $outreach->nama,
+                    'nik' => $outreach->getAttribute('nik'),
+                    'alamat' => $outreach->getAttribute('alamat_domisili'),
+                    'kelurahan' => config('app.wilayah.kelurahan'),
+                    'kecamatan' => config('app.wilayah.kecamatan'),
+                    'no_hp' => $outreach->getAttribute('no_telp'),
+                ],
+                'fields' => collect(KifayahFormSchema::FIELDS)->map(fn (array $field, string $name) => [
+                    'name' => $name,
+                    ...$field,
+                    'value' => $form?->getAttribute($name),
+                ])->values(),
+                'questions' => collect(KifayahFormSchema::QUESTIONS)->map(fn (array $question, string $code) => [
+                    'code' => $code,
+                    ...$question,
+                    'value' => $form?->answers->firstWhere('question_code', $code)?->answer['option'],
+                ])->values(),
+                'missingForFinalization' => KifayahFormSchema::missing($form),
             ]);
         }
 

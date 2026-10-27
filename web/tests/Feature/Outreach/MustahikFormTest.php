@@ -175,8 +175,7 @@ class MustahikFormTest extends TestCase
             'step' => 'narasi', 'edit_version' => 0, 'next' => '1',
         ])->assertRedirect(route('outreaches.edit', ['outreach' => $outreach, 'step' => 'mustahik']));
 
-        // Kifayah is not built yet, so continuing stays on Mustahik.
         $this->save($outreach, ['HOUSE_MCK' => '2'], 1, next: true)
-            ->assertRedirect(route('outreaches.edit', ['outreach' => $outreach, 'step' => 'mustahik']));
+            ->assertRedirect(route('outreaches.edit', ['outreach' => $outreach, 'step' => 'kifayah']));
     }
 }

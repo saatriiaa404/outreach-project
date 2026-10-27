@@ -30,6 +30,7 @@ use Illuminate\Support\Carbon;
  * @property-read OutreachSource $source
  * @property-read OutreachType $type
  * @property-read MustahikForm|null $mustahikForm
+ * @property-read KifayahForm|null $kifayahForm
  * @property-read User $petugas
  * @property OutreachStatus $status
  * @property int $edit_version
@@ -75,6 +76,14 @@ class Outreach extends Model
     public function mustahikForm(): HasOne
     {
         return $this->hasOne(MustahikForm::class);
+    }
+
+    /**
+     * @return HasOne<KifayahForm, $this>
+     */
+    public function kifayahForm(): HasOne
+    {
+        return $this->hasOne(KifayahForm::class);
     }
 
     /**

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\KifayahController;
 use App\Http\Controllers\MustahikController;
 use App\Http\Controllers\OutreachAttachmentController;
 use App\Http\Controllers\OutreachController;
@@ -25,6 +26,10 @@ Route::middleware(['auth'])->group(function () {
         ->name('outreaches.mustahik.update');
     Route::put('outreach/{outreach}/mustahik/autosave', [MustahikController::class, 'autosave'])
         ->name('outreaches.mustahik.autosave');
+    Route::put('outreach/{outreach}/kifayah', [KifayahController::class, 'update'])
+        ->name('outreaches.kifayah.update');
+    Route::put('outreach/{outreach}/kifayah/autosave', [KifayahController::class, 'autosave'])
+        ->name('outreaches.kifayah.autosave');
     Route::put('outreach/{outreach}/autosave', [OutreachController::class, 'autosave'])
         ->name('outreaches.autosave');
 });

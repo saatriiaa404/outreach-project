@@ -35,6 +35,12 @@ class OutreachSteps
                     'state' => MustahikFormSchema::completion($outreach->mustahikForm),
                     'missing' => count(MustahikFormSchema::missing($outreach->mustahikForm)),
                 ],
+                'kifayah' => [
+                    'key' => $key,
+                    'title' => $title,
+                    'state' => KifayahFormSchema::completion($outreach->kifayahForm),
+                    'missing' => count(KifayahFormSchema::missing($outreach->kifayahForm)),
+                ],
                 'lampiran' => self::attachmentStep($outreach, $title),
                 default => ['key' => $key, 'title' => $title, 'state' => 'upcoming'],
             };
