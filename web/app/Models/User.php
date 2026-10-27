@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -14,21 +16,34 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property string $name
  * @property string $email
- * @property Carbon|null $email_verified_at
- * @property string $password
- * @property string|null $two_factor_secret
- * @property string|null $two_factor_recovery_codes
- * @property Carbon|null $two_factor_confirmed_at
- * @property string|null $remember_token
+ * @property string $password_hash
+ * @property string|null $nip
+ * @property UserRole $role
+ * @property UserStatus $status
+ * @property Carbon|null $last_login_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
+#[Fillable(['name', 'email', 'password_hash', 'nip', 'role', 'status'])]
+#[Hidden(['password_hash'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    /**
+     * The column holding the password hash (Database v1.1, D-030).
+     *
+     * @var string
+     */
+    protected $authPasswordName = 'password_hash';
+
+    /**
+     * Remember-me tokens are not used (D-030), so there is no token column.
+     *
+     * @var string
+     */
+    protected $rememberTokenName = '';
 
     /**
      * Get the attributes that should be cast.
@@ -38,8 +53,15 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password_hash' => 'hashed',
+            'role' => UserRole::class,
+            'status' => UserStatus::class,
+            'last_login_at' => 'datetime',
         ];
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === UserStatus::Active;
     }
 }
