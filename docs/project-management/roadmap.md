@@ -22,7 +22,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 | R1.2 | Implementasi migration per kelompok: master dan akun, Outreach, form, file dan lampiran, versi dan approval, history/audit/notifikasi/arsip/special unlock | ✅ Selesai 27 Oktober 2026 (`web/database/migrations/`, 22 tabel domain + `migrations`) |
 | R1.3 | Model User memakai `password_hash`, role, dan status; akun `INACTIVE` tidak dapat login; checkbox "remember me" dibuang | Ikut R1.1 |
 | R1.4 | Kerangka otorisasi: policy per role, ownership/scope, status, dan resource, beserta tes akses ditolak | — |
-| R1.5 | Basis data uji dan menjalankan tes bawaan yang tersisa | 🔒 Pilihan DB uji |
+| R1.5 | Basis data uji dan menjalankan tes bawaan yang tersisa | ✅ Diputuskan: MySQL terpisah `outreach_prototype_test` (27 Oktober 2026); tes bawaan dijalankan ulang setelah R1.3 |
 | R1.6 | Seeder data dummy sesuai `docs/prototype/dummy-data.md` | 🔒 Seed |
 
 ## Fase 2 — Outreach inti
@@ -108,7 +108,6 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 
 ## Keputusan Terbuka
 
-1. Basis data uji: MySQL terpisah (usulan) atau SQLite in-memory.
-2. Ganti password sendiri (usulan: boleh); halaman ubah profil dan hapus akun sendiri (usulan: dihapus).
-3. Workflow CI bawaan `web/.github/workflows/tests.yml` sebelum ada push.
-4. Pustaka: kompresi gambar, signature pad, Dompdf (diajukan saat fasenya).
+1. Ganti password sendiri (usulan: boleh); halaman ubah profil dan hapus akun sendiri (usulan: dihapus).
+2. Workflow CI bawaan `web/.github/workflows/tests.yml` sebelum ada push.
+3. Pustaka: kompresi gambar, signature pad, Dompdf (diajukan saat fasenya).

@@ -116,6 +116,14 @@ Langkah yang dipakai, dijalankan dari `project/`:
 3. `php artisan install:features --answers='{"auth_features":["password-confirmation"]}'` untuk membuang registrasi, verifikasi email, 2FA, dan passkeys; reset password dihapus manual dari `config/fortify.php`, `FortifyServiceProvider`, halaman auth, dan tesnya.
 4. Buat database dan user MySQL seperti bagian 4; password hanya ditulis pada `web/.env`.
 
+Basis data uji (R1.5, diputuskan pemilik proyek 27 Oktober 2026) memakai MySQL terpisah `outreach_prototype_test` dengan user yang sama; `web/phpunit.xml` mengarahkan `DB_CONNECTION=mysql` dan `DB_DATABASE=outreach_prototype_test`, sehingga tes tidak menyentuh `outreach_prototype`:
+
+```sql
+CREATE DATABASE outreach_prototype_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+GRANT ALL PRIVILEGES ON outreach_prototype_test.* TO 'outreach_app'@'localhost';
+FLUSH PRIVILEGES;
+```
+
 Catatan: `web/.env.example` terkena pola `.env.*` pada `.gitignore` akar repository sehingga perlu `git add -f` agar template (tanpa secret) ikut ter-commit. Dompdf belum dipasang; pemasangannya dilakukan pada task fitur PDF.
 
 ## 10. Perubahan Dokumen Ini
