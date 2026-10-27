@@ -24,6 +24,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon $outreach_date
  * @property int $petugas_id
  * @property string|null $nama
+ * @property-read OutreachSource $source
+ * @property-read OutreachType $type
  * @property OutreachStatus $status
  * @property int $edit_version
  */
@@ -42,6 +44,10 @@ class Outreach extends Model
         return [
             'outreach_date' => 'date',
             'status' => OutreachStatus::class,
+            'merokok' => 'boolean',
+            'bantuan_pernah_diterima' => 'boolean',
+            'punya_hutang' => 'boolean',
+            'desil_1_10' => 'integer',
         ];
     }
 

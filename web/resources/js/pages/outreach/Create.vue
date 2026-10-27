@@ -17,6 +17,14 @@ import { create, index } from '@/routes/outreaches';
 
 type Option = { id: number; name: string };
 
+// Defaults to today in the browser's local date; the Petugas can change it.
+const now = new Date();
+const today = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, '0'),
+    String(now.getDate()).padStart(2, '0'),
+].join('-');
+
 defineProps<{
     sources: Option[];
     types: Option[];
@@ -86,7 +94,12 @@ defineOptions({
 
             <div class="grid gap-2">
                 <Label for="outreach_date">Tanggal Outreach</Label>
-                <Input id="outreach_date" name="outreach_date" type="date" />
+                <Input
+                    id="outreach_date"
+                    name="outreach_date"
+                    type="date"
+                    :default-value="today"
+                />
                 <InputError :message="errors.outreach_date" />
             </div>
 

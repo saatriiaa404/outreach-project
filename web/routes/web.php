@@ -9,7 +9,7 @@ Route::middleware(['auth'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
 
     Route::resource('outreach', OutreachController::class)
-        ->only(['index', 'create', 'store'])
+        ->only(['index', 'create', 'store', 'edit', 'update'])
         ->names('outreaches');
 });
 

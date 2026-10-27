@@ -40,16 +40,16 @@ class CreateOutreachTest extends TestCase
         $source = OutreachSource::factory()->create();
         $type = OutreachType::factory()->create();
 
-        $this->actingAs($petugas)
+        $response = $this->actingAs($petugas)
             ->post(route('outreaches.store'), [
                 'source_id' => $source->id,
                 'type_id' => $type->id,
                 'outreach_date' => '2026-10-27',
             ])
-            ->assertSessionHasNoErrors()
-            ->assertRedirect(route('outreaches.index'));
+            ->assertSessionHasNoErrors();
 
         $outreach = Outreach::query()->sole();
+        $response->assertRedirect(route('outreaches.edit', ['outreach' => $outreach, 'step' => 'klien']));
         $this->assertSame(OutreachStatus::Draft, $outreach->status);
         $this->assertMatchesRegularExpression('/^DRAFT-[A-Z0-9]{12}$/', $outreach->draft_code);
         $this->assertNull($outreach->outreach_number);

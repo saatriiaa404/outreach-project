@@ -3,7 +3,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import Heading from '@/components/Heading.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { create, index } from '@/routes/outreaches';
+import { create, edit, index } from '@/routes/outreaches';
 
 type OutreachRow = {
     id: number;
@@ -13,6 +13,7 @@ type OutreachRow = {
     type: string;
     outreach_date: string;
     status: 'DRAFT' | 'MENUNGGU_PENGESAHAN' | 'PERLU_PERBAIKAN' | 'SELESAI';
+    can_edit: boolean;
 };
 
 type Props = {
@@ -78,7 +79,16 @@ const statusLabels: Record<OutreachRow['status'], string> = {
                         :key="outreach.id"
                         class="border-t"
                     >
-                        <td class="px-4 py-2 font-mono">{{ outreach.code }}</td>
+                        <td class="px-4 py-2 font-mono">
+                            <Link
+                                v-if="outreach.can_edit"
+                                :href="edit(outreach.id)"
+                                class="underline underline-offset-4"
+                            >
+                                {{ outreach.code }}
+                            </Link>
+                            <span v-else>{{ outreach.code }}</span>
+                        </td>
                         <td class="px-4 py-2">{{ outreach.nama ?? '—' }}</td>
                         <td class="px-4 py-2">{{ outreach.source }}</td>
                         <td class="px-4 py-2">{{ outreach.type }}</td>

@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Outreach\CreateOutreach;
+use App\Actions\Outreach\SaveOutreachStep;
+use App\Http\Requests\Outreach\SaveOutreachStepRequest;
 use App\Http\Requests\Outreach\StoreOutreachRequest;
 use App\Models\Outreach;
 use App\Models\OutreachSource;
 use App\Models\OutreachType;
+use App\Support\OutreachFormSchema;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -36,6 +39,7 @@ class OutreachController extends Controller
                 'type' => $outreach->type->name,
                 'outreach_date' => $outreach->outreach_date->toDateString(),
                 'status' => $outreach->status->value,
+                'can_edit' => $request->user()->can('update', $outreach),
             ]);
 
         return Inertia::render('outreach/Index', [
@@ -68,6 +72,73 @@ class OutreachController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => "Outreach {$outreach->draft_code} dibuat sebagai Draft."]);
 
-        return to_route('outreaches.index');
+        return to_route('outreaches.edit', ['outreach' => $outreach, 'step' => 'klien']);
+    }
+
+    /**
+     * Show one step of the data collection stepper (Workflow v2.1 section 8).
+     */
+    public function edit(Request $request, Outreach $outreach): Response
+    {
+        Gate::authorize('update', $outreach);
+
+        $steps = OutreachFormSchema::steps();
+        $step = $request->query('step');
+        $step = is_string($step) && array_key_exists($step, $steps) ? $step : 'klien';
+        $outreach->load(['source:id,code,name', 'type:id,name']);
+
+        return Inertia::render('outreach/Edit', [
+            'outreach' => [
+                'id' => $outreach->id,
+                'code' => $outreach->outreach_number ?? $outreach->draft_code,
+                'source' => $outreach->source->name,
+                'type' => $outreach->type->name,
+                'status' => $outreach->status->value,
+                'edit_version' => $outreach->edit_version,
+            ],
+            'steps' => [
+                ...collect($steps)->map(fn (array $definition, string $key) => [
+                    'key' => $key,
+                    'title' => $definition['title'],
+                    'state' => OutreachFormSchema::completion($outreach, $key),
+                ])->values(),
+                ...collect(OutreachFormSchema::upcomingSteps($outreach->source->code))->map(fn (string $title, string $key) => [
+                    'key' => $key,
+                    'title' => $title,
+                    'state' => 'upcoming',
+                ])->values(),
+            ],
+            'step' => $step,
+            'fields' => collect($steps[$step]['fields'])->map(fn (array $field, string $name) => [
+                'name' => $name,
+                'value' => $this->fieldValue($outreach, $name),
+                ...$field,
+            ])->values(),
+        ]);
+    }
+
+    /**
+     * Save the current step as Draft data, then stay or continue.
+     */
+    public function update(SaveOutreachStepRequest $request, Outreach $outreach, SaveOutreachStep $saveStep): RedirectResponse
+    {
+        $step = $request->string('step')->toString();
+
+        $saveStep->handle($outreach, $request->user(), $step, $request->stepData(), $request->integer('edit_version'));
+
+        $keys = array_keys(OutreachFormSchema::steps());
+        $next = $keys[array_search($step, $keys, true) + 1] ?? null;
+        $target = $request->boolean('next') && $next ? $next : $step;
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Draft tersimpan.']);
+
+        return to_route('outreaches.edit', ['outreach' => $outreach, 'step' => $target]);
+    }
+
+    private function fieldValue(Outreach $outreach, string $name): mixed
+    {
+        $value = $outreach->getAttribute($name);
+
+        return $name === 'outreach_date' ? $value?->toDateString() : $value;
     }
 }
