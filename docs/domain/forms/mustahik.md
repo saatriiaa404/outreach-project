@@ -85,7 +85,7 @@ Bagian header PDF sumber diisi dari sumber berikut. Label PDF sumber tidak diuba
 | Alamat Kepala Keluarga: Kelurahan dan Kecamatan | Konstanta konfigurasi yang sama | Bukan data per Outreach |
 | Nomor Telepon HP | `outreaches.no_telp` (field 15 Outreach) | Kontak Outreach, **bukan** nomor Kepala Keluarga yang terverifikasi; tidak ada kolom nomor Kepala Keluarga pada Database v1.1 |
 
-Aturan wajib untuk field header yang diisi Petugas (`survey_date` dan `kepala_keluarga_*`) belum ditetapkan dan tetap `PENDING VALIDATION` (lihat bagian 5 butir 4).
+**Aturan wajib header (D-048, VAL-005 selesai).** Seluruh field header yang diisi Petugas wajib sebelum Finalisasi: Tanggal survei (`survey_date`), Nama, NIK/No KK, Alamat (Jalan), RT, dan RW Kepala Keluarga. Draft boleh kosong. Tanggal survei terisi awal dari Tanggal Outreach saat form pertama kali dibuka dan tetap dapat diubah. Tombol eksplisit "Salin dari data Klien" menyalin Nama, NIK, dan Alamat Domisili Klien bila Klien memang Kepala Keluarga; penyalinan tidak pernah terjadi otomatis, dan RT/RW diisi manual.
 
 ## 4. Data Konteks dan Batas Perilaku
 
@@ -98,7 +98,7 @@ Perubahan spesifikasi tidak mengubah jawaban pada versi historis. Jika label ata
 1. Validasi pemilik form atas penerapan 25 pertanyaan wajib, termasuk penanganan input yang belum lengkap sebelum finalisasi.
 2. Konfirmasi pemetaan `question_code` terhadap posisi pertanyaan pada PDF. Label dan opsi register telah dilengkapi dan dicocokkan dengan teks serta tampilan visual PDF (D-022); pemetaan kode ke posisi mengikuti nama dan urutan kode.
 3. Apakah kolom skor diisi manual, hanya dicetak, atau memiliki aturan lain. Tidak ada scoring otomatis sebelum ada keputusan eksplisit.
-4. Aturan wajib field header yang diisi Petugas (`survey_date`, `kepala_keluarga_*`) dan representasi jawaban pada PDF hasil aplikasi. Sumber data header sudah ditetapkan pada D-036.
+4. Representasi jawaban pada PDF hasil aplikasi. Sumber data header (D-036) dan aturan wajib header (D-048) sudah ditetapkan.
 5. Persetujuan formal pemilik form terhadap PDF sumber yang dipakai sebagai acuan prototipe.
 6. Klarifikasi opsi yang beririsan atau menyisakan celah (D-023).
 

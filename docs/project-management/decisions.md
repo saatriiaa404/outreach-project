@@ -739,6 +739,33 @@ rujuk keputusan pengganti.
                            dan dipakai untuk cek
                            duplikat per
                            Outreach.
+
+  D-048       LOCKED       VAL-005 ditutup:       Persetujuan     Tanpa perubahan         `mustahik.md`, `tasks.md`,
+                           seluruh field header   eksplisit       schema. Klien tetap     kode `web/`
+                           Mustahik yang diisi    pemilik         tidak otomatis
+                           Petugas wajib sebelum  proyek, 28      dianggap Kepala
+                           Finalisasi             Oktober 2026.   Keluarga (D-036);
+                           (survey_date,                          penyalinan hanya atas
+                           kepala_keluarga_nama,                  tindakan Petugas.
+                           kepala_keluarga_nik_n                  RT/RW diisi manual.
+                           o_kk, kepala_keluarga
+                           _alamat,
+                           kepala_keluarga_rt,
+                           kepala_keluarga_rw);
+                           Draft boleh kosong.
+                           Tanggal survei terisi
+                           awal dari Tanggal
+                           Outreach saat form
+                           pertama kali dibuka
+                           dan tetap dapat
+                           diubah. Tombol
+                           eksplisit "Salin dari
+                           data Klien" menyalin
+                           Nama, NIK, dan Alamat
+                           Domisili Klien ke
+                           data Kepala Keluarga;
+                           tidak pernah
+                           otomatis.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru
