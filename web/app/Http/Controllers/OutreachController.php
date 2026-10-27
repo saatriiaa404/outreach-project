@@ -14,7 +14,9 @@ use App\Models\Outreach;
 use App\Models\OutreachAttachment;
 use App\Models\OutreachSource;
 use App\Models\OutreachType;
+use App\Support\MustahikFormSchema;
 use App\Support\OutreachFormSchema;
+use App\Support\OutreachSteps;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -91,7 +93,7 @@ class OutreachController extends Controller
 
         $steps = OutreachFormSchema::steps();
         $outreach->load(['source:id,code,name', 'type:id,code,name']);
-        $stepList = $this->stepList($outreach);
+        $stepList = OutreachSteps::for($outreach);
         $step = $request->query('step');
         $step = is_string($step) && collect($stepList)->contains(fn (array $item) => $item['key'] === $step && $item['state'] !== 'upcoming') ? $step : 'klien';
 
@@ -110,6 +112,38 @@ class OutreachController extends Controller
             'steps' => $stepList,
             'step' => $step,
         ];
+
+        if ($step === 'mustahik') {
+            $form = $outreach->mustahikForm;
+
+            return Inertia::render('outreach/Mustahik', [
+                ...$shared,
+                'petugas' => ($form->petugas ?? $outreach->petugas)->name,
+                'wilayah' => config('app.wilayah'),
+                // Contact from Outreach field 15, not a verified Kepala Keluarga number (D-036).
+                'noTelp' => $outreach->getAttribute('no_telp'),
+                // Offered only through the explicit copy button (D-048).
+                'klien' => [
+                    'nama' => $outreach->nama,
+                    'nik' => $outreach->getAttribute('nik'),
+                    'alamat' => $outreach->getAttribute('alamat_domisili'),
+                ],
+                'header' => collect(MustahikFormSchema::HEADER)->map(fn (array $field, string $name) => [
+                    'name' => $name,
+                    ...$field,
+                    // Survey date starts at the Outreach date when the form is first opened (D-048).
+                    'value' => $form === null
+                        ? ($name === 'survey_date' ? $outreach->outreach_date->toDateString() : null)
+                        : ($name === 'survey_date' ? $form->survey_date?->toDateString() : $form->getAttribute($name)),
+                ])->values(),
+                'questions' => collect(MustahikFormSchema::QUESTIONS)->map(fn (array $question, string $code) => [
+                    'code' => $code,
+                    ...$question,
+                    'value' => $form?->answers->firstWhere('question_code', $code)?->answer['option'],
+                ])->values(),
+                'missingForFinalization' => MustahikFormSchema::missing($form),
+            ]);
+        }
 
         if ($step === 'lampiran') {
             return Inertia::render('outreach/Attachments', [
@@ -167,10 +201,8 @@ class OutreachController extends Controller
 
         $saveStep->handle($outreach, $request->user(), $step, $request->stepData(), $request->integer('edit_version'));
 
-        $stepList = $this->stepList($outreach->load('source'));
-        $position = (int) collect($stepList)->search(fn (array $item) => $item['key'] === $step);
-        $next = $stepList[$position + 1] ?? null;
-        $target = $request->boolean('next') && $next && $next['state'] !== 'upcoming' ? $next['key'] : $step;
+        $next = OutreachSteps::nextAfter($outreach->load('source'), $step);
+        $target = $request->boolean('next') && $next ? $next : $step;
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Draft tersimpan.']);
 
@@ -217,41 +249,6 @@ class OutreachController extends Controller
         }
 
         return response()->json(['edit_version' => $version, 'saved_at' => now()->toIso8601String()]);
-    }
-
-    /**
-     * The stepper in Workflow order: the form steps, then the Source-dependent
-     * steps; those not built yet in this roadmap phase are "upcoming".
-     *
-     * @return list<array{key: string, title: string, state: string, missing?: int}>
-     */
-    private function stepList(Outreach $outreach): array
-    {
-        $hasAttachments = $outreach->attachments()->exists();
-        $missingAttachments = count(OutreachFormSchema::missingAttachments($outreach));
-
-        return [
-            ...collect(OutreachFormSchema::steps())->map(fn (array $definition, string $key) => [
-                'key' => $key,
-                'title' => $definition['title'],
-                'state' => OutreachFormSchema::completion($outreach, $key),
-                'missing' => count(OutreachFormSchema::missingFields($outreach, $key)),
-            ])->values()->all(),
-            ...collect(OutreachFormSchema::upcomingSteps($outreach->source->code))->map(fn (string $title, string $key) => $key === 'lampiran' ? [
-                'key' => $key,
-                'title' => $title,
-                'state' => match (true) {
-                    ! $hasAttachments => 'untouched',
-                    $missingAttachments > 0 => 'incomplete',
-                    default => 'complete',
-                },
-                'missing' => $missingAttachments,
-            ] : [
-                'key' => $key,
-                'title' => $title,
-                'state' => 'upcoming',
-            ])->values()->all(),
-        ];
     }
 
     private function fieldValue(Outreach $outreach, string $name): mixed

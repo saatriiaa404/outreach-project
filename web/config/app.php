@@ -133,6 +133,15 @@ return [
     |
     */
 
+    /*
+    | Region printed on the Mustahik and Kifayah forms; configuration, not
+    | per-Outreach data (D-036).
+    */
+    'wilayah' => [
+        'kelurahan' => 'Manukan Kulon',
+        'kecamatan' => 'Tandes',
+    ],
+
     'demo_user_password' => env('DEMO_USER_PASSWORD'),
 
 ];

@@ -47,7 +47,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 
 | ID | Task | Bergantung pada |
 |---|---|---|
-| R4.1 | Form Mustahik: 25 pertanyaan single-choice literal, header sesuai D-036 | VAL-005 (aturan wajib header) |
+| R4.1 | Form Mustahik: 25 pertanyaan single-choice literal, header sesuai D-036 | ✅ Selesai 28 Oktober 2026 setelah VAL-005 diputuskan (D-048): langkah Mustahik untuk Baznas/CSR dengan header, tombol salin data Klien, 25 pertanyaan literal tanpa pilihan otomatis atau skor, jawaban `{"option": "<posisi 1-4 pada PDF>"}`, Simpan Draft dan autosave dengan `edit_version`, serta masuk pemeriksaan kelengkapan Finalisasi. Tanda tangan Petugas menyusul di R5.1 |
 | R4.2 | Form Kifayah: nominal `0`/`NULL`, identitas read-only, 7 pertanyaan pilihan | — (VAL-003 selesai) |
 
 ## Fase 5 — Tanda tangan dan Review

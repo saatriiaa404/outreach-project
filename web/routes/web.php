@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MustahikController;
 use App\Http\Controllers\OutreachAttachmentController;
 use App\Http\Controllers\OutreachController;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,10 @@ Route::middleware(['auth'])->group(function () {
         ->name('outreaches.attachments.show');
     Route::delete('outreach/{outreach}/attachments/{attachment}', [OutreachAttachmentController::class, 'destroy'])
         ->name('outreaches.attachments.destroy');
+    Route::put('outreach/{outreach}/mustahik', [MustahikController::class, 'update'])
+        ->name('outreaches.mustahik.update');
+    Route::put('outreach/{outreach}/mustahik/autosave', [MustahikController::class, 'autosave'])
+        ->name('outreaches.mustahik.autosave');
     Route::put('outreach/{outreach}/autosave', [OutreachController::class, 'autosave'])
         ->name('outreaches.autosave');
 });

@@ -19,7 +19,7 @@ Database v1.1 tetap menjadi baseline terkunci:
 | Properti | Aturan |
 |---|---|
 | Applicability | Baznas/CSR; tidak berlaku untuk Bangga Surabaya. |
-| Answer persistence | `mustahik_answers.question_code` + `answer` JSON. |
+| Answer persistence | `mustahik_answers.question_code` + `answer` JSON `{"option": "<kode>"}`; kode opsi adalah posisi opsi 1–4 pada PDF sumber, label literal disimpan di kode aplikasi (Q-07). |
 | Cardinality | **Single-choice untuk seluruh 25 pertanyaan**, termasuk `PHYSICAL_DEPENDENTS` dan `PHYSICAL_DEBT` (D-035). |
 | Required | **Seluruh 25 pertanyaan wajib dijawab** sebelum finalisasi form Mustahik. Validasi tetap diperlukan untuk perilaku tampilan dan representasi PDF. |
 | Snapshot/PDF | Snapshot harus merekam jawaban yang disubmit. Representasi final pada PDF masih perlu validasi. |

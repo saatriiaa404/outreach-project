@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -28,6 +29,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $tanggal_lahir
  * @property-read OutreachSource $source
  * @property-read OutreachType $type
+ * @property-read MustahikForm|null $mustahikForm
+ * @property-read User $petugas
  * @property OutreachStatus $status
  * @property int $edit_version
  */
@@ -64,6 +67,14 @@ class Outreach extends Model
         }
 
         return (int) $this->tanggal_lahir->diffInYears($this->outreach_date);
+    }
+
+    /**
+     * @return HasOne<MustahikForm, $this>
+     */
+    public function mustahikForm(): HasOne
+    {
+        return $this->hasOne(MustahikForm::class);
     }
 
     /**

@@ -259,8 +259,9 @@ class OutreachFormSchema
     }
 
     /**
-     * What Finalisasi still needs, per step: form fields and the baseline
-     * attachments. Mustahik, Kifayah, and signatures are added by their phases.
+     * What Finalisasi still needs, per step: form fields, the Mustahik form for
+     * Baznas/CSR, and the baseline attachments. Kifayah and signatures are
+     * added by their phases.
      *
      * @return array<string, list<string>>
      */
@@ -268,6 +269,7 @@ class OutreachFormSchema
     {
         return collect(array_keys(self::steps()))
             ->mapWithKeys(fn (string $step) => [$step => self::missingFields($outreach, $step)])
+            ->when($outreach->source->usesMustahikKifayah(), fn ($missing) => $missing->put('mustahik', MustahikFormSchema::missing($outreach->mustahikForm)))
             ->put('lampiran', self::missingAttachments($outreach))
             ->filter()
             ->all();
