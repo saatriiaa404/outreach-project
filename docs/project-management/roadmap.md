@@ -69,7 +69,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 | ID | Task | Persetujuan / ketergantungan |
 |---|---|---|
 | R7.1 | Pasang Dompdf (stack D-013) | 🔒 |
-| R7.2 | Template PDF Outreach (halaman lampiran gambar dan halaman rujukan PDF), Mustahik, Kifayah; `document_template_versions`; blok pengesahan sesuai VAL-004 | Tanggal blok pengesahan |
+| R7.2 | Template PDF Outreach (halaman lampiran gambar dan halaman rujukan PDF), Mustahik, Kifayah; `document_template_versions`; blok pengesahan sesuai VAL-004 | — |
 | R7.3 | Antrean Kepala, Return dengan catatan wajib, `OUTREACH_RETURNED` | — |
 | R7.4 | Approve dengan PDF gate dan uji kegagalan | — |
 | R7.5 | Pengambilan PDF on-demand dari versi historis; PETUGAS tidak dapat mengunduh | — |
@@ -113,4 +113,3 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 3. Ganti password sendiri (usulan: boleh); halaman ubah profil dan hapus akun sendiri (usulan: dihapus).
 4. Workflow CI bawaan `web/.github/workflows/tests.yml` sebelum ada push.
 5. Pustaka: kompresi gambar, signature pad, Dompdf (diajukan saat fasenya).
-6. Sumber tanggal pada blok pengesahan PDF Outreach (VAL-004).

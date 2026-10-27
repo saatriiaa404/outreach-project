@@ -703,4 +703,5 @@ agent mengerjakan transkripsi literal opsi Kifayah yang pada D-037 semula
 dikerjakan pemilik proyek; hasilnya menunggu konfirmasi pemilik (VAL-003).
 Tata letak blok pengesahan untuk D-041 dikonfirmasi dan dicatat pada
 `outreach.md` bagian 8.4 tanpa mencantumkan nama atau NIP pejabat nyata;
-sumber tanggal pada blok tersebut masih menunggu keputusan (VAL-004).
+tanggal pada blok tersebut adalah tanggal Kepala mengesahkan, bukan Tanggal
+Outreach (VAL-004 selesai).
