@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { Form, Head, Link } from '@inertiajs/vue3';
+import { Form, Head } from '@inertiajs/vue3';
 import { computed, reactive, ref, watch } from 'vue';
 import OutreachController from '@/actions/App/Http/Controllers/OutreachController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
+import OutreachStepper from '@/components/outreach/OutreachStepper.vue';
+import type { Step } from '@/components/outreach/OutreachStepper.vue';
 import SourceTypeChange from '@/components/outreach/SourceTypeChange.vue';
 import type { SourceTypeChoices } from '@/components/outreach/SourceTypeChange.vue';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -19,9 +21,7 @@ import {
 } from '@/components/ui/select';
 import type { AutosaveState } from '@/composables/useAutosave';
 import { useAutosave } from '@/composables/useAutosave';
-import { edit, index } from '@/routes/outreaches';
-
-type StepState = 'complete' | 'incomplete' | 'untouched' | 'upcoming';
+import { index } from '@/routes/outreaches';
 
 type Field = {
     name: string;
@@ -55,12 +55,7 @@ type Props = {
         type_id: number;
     };
     sourceTypeChoices: SourceTypeChoices | null;
-    steps: {
-        key: string;
-        title: string;
-        state: StepState;
-        missing?: number;
-    }[];
+    steps: Step[];
     step: string;
     fields: Field[];
 };
@@ -183,62 +178,17 @@ const rupiah = (amount: number) =>
         currency: 'IDR',
         maximumFractionDigits: 0,
     }).format(amount);
-
-const stateMarker: Record<StepState, string> = {
-    complete: '✓',
-    incomplete: '!',
-    untouched: '○',
-    upcoming: '–',
-};
-
-const stateLabel: Record<StepState, string> = {
-    complete: 'selesai',
-    incomplete: 'belum lengkap',
-    untouched: 'belum disentuh',
-    upcoming: 'belum tersedia',
-};
 </script>
 
 <template>
     <Head :title="`Outreach ${outreach.code}`" />
 
     <div class="flex flex-1 flex-col gap-6 p-4 lg:flex-row">
-        <nav class="lg:w-60 lg:shrink-0" aria-label="Langkah pengisian">
-            <p class="text-sm text-muted-foreground lg:hidden">
-                Langkah {{ stepIndex + 1 }} dari {{ steps.length }}:
-                <span class="font-medium text-foreground">{{
-                    currentStep.title
-                }}</span>
-            </p>
-            <ol class="hidden space-y-1 lg:block">
-                <li v-for="(item, i) in steps" :key="item.key">
-                    <span
-                        v-if="item.state === 'upcoming'"
-                        class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground"
-                        :title="stateLabel[item.state]"
-                    >
-                        <span class="w-4 text-center">–</span>
-                        {{ i + 1 }}. {{ item.title }}
-                    </span>
-                    <Link
-                        v-else
-                        :href="edit(outreach.id, { query: { step: item.key } })"
-                        class="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted"
-                        :class="{ 'bg-muted font-medium': item.key === step }"
-                        :title="
-                            item.state === 'incomplete'
-                                ? `belum lengkap: ${item.missing} isian`
-                                : stateLabel[item.state]
-                        "
-                    >
-                        <span class="w-4 text-center">{{
-                            item.key === step ? '●' : stateMarker[item.state]
-                        }}</span>
-                        {{ i + 1 }}. {{ item.title }}
-                    </Link>
-                </li>
-            </ol>
-        </nav>
+        <OutreachStepper
+            :outreach-id="outreach.id"
+            :steps="steps"
+            :step="step"
+        />
 
         <div class="flex max-w-3xl flex-1 flex-col gap-6">
             <Heading

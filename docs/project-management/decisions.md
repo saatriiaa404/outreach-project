@@ -720,6 +720,25 @@ rujuk keputusan pengganti.
                            bagian umur tidak
                            disimpan karena
                            dihitung.
+
+  D-047       LOCKED       Batas teknis unggah    Persetujuan     Batas teknis            `database.md`, `security.md`,
+                           lampiran (R3.1):       eksplisit       prototype, bukan        kode `web/`
+                           gambar JPEG, PNG,      pemilik         ketentuan Kelurahan;
+                           WEBP; PDF hanya pada   proyek, 28      dapat disesuaikan
+                           kategori TAMBAHAN;     Oktober 2026.   setelah uji prototype.
+                           maksimal 10 MB per                     HEIC tidak diterima.
+                           berkas sebelum                         Hash tidak selalu sama
+                           kompresi; jenis                        dengan isi berkas
+                           berkas ditentukan                      tersimpan setelah
+                           dari isi, bukan                        kompresi R3.2.
+                           ekstensi. SHA-256
+                           pada
+                           files.sha256_hash
+                           dihitung dari berkas
+                           asli yang diunggah
+                           dan dipakai untuk cek
+                           duplikat per
+                           Outreach.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

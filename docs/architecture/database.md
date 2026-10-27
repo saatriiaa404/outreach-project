@@ -623,6 +623,11 @@ Registry `files` dapat digunakan untuk:
   storage.
 - File asli tidak disimpan permanen setelah hasil optimasi berhasil.
 - `purged_at` digunakan untuk menandai physical file yang telah dipurge.
+- `sha256_hash` dihitung dari berkas asli yang diunggah, sebelum kompresi,
+  dan dipakai untuk cek duplikat per Outreach (D-047).
+- Batas teknis prototype (D-047): gambar JPEG, PNG, WEBP; PDF hanya untuk
+  kategori `TAMBAHAN`; maksimal 10 MB per berkas sebelum kompresi; jenis
+  berkas ditentukan dari isi, bukan ekstensi.
 
 ---
 

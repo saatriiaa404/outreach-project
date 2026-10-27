@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Actions\Outreach\ChangeOutreachSourceType;
 use App\Actions\Outreach\CreateOutreach;
 use App\Actions\Outreach\SaveOutreachStep;
+use App\Enums\AttachmentCategory;
 use App\Http\Requests\Outreach\ChangeSourceTypeRequest;
 use App\Http\Requests\Outreach\SaveOutreachStepRequest;
+use App\Http\Requests\Outreach\StoreAttachmentRequest;
 use App\Http\Requests\Outreach\StoreOutreachRequest;
 use App\Models\Outreach;
+use App\Models\OutreachAttachment;
 use App\Models\OutreachSource;
 use App\Models\OutreachType;
 use App\Support\OutreachFormSchema;
@@ -87,12 +90,12 @@ class OutreachController extends Controller
         Gate::authorize('update', $outreach);
 
         $steps = OutreachFormSchema::steps();
-        $step = $request->query('step');
-        $step = is_string($step) && array_key_exists($step, $steps) ? $step : 'klien';
         $outreach->load(['source:id,code,name', 'type:id,name']);
-        $sources = OutreachSource::query()->where('active', true)->orWhere('id', $outreach->source_id)->orderBy('name')->get(['id', 'code', 'name']);
+        $stepList = $this->stepList($outreach);
+        $step = $request->query('step');
+        $step = is_string($step) && collect($stepList)->contains(fn (array $item) => $item['key'] === $step && $item['state'] !== 'upcoming') ? $step : 'klien';
 
-        return Inertia::render('outreach/Edit', [
+        $shared = [
             'outreach' => [
                 'id' => $outreach->id,
                 'code' => $outreach->outreach_number ?? $outreach->draft_code,
@@ -104,6 +107,37 @@ class OutreachController extends Controller
                 'source_id' => $outreach->source_id,
                 'type_id' => $outreach->type_id,
             ],
+            'steps' => $stepList,
+            'step' => $step,
+        ];
+
+        if ($step === 'lampiran') {
+            return Inertia::render('outreach/Attachments', [
+                ...$shared,
+                'categories' => collect(AttachmentCategory::cases())->map(fn (AttachmentCategory $category) => [
+                    'value' => $category->value,
+                    'label' => $category->label(),
+                    'baseline' => $category->isBaseline(),
+                    'accept' => implode(',', $category->allowedMimeTypes()),
+                ]),
+                'attachments' => $outreach->attachments()->with('file')->orderBy('sort_order')->get()
+                    ->map(fn (OutreachAttachment $attachment) => [
+                        'id' => $attachment->id,
+                        'category' => $attachment->category->value,
+                        'title' => $attachment->title,
+                        'name' => $attachment->file->original_name,
+                        'is_image' => $attachment->file->isImage(),
+                        'size_bytes' => $attachment->file->size_bytes,
+                        'url' => route('outreaches.attachments.show', [$outreach, $attachment]),
+                    ]),
+                'maxKilobytes' => StoreAttachmentRequest::MAX_KILOBYTES,
+            ]);
+        }
+
+        $sources = OutreachSource::query()->where('active', true)->orWhere('id', $outreach->source_id)->orderBy('name')->get(['id', 'code', 'name']);
+
+        return Inertia::render('outreach/Edit', [
+            ...$shared,
             // Choices for changing Source and Type on the Identitas step (Workflow v2.1 7.3).
             'sourceTypeChoices' => $step === 'identitas' && $request->user()->can('changeSourceType', $outreach) ? [
                 'sources' => $sources->map(fn (OutreachSource $source) => [
@@ -113,20 +147,6 @@ class OutreachController extends Controller
                 ]),
                 'types' => OutreachType::query()->where('active', true)->orWhere('id', $outreach->type_id)->orderBy('name')->get(['id', 'name']),
             ] : null,
-            'steps' => [
-                ...collect($steps)->map(fn (array $definition, string $key) => [
-                    'key' => $key,
-                    'title' => $definition['title'],
-                    'state' => OutreachFormSchema::completion($outreach, $key),
-                    'missing' => count(OutreachFormSchema::missingFields($outreach, $key)),
-                ])->values(),
-                ...collect(OutreachFormSchema::upcomingSteps($outreach->source->code))->map(fn (string $title, string $key) => [
-                    'key' => $key,
-                    'title' => $title,
-                    'state' => 'upcoming',
-                ])->values(),
-            ],
-            'step' => $step,
             'fields' => collect($steps[$step]['fields'])->map(fn (array $field, string $name) => [
                 'name' => $name,
                 'value' => $this->fieldValue($outreach, $name),
@@ -144,9 +164,10 @@ class OutreachController extends Controller
 
         $saveStep->handle($outreach, $request->user(), $step, $request->stepData(), $request->integer('edit_version'));
 
-        $keys = array_keys(OutreachFormSchema::steps());
-        $next = $keys[array_search($step, $keys, true) + 1] ?? null;
-        $target = $request->boolean('next') && $next ? $next : $step;
+        $stepList = $this->stepList($outreach->load('source'));
+        $position = (int) collect($stepList)->search(fn (array $item) => $item['key'] === $step);
+        $next = $stepList[$position + 1] ?? null;
+        $target = $request->boolean('next') && $next && $next['state'] !== 'upcoming' ? $next['key'] : $step;
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Draft tersimpan.']);
 
@@ -193,6 +214,43 @@ class OutreachController extends Controller
         }
 
         return response()->json(['edit_version' => $version, 'saved_at' => now()->toIso8601String()]);
+    }
+
+    /**
+     * The stepper in Workflow order: the form steps, then the Source-dependent
+     * steps; those not built yet in this roadmap phase are "upcoming".
+     *
+     * @return list<array{key: string, title: string, state: string, missing?: int}>
+     */
+    private function stepList(Outreach $outreach): array
+    {
+        $present = $outreach->attachments()->distinct()->pluck('category');
+        $missingAttachments = collect(AttachmentCategory::cases())
+            ->filter(fn (AttachmentCategory $category) => $category->isBaseline() && ! $present->contains($category))
+            ->count();
+
+        return [
+            ...collect(OutreachFormSchema::steps())->map(fn (array $definition, string $key) => [
+                'key' => $key,
+                'title' => $definition['title'],
+                'state' => OutreachFormSchema::completion($outreach, $key),
+                'missing' => count(OutreachFormSchema::missingFields($outreach, $key)),
+            ])->values()->all(),
+            ...collect(OutreachFormSchema::upcomingSteps($outreach->source->code))->map(fn (string $title, string $key) => $key === 'lampiran' ? [
+                'key' => $key,
+                'title' => $title,
+                'state' => match (true) {
+                    $present->isEmpty() => 'untouched',
+                    $missingAttachments > 0 => 'incomplete',
+                    default => 'complete',
+                },
+                'missing' => $missingAttachments,
+            ] : [
+                'key' => $key,
+                'title' => $title,
+                'state' => 'upcoming',
+            ])->values()->all(),
+        ];
     }
 
     private function fieldValue(Outreach $outreach, string $name): mixed

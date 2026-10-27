@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\OutreachAttachmentController;
 use App\Http\Controllers\OutreachController;
 use Illuminate\Support\Facades\Route;
 
@@ -13,6 +14,12 @@ Route::middleware(['auth'])->group(function () {
         ->names('outreaches');
     Route::put('outreach/{outreach}/source-type', [OutreachController::class, 'changeSourceType'])
         ->name('outreaches.source-type');
+    Route::post('outreach/{outreach}/attachments', [OutreachAttachmentController::class, 'store'])
+        ->name('outreaches.attachments.store');
+    Route::get('outreach/{outreach}/attachments/{attachment}', [OutreachAttachmentController::class, 'show'])
+        ->name('outreaches.attachments.show');
+    Route::delete('outreach/{outreach}/attachments/{attachment}', [OutreachAttachmentController::class, 'destroy'])
+        ->name('outreaches.attachments.destroy');
     Route::put('outreach/{outreach}/autosave', [OutreachController::class, 'autosave'])
         ->name('outreaches.autosave');
 });

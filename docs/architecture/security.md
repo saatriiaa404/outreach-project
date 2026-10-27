@@ -92,7 +92,9 @@ dan audit perubahan NIP Kepala (D-041).
     uji restore dilakukan setelah alur utama prototype stabil dan
     sebelum serah terima.
 -   Batas ukuran upload dan kompresi akhir harus ditentukan melalui
-    pengujian prototype. Persyaratan lampiran tambahan per jenis bantuan
+    pengujian prototype. Batas teknis sementara (D-047): gambar JPEG,
+    PNG, WEBP, PDF hanya untuk lampiran tambahan, maksimal 10 MB per
+    berkas sebelum kompresi. Persyaratan lampiran tambahan per jenis bantuan
     perlu dikonfirmasi kepada Kelurahan sebelum ditetapkan sebagai
     aturan formal.
 -   Prototype awal tetap lokal, non-production, dan menggunakan data

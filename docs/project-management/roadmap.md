@@ -39,7 +39,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 
 | ID | Task | Persetujuan |
 |---|---|---|
-| R3.1 | Pipeline unggah: validasi isi file, hash SHA-256, penyimpanan privat, `files`/`outreach_attachments`, reaktivasi soft delete | — |
+| R3.1 | Pipeline unggah: validasi isi file, hash SHA-256, penyimpanan privat, `files`/`outreach_attachments`, reaktivasi soft delete | ✅ Selesai 28 Oktober 2026 (batas teknis D-047; langkah Lampiran di stepper dengan ambil foto/pilih berkas, ganti, hapus; berkas privat hanya lewat route berotorisasi; tolak duplikat per Outreach dan pulihkan relasi lama bila berkas yang sama diunggah lagi) |
 | R3.2 | Kompresi gambar (usulan: GD bawaan) | 🔒 Bila memakai pustaka |
 | R3.3 | Empat lampiran wajib berupa gambar, lampiran tambahan tidak memblokir, lampiran PDF diterima (D-033, D-034) | — |
 
