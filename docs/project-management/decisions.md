@@ -401,6 +401,240 @@ rujuk keputusan pengganti.
                            implementasi kecuali   implementasi).
                            pengguna secara
                            eksplisit memintanya.
+
+  D-030       LOCKED       Baseline "22 tabel"    Persetujuan     Menafsirkan baseline 22 `docs/architecture/database.md`,
+                           Database v1.1 adalah   eksplisit       tabel tanpa mengubah    `docs/architecture/architecture.md`,
+                           tabel domain. Tabel    pemilik proyek, tabel domain. Detail    `docs/architecture/security.md`,
+                           infrastruktur Laravel  27 Oktober 2026 teknis Laravel          `docs/engineering/setup.md`, `tasks.md`
+                           berada di luar         (jawaban audit  diverifikasi saat
+                           hitungan dan dibatasi  kesiapan Tahap  implementasi
+                           seminimal mungkin:     1, F-01).       (BOOT-001). Tidak
+                           session dan cache                      membuka gate dan tidak
+                           memakai driver file,                   mengotorisasi bootstrap
+                           queue sinkron (sync),                  atau migration.
+                           tanpa reset password
+                           dan tanpa registrasi
+                           publik, sehingga
+                           praktis hanya tabel
+                           migrations. Kolom
+                           users tidak ditambah
+                           untuk fitur bawaan
+                           (remember_token,
+                           email_verified_at, dan
+                           2FA tidak dipakai);
+                           kolom password_hash
+                           dipertahankan dengan
+                           model User yang
+                           disesuaikan.
+
+  D-031       LOCKED       Pengecualian invarian  Persetujuan     Hanya teks invarian dan `docs/architecture/database.md` (bagian
+                           status: setelah Lock   eksplisit       daftar nilai            11.1, 13.2, 28),
+                           pasca Special Unlock   pemilik proyek, event_type; tidak ada   `docs/architecture/workflow.md` (bagian
+                           tanpa versi baru,      27 Oktober 2026 perubahan kolom, tabel, 28.2), `docs/engineering/testing.md`
+                           Outreach berstatus     (jawaban audit  atau relasi.
+                           PERLU_PERBAIKAN boleh  kesiapan Tahap  Menyelaraskan Database
+                           memiliki versi terbaru 1, F-02 dan     v1.1 dengan transisi
+                           APPROVED atau          pilihan         Lock pada Workflow
+                           PENDING_APPROVAL. Lock pencatatan      v2.1.
+                           dan Lock & Ajukan      event).
+                           dicatat pada
+                           history_events dengan
+                           nilai event_type baru
+                           SPECIAL_UNLOCK_LOCKED
+                           dan
+                           SPECIAL_UNLOCK_SUBMITTED.
+
+  D-032       LOCKED       outreach.md (Draft     Persetujuan     Menutup ketidakpastian  `docs/domain/forms/outreach.md`,
+                           Revisi v1.6) menjadi   eksplisit       status dokumen          `docs/index.md` (bila status perlu),
+                           spesifikasi Form       pemilik proyek, Outreach. Tanpa         `tasks.md`
+                           Outreach aktif untuk   27 Oktober 2026 perubahan schema.
+                           prototype dan tidak    (jawaban audit
+                           lagi bergantung pada   kesiapan Tahap
+                           rujukan baseline v1.5  1, F-03).
+                           yang tidak tersedia di
+                           repository. Field 14
+                           (Penghasilan klien
+                           sebulan) dan 17
+                           (Pendidikan terakhir)
+                           opsional: boleh
+                           kosong, tidak
+                           memblokir Finalisasi,
+                           dan tetap divalidasi
+                           bila diisi.
+
+  D-033       LOCKED       Lampiran tambahan per  Persetujuan     Selaras dengan Workflow `docs/domain/forms/outreach.md`,
+                           Type (outreach.md      eksplisit       v2.1 bagian 18.1:       `docs/architecture/workflow.md` (bagian
+                           bagian 7.2) tidak      pemilik proyek, lampiran tambahan baru  15.2, 41.1), `PRD.md`,
+                           memblokir Finalisasi   27 Oktober 2026 menjadi syarat setelah  `docs/ux/design.md`, `testing.md`
+                           pada prototype. Empat  (jawaban audit  validasi resmi
+                           lampiran dasar tetap   kesiapan Tahap  Kelurahan, yang tetap
+                           wajib.                 1, F-04).       PENDING VALIDATION.
+                                                                  Tanpa perubahan schema.
+
+  D-034       LOCKED       Hanya lampiran berupa  Persetujuan     Menghindari kegagalan   `docs/domain/forms/outreach.md`,
+                           gambar yang dicetak    eksplisit       PDF gate akibat         `docs/architecture/workflow.md` (bagian
+                           pada halaman lampiran  pemilik proyek, keterbatasan Dompdf.    41.2), `docs/architecture/security.md`,
+                           PDF Outreach. Lampiran 27 Oktober 2026 Daftar tipe gambar dan  `docs/ux/design.md`, `prototype.md`,
+                           berformat PDF tetap    (jawaban audit  batas ukuran tetap      `testing.md`
+                           disimpan sebagai       kesiapan Tahap  ditetapkan melalui
+                           attachment dan         1, F-05).       pengujian prototype.
+                           ditampilkan pada PDF                   Tanpa perubahan schema.
+                           Outreach sebagai
+                           halaman rujukan berisi
+                           nama berkas. Tidak
+                           menambah pustaka
+                           penggabung PDF. Empat
+                           lampiran wajib (KTP,
+                           KK, Foto Klien, Foto
+                           Rumah) harus berupa
+                           gambar.
+
+  D-035       LOCKED       Pertanyaan Mustahik    Persetujuan     Menyelaraskan           `docs/architecture/workflow.md`,
+                           Tanggungan             eksplisit       workflow.md dengan      `docs/domain/forms/mustahik.md`
+                           (PHYSICAL_DEPENDENTS)  pemilik proyek, mustahik.md dan
+                           dan Hutang             27 Oktober 2026 database.md yang sudah
+                           (PHYSICAL_DEBT)        (jawaban audit  menetapkan
+                           bersifat               kesiapan Tahap  single-choice untuk
+                           single-choice.         1, F-06).       seluruh 25 pertanyaan.
+                           Pengecualian                           Tanpa perubahan schema.
+                           multiple-choice pada
+                           Workflow v2.1 bagian
+                           13.3 dan 41.8 dicabut
+                           untuk prototype.
+
+  D-036       LOCKED       Identitas pada Form    Persetujuan     Tanpa perubahan schema. `docs/domain/forms/kifayah.md`,
+                           Had Kifayah            eksplisit       Label PDF sumber tidak  `docs/domain/forms/mustahik.md`,
+                           ditampilkan read-only  pemilik proyek, diubah (D-022).         `docs/architecture/database.md` (hanya
+                           dari data Outreach,    27 Oktober 2026 Konstanta wilayah       dibaca), `testing.md`
+                           tidak diketik ulang:   (jawaban audit  adalah konfigurasi
+                           Nama, NIK, dan No. HP  kesiapan Tahap  aplikasi, bukan data
+                           dari Outreach; Alamat  1, F-07 dan     per Outreach.
+                           Tempat Tinggal dari    F-08 opsi a).
+                           Alamat Domisili.
+                           Header Form Mustahik:
+                           Nama Petugas dari
+                           petugas_id, Tanggal
+                           dari survey_date,
+                           identitas Kepala
+                           Keluarga (Nama, NIK/No
+                           KK, alamat, RT, RW)
+                           dari kolom
+                           kepala_keluarga_*, dan
+                           No. Telepon HP diisi
+                           No. telp Outreach
+                           (field 15) sebagai
+                           kontak Outreach, bukan
+                           data Kepala Keluarga
+                           yang terverifikasi.
+                           Kelurahan dan
+                           Kecamatan memakai
+                           konstanta konfigurasi:
+                           Kelurahan Manukan
+                           Kulon, Kecamatan
+                           Tandes.
+
+  D-037       LOCKED       Opsi tujuh pertanyaan  Persetujuan     Opsi tidak              `docs/domain/forms/kifayah.md`,
+                           Kifayah ditranskripsi  eksplisit       dinormalisasi dan tidak `tasks.md`
+                           secara literal dari    pemilik proyek, ada scoring. Tanpa
+                           kifayah.pdf dengan     27 Oktober 2026 perubahan schema atau
+                           pendekatan D-022, dan  (jawaban audit  question_code.
+                           seluruhnya             kesiapan Tahap
+                           single-choice.         1, F-09).
+                           Transkripsi dan
+                           pencocokan visual
+                           dikerjakan pemilik
+                           proyek; sampai
+                           hasilnya tercatat,
+                           register opsi pada
+                           kifayah.md tetap
+                           PENDING VALIDATION.
+
+  D-038       LOCKED       Arsip dilakukan manual Persetujuan     Mengukuhkan keputusan   `docs/architecture/workflow.md` (bagian
+                           oleh ADMIN paling      eksplisit       arsip dan backup        27, 39, 41), `scope.md`,
+                           lambat satu bulan      pemilik proyek, sebagai sumber kanonis. `roles-permissions.md`, `testing.md`,
+                           sejak persetujuan      27 Oktober 2026 Prosedur rinci backup   `reconciliation.md`
+                           Kepala; data dan       (jawaban audit  dan restore ditulis
+                           lampiran tetap berada  kesiapan Tahap  pada dokumen
+                           di aplikasi; tidak ada 1, F-10;        engineering. Tanpa
+                           integrasi              sebelumnya      perubahan schema
+                           E-Surat/E-Arsip (PDF   hanya tercatat  (archive_records
+                           diunduh dan diunggah   pada            tetap).
+                           manual); ID internal   reconciliation.md).
+                           aplikasi bukan nomor
+                           arsip resmi. Backup
+                           dilakukan manual oleh
+                           ADMIN setiap minggu,
+                           mencakup database dan
+                           seluruh lampiran, dan
+                           disimpan pada media
+                           terpisah.
+
+  D-039       LOCKED       KEPALA tidak melihat   Persetujuan     Otorisasi server-side   `docs/architecture/roles-permissions.md`,
+                           Outreach berstatus     eksplisit       menerapkan batas yang   `docs/ux/design.md`, `scope.md`,
+                           DRAFT. Untuk           pemilik proyek, sama pada dashboard,    `testing.md`
+                           PERLU_PERBAIKAN,       27 Oktober 2026 daftar, pencarian, dan
+                           KEPALA hanya melihat   (jawaban audit  URL langsung. Tanpa
+                           status dan catatan     kesiapan Tahap  perubahan schema.
+                           Return pada riwayat,   1, F-11).
+                           tanpa isi yang sedang
+                           diedit. Dashboard
+                           minimum: PETUGAS
+                           melihat Outreach
+                           miliknya per status;
+                           KEPALA melihat antrean
+                           MENUNGGU_PENGESAHAN
+                           dan SELESAI; ADMIN
+                           melihat semua Outreach
+                           per status, permintaan
+                           Special Unlock, dan
+                           status arsip.
+                           Pencarian berdasarkan
+                           nama, NIK, ID
+                           internal, Source,
+                           Type, status, dan
+                           rentang tanggal,
+                           selalu dibatasi scope
+                           role.
+
+  D-040       LOCKED       Hanya ADMIN yang       Persetujuan     Menambah baris matriks  `docs/architecture/roles-permissions.md`,
+                           mengelola master       eksplisit       peran. Tanpa perubahan  `docs/ux/design.md`, `testing.md`
+                           Source dan Type. Kode  pemilik proyek, schema.
+                           Source dan Type tidak  27 Oktober 2026
+                           dapat diubah karena    (jawaban audit
+                           menentukan komposisi   kesiapan Tahap
+                           PDF dan workflow;      1, F-12).
+                           penonaktifan memakai
+                           kolom active. PETUGAS
+                           tidak mengunduh PDF
+                           final, sesuai matriks
+                           peran (Print PDF:
+                           PETUGAS Tidak).
+
+  D-041       LOCKED       Amandemen Database     Persetujuan     Perubahan schema pada   `docs/architecture/database.md`,
+                           v1.1: tabel users      eksplisit       baseline terkunci;      `docs/domain/forms/outreach.md` (bagian
+                           mendapat kolom nip     pemilik proyek, jumlah tabel tetap 22   8.4), `roles-permissions.md`,
+                           (nullable), diisi      27 Oktober 2026 dan label versi tetap   `testing.md`, `tasks.md`
+                           untuk user KEPALA dan  (pilihan kolom  Database v1.1 dengan
+                           dicetak pada blok      users.nip dan   amandemen ini. PDF
+                           pengesahan PDF. Format persetujuan     historis membaca NIP
+                           dan posisi cetak NIP   rencana         saat render, sehingga
+                           PENDING VALIDATION     sinkronisasi).  perubahan NIP dicatat
+                           sampai tata letak blok                 pada audit_logs dan
+                           pengesahan                             tidak dilakukan setelah
+                           dikonfirmasi pemilik                   NIP dipakai pada
+                           proyek.                                approval kecuali
+                                                                  melalui koreksi
+                                                                  administratif. Tidak
+                                                                  mengotorisasi migration
+                                                                  sebelum gate dibuka.
+
+  D-042       LOCKED       Kode aplikasi Laravel  Persetujuan     Mencegah tabrakan       `docs/architecture/architecture.md`,
+                           ditempatkan di         eksplisit       dengan README.md,       `docs/engineering/setup.md`, `tasks.md`
+                           subfolder web/ di      pemilik proyek, .gitignore, dan docs/.  (BOOT-001)
+                           dalam project/, bukan  27 Oktober 2026 Tidak membuka gate dan
+                           di akar project/.      (jawaban audit  tidak mengotorisasi
+                                                  kesiapan Tahap  bootstrap.
+                                                  1, F-14).
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru
@@ -452,3 +686,14 @@ D-023 masih `PENDING VALIDATION`. Entri ini tidak mengubah Workflow v2.1 atau
 Database v1.1 / 22 tabel, dan tidak membuka gate implementasi. Dokumen
 yang terdampak disesuaikan satu file per giliran dengan persetujuan
 pemilik proyek.
+
+## Catatan Keputusan — 27 Oktober 2026
+
+D-030 sampai D-042 dicatat berdasarkan jawaban eksplisit pemilik proyek atas
+audit kesiapan Tahap 1 (PLAN-002) dan persetujuan rencana sinkronisasi pada 27
+Oktober 2026. D-041 adalah satu-satunya perubahan schema (kolom `users.nip`);
+D-031 menambah nilai `event_type` dan pengecualian invarian tanpa mengubah
+kolom. Teks Workflow v2.1 diselaraskan pada bagian yang disebut D-031,
+D-033, D-034, D-035, dan D-038. Tidak ada keputusan yang membuka gate
+implementasi atau mengotorisasi bootstrap, migration, atau seed sebelum gate
+dibuka. Dokumen terdampak disesuaikan satu file per giliran.

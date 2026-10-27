@@ -10,6 +10,11 @@
 | Status | ACTIVE — Technical Baseline |
 | Database Engine | MySQL |
 | Application | Laravel 13 |
+| Amandemen | D-030, D-031, dan D-041 (27 Oktober 2026); lihat `docs/project-management/decisions.md` |
+
+Amandemen D-041 menambah kolom `users.nip`; jumlah tabel tetap 22 dan label versi
+tetap Database v1.1. D-030 dan D-031 hanya memperjelas tafsir dan teks, tanpa
+perubahan kolom.
 
 ### Document Responsibility
 
@@ -87,7 +92,10 @@ referensi tidak hilang secara tidak sengaja.
 
 # 3. Entity Overview
 
-Database v1 terdiri dari **22 tabel**:
+Database v1 terdiri dari **22 tabel domain**. Tabel infrastruktur framework
+berada di luar hitungan ini dan dibatasi seminimal mungkin (D-030): session dan
+cache memakai driver file, queue sinkron, tanpa reset password dan tanpa
+registrasi publik, sehingga praktis hanya tabel `migrations` milik Laravel.
 
 | # | Table | Domain |
 |---:|---|---|
@@ -128,6 +136,7 @@ id                         PK
 name
 email                      UNIQUE
 password_hash
+nip                        NULL; diisi untuk user KEPALA (D-041)
 role                       PETUGAS | KEPALA | ADMIN
 status                     ACTIVE | INACTIVE
 last_login_at
@@ -142,6 +151,14 @@ updated_at
 - Identitas user harus tetap tersedia untuk kebutuhan history/audit.
 - Pada satu waktu hanya ada satu Kepala Kelurahan aktif.
 - Enforcement satu Kepala aktif dilakukan pada service/transaction boundary.
+- `nip` diisi untuk user KEPALA dan dicetak pada blok pengesahan PDF. Format dan
+  posisi cetaknya masih **PENDING VALIDASI** (D-041).
+- PDF historis membaca `nip` saat render. Perubahan `nip` dicatat pada
+  `audit_logs` dan tidak dilakukan setelah NIP dipakai pada approval, kecuali
+  melalui koreksi administratif (D-041).
+- Kolom `password_hash` dipertahankan; model User Laravel disesuaikan untuk
+  memakainya. Kolom bawaan framework seperti `remember_token`,
+  `email_verified_at`, dan kolom 2FA tidak ditambahkan (D-030).
 
 ### Role meaning
 
@@ -325,12 +342,11 @@ updated_at
 - Draft boleh memiliki field wajib yang belum terisi.
 - Finalisasi melakukan validasi penuh.
 - Field conditional mengikuti business rules form.
-- `desil_1_10` tetap dipertahankan pada model data v1.1. Sumber resmi, label,
-  dan aturan validasi/pengisian desil masih **PENDING VALIDASI**; jangan
-  menetapkan label atau pilihan final berdasarkan asumsi.
-- `status_kesejahteraan` dan desil harus mengikuti sumber resmi yang telah
-  diverifikasi. Sampai verifikasi dilakukan, jangan menganggap sumber/labelnya
-  sudah final.
+- `desil_1_10` menyimpan pilihan desil 1–10 dan `status_kesejahteraan` diisi
+  otomatis dengan label pasangannya sesuai D-019 (pemetaan label ada di
+  `docs/domain/forms/outreach.md`). Yang masih **PENDING VALIDASI** hanya
+  evidence dokumen sumber resmi label tersebut (VAL-002); jangan mengubah atau
+  menambah label di luar D-019.
 - Total pendapatan dan total pengeluaran dihitung dari source fields.
 - `besar_hutang` relevan bila `punya_hutang` bernilai Ya sesuai aturan form.
 - Source dan Type dapat diubah sebelum Finalisasi dengan konfirmasi dan
@@ -638,7 +654,12 @@ TAMBAHAN
 ### Rules
 
 - Attachment wajib baseline: KTP, KK, Foto Klien, Foto Rumah.
-- Lampiran tambahan fleksibel sampai ada validasi per Jenis Outreach.
+- Empat lampiran wajib baseline harus berupa gambar (D-034).
+- Lampiran tambahan fleksibel sampai ada validasi per Jenis Outreach dan tidak
+  memblokir Finalisasi pada prototype (D-033).
+- Hanya lampiran gambar yang dicetak pada halaman lampiran PDF Outreach;
+  lampiran berformat PDF tetap tersimpan dan ditampilkan sebagai halaman
+  rujukan berisi nama berkas (D-034).
 - Multiple file dalam satu kategori diperbolehkan sesuai kebutuhan dan batas
   validasi.
 - `title`/`description` terutama digunakan untuk Foto Klien, Foto Rumah, dan
@@ -934,7 +955,13 @@ REFINALIZED
 APPROVED
 SPECIAL_UNLOCKED
 SPECIAL_UNLOCK_EDITED
+SPECIAL_UNLOCK_LOCKED
+SPECIAL_UNLOCK_SUBMITTED
 ```
+
+`SPECIAL_UNLOCK_LOCKED` mencatat `Lock` setelah Special Unlock, dan
+`SPECIAL_UNLOCK_SUBMITTED` mencatat `Lock & Ajukan untuk Pengesahan` (D-031).
+Penambahan ini hanya memperluas daftar nilai `event_type`; kolom tidak berubah.
 
 ### Rules
 
@@ -1048,7 +1075,11 @@ created_at
   prosedur Kelurahan menggunakannya.
 - `archived_at` tetap `NULL` sampai arsip eksternal benar-benar dibuat;
   `verified_at` tetap `NULL` sampai verifikasi benar-benar dilakukan.
-- Detail verifikasi dan upload manual masih pending validasi.
+- Pengarsipan dilakukan manual oleh Admin paling lambat satu bulan sejak
+  persetujuan Kepala, tanpa integrasi E-Surat/E-Arsip; ID internal aplikasi
+  bukan nomor arsip resmi (D-038).
+- Pemakaian `archive_reference` dan cara verifikasi arsip masih pending
+  validasi.
 
 ---
 
@@ -1100,6 +1131,12 @@ Saat Special Unlock mengedit Outreach berstatus `SELESAI`, status tetap
 `SELESAI` selama pengeditan administratif berlangsung. Ketika hasil koreksi
 secara atomik diajukan sebagai versi baru, versi baru menjadi `PENDING_APPROVAL`
 dan status Outreach menjadi `MENUNGGU_PENGESAHAN`.
+
+**Pengecualian (D-031):** setelah Admin melakukan `Lock` pasca Special Unlock
+tanpa membuat versi baru, Outreach berstatus `PERLU_PERBAIKAN` boleh memiliki
+versi terbaru `APPROVED` atau `PENDING_APPROVAL`. `Lock` tersebut dicatat pada
+`history_events` dengan event `SPECIAL_UNLOCK_LOCKED`. Versi terbaru tidak
+diubah; submission berikutnya oleh Petugas membuat versi baru.
 
 ---
 
@@ -1386,8 +1423,9 @@ Historical references harus diperiksa terlebih dahulu.
 | Notification | Ya setelah expired | 30-day record retention |
 | Physical file | Bersyarat | Purge only when unreferenced + policy |
 
-Overall Outreach retention dan archive policy belum dikunci oleh Kelurahan.
-Tidak ada auto-delete sebelum kebijakan tersebut jelas.
+Prosedur arsip manual ditetapkan pada D-038, tetapi retensi keseluruhan
+Outreach belum dikunci oleh Kelurahan. Tidak ada auto-delete sebelum kebijakan
+retensi jelas.
 
 ---
 
@@ -1588,20 +1626,25 @@ identik.
 Bagian berikut belum boleh dianggap final sebelum validasi Kelurahan atau
 penetapan teknis yang memang belum tersedia:
 
-1. Sumber resmi, label, dan aturan validasi/pengisian `status_kesejahteraan`
-   serta desil.
-2. Lampiran tambahan wajib berdasarkan Jenis Outreach.
-3. Batas ukuran, jumlah, dan format file lampiran.
+1. Evidence dokumen sumber resmi label desil; label dan pemetaannya sudah
+   ditetapkan pada D-019 (VAL-002).
+2. Lampiran tambahan wajib berdasarkan Jenis Outreach (tidak memblokir
+   Finalisasi pada prototype, D-033).
+3. Batas ukuran dan jumlah file lampiran, serta tipe gambar yang diterima.
+   Empat lampiran wajib harus berupa gambar (D-034).
 4. Field Outreach tambahan bila ada.
 5. Perilaku antrean saat pergantian Kepala Kelurahan.
 6. Penggunaan stempel digital pada PDF.
-7. Prosedur pengarsipan eksternal, upload manual ke E-Surat, dan verifikasi
-   referensi arsip.
+7. Pemakaian nomor/reference arsip dan verifikasi arsip; prosedur arsip manual
+   sudah ditetapkan pada D-038.
 8. Provider hosting konkret.
 9. Provider object/file storage konkret.
-10. Provider backup eksternal konkret dan kebijakan backup operasional.
+10. Provider backup eksternal konkret dan kebijakan backup setelah serah
+    terima; backup manual mingguan oleh Admin pada prototype ditetapkan pada
+    D-038.
 11. Parameter final compression/optimization.
-12. Kebijakan retensi data dan arsip Outreach.
+12. Kebijakan retensi data Outreach.
+13. Format dan posisi cetak NIP Kepala pada blok pengesahan (D-041).
 
 Kontrak JSON terperinci untuk `snapshot_data` belum ditetapkan. Jangan mengarang
 struktur finalnya sebelum kebutuhan rekonstruksi snapshot dipastikan.
@@ -1613,8 +1656,8 @@ lampiran); 25 pertanyaan Mustahik wajib dengan single-choice tanpa default,
 automatic selection, atau scoring; aturan nilai Kifayah `0` versus `NULL`;
 output Baznas/CSR berupa tiga PDF terpisah; PDF Outreach menyertakan halaman
 lampiran setelah form utama; output Bangga Surabaya berupa PDF Outreach dengan
-halaman lampiran; dan PDF dibuat on-demand, bukan disimpan permanen sebagai
-source of truth.
+halaman lampiran; PDF dibuat on-demand, bukan disimpan permanen sebagai
+source of truth; serta keputusan D-030, D-031, D-033, D-034, D-038, dan D-041.
 
 Pending validation tidak boleh diubah menjadi hard-coded business rule tanpa
 keputusan baru.
@@ -1672,7 +1715,9 @@ Implementasi tidak boleh diam-diam:
 
 Sebelum implementasi dianggap sesuai baseline, pastikan:
 
-- [ ] 22 tabel tersedia sesuai domain baseline.
+- [ ] 22 tabel domain tersedia sesuai baseline; tabel infrastruktur framework
+      minimal dan di luar hitungan (D-030).
+- [ ] `users.nip` tersedia untuk user KEPALA (D-041).
 - [ ] `special_unlock_requests` memiliki foreign key, status lifecycle, indeks antrean, dan aturan transaksi.
 - [ ] Master Source dan Type menggunakan unique code.
 - [ ] Outreach memiliki `draft_code` dan `outreach_number` sesuai lifecycle.
@@ -1687,7 +1732,8 @@ Sebelum implementasi dianggap sesuai baseline, pastikan:
 - [ ] Current attachment dan historical attachment dipisahkan.
 - [ ] Lampiran soft-deleted dapat direaktivasi tanpa membuat relasi duplikat.
 - [ ] `special_unlock_requests` terhubung ke Outreach, requester, dan Admin.
-- [ ] Status Outreach konsisten dengan status versi terbaru.
+- [ ] Status Outreach konsisten dengan status versi terbaru, dengan
+      pengecualian `Lock` pasca Special Unlock (D-031).
 - [ ] `head_signature_template_id` nullable untuk RETURNED dan wajib untuk APPROVED.
 - [ ] `stamp_templates.version_number` unik dan maksimal satu template aktif.
 - [ ] `archive_records.archived_at` nullable hingga arsip benar-benar dilakukan.
@@ -1708,14 +1754,15 @@ Sebelum implementasi dianggap sesuai baseline, pastikan:
       Bangga Surabaya menghasilkan Outreach beserta halaman lampiran.
 - [ ] Kegagalan render PDF pada approval membuat approval gagal; status tetap
       `MENUNGGU_PENGESAHAN` dan `OUTREACH_COMPLETED` tidak dikirim.
-- [ ] Sumber/label status kesejahteraan dan desil tetap pending sampai diverifikasi.
+- [ ] Label desil mengikuti D-019; evidence sumber resmi tetap pending (VAL-002).
 - [ ] Pending validation tidak di-hard-code sebagai keputusan final.
 
 ---
 
 # 29. Status Dokumen
 
-**Database Specification v1.1 — ACTIVE.**
+**Database Specification v1.1 — ACTIVE** (dengan amandemen D-030, D-031, dan
+D-041).
 
 Dokumen ini menjadi canonical database baseline untuk pengembangan prototype.
 Perubahan requirement atau hasil validasi Kelurahan yang memengaruhi persistence

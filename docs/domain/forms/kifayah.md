@@ -1,5 +1,10 @@
 # Kifayah Form Specification --- v1.7
 
+Revisi 27 Oktober 2026: identitas Mustahik ditampilkan read-only dari
+Outreach (D-036), dan opsi pertanyaan pilihan ditetapkan untuk ditranskripsi
+secara literal dari `kifayah.pdf` (D-037). Keputusan tercatat pada
+`docs/project-management/decisions.md`. Tidak ada perubahan schema.
+
 ## 1. Authority dan Batasan
 
 -   Kifayah berlaku hanya untuk Source `BAZNAS` dan `CSR`;
@@ -268,12 +273,18 @@ terkunci.
   `DEBT`              Hutang         Ya; Tidak         Single        Baznas/CSR
   ----------------------------------------------------------------------------------
 
-**Catatan validasi sumber:** daftar di atas merangkum label dan opsi
-yang terbaca dari formulir Had Kifayah. Pastikan ejaan, pemetaan
-label-ke-kode, dan seluruh opsi terhadap salinan PDF sumber sebelum
-dianggap sebagai transkripsi final. Jika PDF memuat rincian opsi
-tambahan yang tidak tercantum di tabel ini, jangan menambahkannya
-berdasarkan asumsi.
+**Catatan validasi sumber (D-037):** daftar di atas adalah rangkuman
+sementara, bukan transkripsi final. Opsi ketujuh pertanyaan akan
+ditranskripsi secara literal dari `kifayah.pdf` dengan pendekatan D-022
+(ejaan, urutan, dan frasa sumber dipertahankan; tidak dinormalisasi), dan
+seluruhnya tetap single-choice. Transkripsi beserta pencocokan visual
+dikerjakan pemilik proyek. Sampai hasilnya tercatat, register ini
+`PENDING VALIDATION`. Perbedaan yang sudah terlihat pada audit kesiapan:
+pertanyaan Kepemilikan Rumah/Kontrakan pada PDF memiliki tiga pilihan,
+sedangkan tabel ini baru mencatat dua; pertanyaan lain pada PDF memakai
+frasa lengkap (mis. "Tidak Menerima Bansos" / "Menerima Bansos"), bukan
+"Ya; Tidak". Jangan menambah atau mengubah opsi berdasarkan asumsi sebelum
+transkripsi selesai.
 
 ## 4. Identitas Mustahik dan Penggunaan Data Outreach
 
@@ -286,10 +297,23 @@ Form Had Kifayah menampilkan informasi identitas berikut:
 -   Kecamatan
 -   No. HP
 
-Belum diputuskan apakah identitas ini diisi mandiri pada form Kifayah
-atau ditampilkan dari data Outreach yang terkait. Karena itu, jangan
-mengasumsikan perilaku salin otomatis atau membuat sumber data baru.
-Perilaku tersebut perlu ditetapkan saat validasi tampilan form.
+Sesuai D-036, identitas ini **ditampilkan read-only dari data Outreach
+yang terkait** dan tidak diketik ulang pada form Kifayah. Tidak ada kolom
+identitas baru pada `kifayah_forms`.
+
+| Bagian pada PDF sumber | Sumber data |
+|---|---|
+| Nama | `outreaches.nama` |
+| NIK | `outreaches.nik` |
+| Alamat Tempat Tinggal | `outreaches.alamat_domisili` (Alamat Domisili) |
+| Kelurahan | Konstanta konfigurasi: Kelurahan Manukan Kulon |
+| Kecamatan | Konstanta konfigurasi: Kecamatan Tandes |
+| No. HP | `outreaches.no_telp` |
+
+Penampilan identitas ini bukan pengisian otomatis jawaban Kifayah;
+larangan memilih atau mengisi jawaban Kifayah dari data Outreach tetap
+berlaku. Identitas pada PDF historis diambil dari snapshot versi terkait,
+bukan dari data Outreach terkini.
 
 ## 5. PDF, Snapshot, dan Approval
 
@@ -312,9 +336,9 @@ Perilaku tersebut perlu ditetapkan saat validasi tampilan form.
     mengikuti aturan workflow untuk memperbarui tanda tangan yang
     relevan. Perubahan yang hanya terjadi pada lampiran tidak mengubah
     data Kifayah dan tidak memicu re-sign.
--   Jangan menambahkan kalkulasi skor otomatis. Perilaku kolom skor yang
-    terlihat pada formulir sumber belum ditetapkan sebagai fitur
-    aplikasi.
+-   Jangan menambahkan kalkulasi skor otomatis. Formulir sumber
+    `kifayah.pdf` tidak memuat kolom skor, sehingga tidak ada perilaku
+    skor yang perlu diterapkan.
 
 ## 6. Aturan Implementasi yang Sudah Dikonfirmasi
 
@@ -339,15 +363,19 @@ Perilaku tersebut perlu ditetapkan saat validasi tampilan form.
 10. Jangan mengubah Database v1.1, menambah/mengganti kode pertanyaan,
     atau membuat migration sebagai bagian dari pembaruan spesifikasi
     ini.
+11. Identitas Mustahik ditampilkan read-only dari Outreach; alamat
+    memakai Alamat Domisili, sedangkan Kelurahan dan Kecamatan memakai
+    konstanta konfigurasi (D-036).
+12. Opsi pertanyaan pilihan mengikuti transkripsi literal dari
+    `kifayah.pdf` (D-037).
 
 ## 7. Hal yang Masih Perlu Validasi
 
--   Apakah identitas Mustahik diketik ulang atau ditampilkan dari
-    Outreach.
 -   Transkripsi final label dan opsi tiap pertanyaan dengan pemeriksaan
-    visual terhadap PDF sumber.
--   Makna dan perlakuan kolom skor pada formulir sumber; tidak ada
-    scoring otomatis yang disetujui.
+    visual terhadap PDF sumber, dikerjakan pemilik proyek (D-037).
+-   Makna kotak centang di samping setiap nominal pengeluaran pada PDF
+    sumber; jangan menafsirkannya sebagai pengganti aturan `0`/`NULL`
+    sebelum dikonfirmasi.
 -   Format dan posisi tanda tangan pada PDF keluaran.
 -   Validasi formal oleh Kelurahan bahwa spesifikasi ini sesuai dengan
     formulir Had Kifayah yang digunakan.

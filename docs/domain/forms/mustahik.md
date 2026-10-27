@@ -1,6 +1,6 @@
 # Mustahik Form Specification — v1.7
 
-Revisi Oktober 2026: register 25 pertanyaan dilengkapi dan diselaraskan secara literal dengan PDF sumber (D-022); `docs/project-management/decisions.md` memuat keputusannya.
+Revisi Oktober 2026: register 25 pertanyaan dilengkapi dan diselaraskan secara literal dengan PDF sumber (D-022); `docs/project-management/decisions.md` memuat keputusannya. Revisi 27 Oktober 2026: Tanggungan dan Hutang ditetapkan single-choice (D-035) dan sumber data header form ditetapkan (D-036).
 
 ## 1. Authority dan Batasan
 
@@ -20,7 +20,7 @@ Database v1.1 tetap menjadi baseline terkunci:
 |---|---|
 | Applicability | Baznas/CSR; tidak berlaku untuk Bangga Surabaya. |
 | Answer persistence | `mustahik_answers.question_code` + `answer` JSON. |
-| Cardinality | **Single-choice untuk seluruh 25 pertanyaan**, termasuk `PHYSICAL_DEPENDENTS` dan `PHYSICAL_DEBT`. |
+| Cardinality | **Single-choice untuk seluruh 25 pertanyaan**, termasuk `PHYSICAL_DEPENDENTS` dan `PHYSICAL_DEBT` (D-035). |
 | Required | **Seluruh 25 pertanyaan wajib dijawab** sebelum finalisasi form Mustahik. Validasi tetap diperlukan untuk perilaku tampilan dan representasi PDF. |
 | Snapshot/PDF | Snapshot harus merekam jawaban yang disubmit. Representasi final pada PDF masih perlu validasi. |
 | Signature | Perubahan data form yang relevan memerlukan pembaruan tanda tangan sesuai workflow. Perubahan attachment saja tidak memicu tanda tangan ulang. |
@@ -71,6 +71,22 @@ PDF kosong adalah sumber label dan opsi untuk prototipe. Tabel di bawah membedak
 
 Petugas memilih opsi yang paling mendekati kondisi sebenarnya (misalnya emas 12 gram memilih `Emas > 10 grm`). Ini panduan pengisian, bukan perubahan opsi, tidak menormalisasi rentang, dan bukan aturan scoring (D-022).
 
+### Header form dan Data Kepala Keluarga (D-036)
+
+Bagian header PDF sumber diisi dari sumber berikut. Label PDF sumber tidak diubah (D-022), dan tidak ada perubahan schema.
+
+| Bagian pada PDF sumber | Sumber data | Catatan |
+|---|---|---|
+| Nama Petugas | Nama user dari `mustahik_forms.petugas_id` | Read-only |
+| Tanggal/Hari (Survey) | `mustahik_forms.survey_date` | Hari diturunkan dari tanggal |
+| Kelurahan dan Kecamatan (header survei) | Konstanta konfigurasi: Kelurahan Manukan Kulon, Kecamatan Tandes | Bukan data per Outreach |
+| Nama, NIK/No KK Kepala Keluarga | `kepala_keluarga_nama`, `kepala_keluarga_nik_no_kk` | Data khusus Mustahik; Klien Outreach tidak otomatis dianggap Kepala Keluarga |
+| Alamat Kepala Keluarga: Jalan, RT, RW | `kepala_keluarga_alamat`, `kepala_keluarga_rt`, `kepala_keluarga_rw` | Data khusus Mustahik |
+| Alamat Kepala Keluarga: Kelurahan dan Kecamatan | Konstanta konfigurasi yang sama | Bukan data per Outreach |
+| Nomor Telepon HP | `outreaches.no_telp` (field 15 Outreach) | Kontak Outreach, **bukan** nomor Kepala Keluarga yang terverifikasi; tidak ada kolom nomor Kepala Keluarga pada Database v1.1 |
+
+Aturan wajib untuk field header yang diisi Petugas (`survey_date` dan `kepala_keluarga_*`) belum ditetapkan dan tetap `PENDING VALIDATION` (lihat bagian 5 butir 4).
+
 ## 4. Data Konteks dan Batas Perilaku
 
 Data Outreach boleh ditampilkan sebagai konteks bagi petugas, tetapi tidak boleh otomatis memilih jawaban Mustahik. Jawaban harus dipilih secara eksplisit pada form Mustahik.
@@ -82,7 +98,7 @@ Perubahan spesifikasi tidak mengubah jawaban pada versi historis. Jika label ata
 1. Validasi pemilik form atas penerapan 25 pertanyaan wajib, termasuk penanganan input yang belum lengkap sebelum finalisasi.
 2. Konfirmasi pemetaan `question_code` terhadap posisi pertanyaan pada PDF. Label dan opsi register telah dilengkapi dan dicocokkan dengan teks serta tampilan visual PDF (D-022); pemetaan kode ke posisi mengikuti nama dan urutan kode.
 3. Apakah kolom skor diisi manual, hanya dicetak, atau memiliki aturan lain. Tidak ada scoring otomatis sebelum ada keputusan eksplisit.
-4. Pemetaan metadata/header pada PDF dan representasi jawaban pada PDF hasil aplikasi.
+4. Aturan wajib field header yang diisi Petugas (`survey_date`, `kepala_keluarga_*`) dan representasi jawaban pada PDF hasil aplikasi. Sumber data header sudah ditetapkan pada D-036.
 5. Persetujuan formal pemilik form terhadap PDF sumber yang dipakai sebagai acuan prototipe.
 6. Klarifikasi opsi yang beririsan atau menyisakan celah (D-023).
 

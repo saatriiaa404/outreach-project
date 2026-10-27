@@ -28,7 +28,7 @@ Prototype menggunakan tiga role:
 
 - **PETUGAS** — membuat dan mengelola Outreach sesuai scope miliknya, mengisi formulir, mengelola lampiran, menyimpan draft, dan mengajukan data untuk pengesahan.
 - **KEPALA** — memeriksa antrean pengesahan, mengembalikan data dengan catatan perbaikan, atau menyetujui data melalui alur approval yang berlaku.
-- **ADMIN** — menjalankan fungsi administrasi yang ditetapkan, termasuk Special Unlock secara terkendali. ADMIN tidak memiliki hak untuk menyetujui Outreach.
+- **ADMIN** — menjalankan fungsi administrasi yang ditetapkan, termasuk Special Unlock secara terkendali, pengelolaan master Source/Type dan user, penandaan arsip, serta backup manual. ADMIN tidak membuat Outreach dari nol, hanya mengedit data selama Special Unlock dengan alasan wajib, dan tidak memiliki hak untuk menyetujui atau mengembalikan Outreach (D-016).
 
 Detail permission, scope, dan aturan transisi status mengikuti `docs/architecture/roles-permissions.md` serta `docs/architecture/workflow.md`. Ringkasan role ini tidak menggantikan aturan terperinci tersebut.
 
@@ -57,9 +57,10 @@ Detail field, label, dan aturan formulir mengikuti dokumen domain terkait. Hal y
 
 ### 4.3 Lampiran
 
-- Empat lampiran dasar wajib untuk finalisasi: **KTP, KK, foto klien, dan foto rumah**.
+- Empat lampiran dasar wajib untuk finalisasi: **KTP, KK, foto klien, dan foto rumah**. Keempatnya harus berupa gambar (D-034).
 - Draft boleh disimpan meskipun lampiran wajib belum lengkap. Finalisasi harus ditolak dengan pesan yang menjelaskan lampiran yang masih kurang.
-- Lampiran tambahan berdasarkan jenis bantuan dapat didukung pada prototype; daftar persyaratan resminya masih memerlukan validasi Kelurahan.
+- Lampiran tambahan berdasarkan jenis bantuan dapat didukung pada prototype dan tidak memblokir finalisasi (D-033); daftar persyaratan resminya masih memerlukan validasi Kelurahan.
+- Lampiran berformat PDF boleh disimpan; pada PDF Outreach ia ditampilkan sebagai halaman rujukan berisi nama berkas (D-034).
 - Foto dikompresi secara otomatis sesuai hasil pengujian prototype.
 - Jika pemrosesan atau penyimpanan lampiran gagal, sistem harus menampilkan kesalahan yang jelas dan tidak boleh diam-diam menghilangkan lampiran.
 - Batas ukuran unggahan dan parameter kompresi ditetapkan setelah pengujian prototype, bukan diasumsikan sebelum pengujian.
@@ -88,7 +89,10 @@ Detail field, label, dan aturan formulir mengikuti dokumen domain terkait. Hal y
   2. PDF Mustahik.
   3. PDF Kifayah.
 - Untuk **Bangga Surabaya**, sistem menghasilkan PDF Outreach dengan halaman lampiran setelah halaman utama formulir Outreach.
+- Halaman lampiran PDF Outreach hanya mencetak lampiran gambar; lampiran berformat PDF ditampilkan sebagai halaman rujukan (D-034).
+- Blok pengesahan memuat nama Kepala yang mengesahkan dan NIP dari data user Kepala (D-041); format cetak NIP masih `PENDING VALIDATION`.
 - PDF harus dapat dipreview sebelum proses pengesahan sesuai alur yang ditetapkan.
+- PETUGAS tidak mengunduh atau mencetak PDF final (D-040).
 - Kegagalan pembuatan salah satu PDF yang diwajibkan menggagalkan approval; sistem tidak boleh menandai Outreach sebagai `SELESAI` atau mengirim notifikasi `OUTREACH_COMPLETED`.
 - Format PDF mengikuti template sumber yang tersedia. Ketidakpastian atau kebutuhan format yang belum dikonfirmasi harus dicatat sebagai `PENDING VALIDATION`.
 
@@ -105,8 +109,16 @@ Detail field, label, dan aturan formulir mengikuti dokumen domain terkait. Hal y
 
 - Data harus tetap tersedia setelah aplikasi ditutup dan dibuka kembali.
 - Uji persistence minimal mencakup simpan, tutup aplikasi, buka kembali, lalu verifikasi data dan lampiran.
-- Backup mingguan mencakup database dan seluruh berkas lampiran.
+- Backup mingguan dilakukan manual oleh ADMIN, mencakup database dan seluruh berkas lampiran, dan disimpan pada media terpisah (D-038).
 - Uji restore dilakukan setelah alur utama prototype stabil dan sebelum serah terima.
+
+### 4.9 Dashboard, Pencarian, dan Administrasi
+
+- Dashboard minimum: PETUGAS melihat Outreach miliknya per status; KEPALA melihat antrean `MENUNGGU_PENGESAHAN` dan Outreach `SELESAI`; ADMIN melihat semua Outreach per status, permintaan Special Unlock, dan status arsip (D-039).
+- KEPALA tidak melihat Draft; untuk `PERLU_PERBAIKAN` KEPALA hanya melihat status dan catatan Return pada riwayat (D-039).
+- Pencarian memakai nama, NIK, ID internal, Source, Type, status, dan rentang tanggal, selalu dibatasi scope role (D-039).
+- ADMIN mengelola master Source/Type; kode tidak dapat diubah karena menentukan komposisi PDF dan workflow (D-040).
+- ADMIN menandai status arsip secara manual paling lambat satu bulan sejak persetujuan Kepala; data tetap di aplikasi dan tidak ada integrasi E-Surat/E-Arsip (D-038).
 
 ## 5. Acceptance Criteria
 
@@ -128,6 +140,8 @@ Prototype memenuhi kriteria penerimaan berikut jika:
 14. Special Unlock tercatat dan tidak melewati pemeriksaan akses atau versioning.
 15. Kegagalan pemrosesan lampiran ditampilkan dengan jelas dan tidak menyebabkan lampiran hilang secara diam-diam.
 16. Uji backup dan restore mencakup database serta lampiran.
+17. Lampiran tambahan tidak memblokir finalisasi; lampiran berformat PDF tampil sebagai halaman rujukan pada PDF Outreach.
+18. Dashboard dan pencarian setiap role hanya menampilkan Outreach dalam scope dan visibilitasnya; KEPALA tidak melihat Draft.
 
 ## 6. Hal yang Masih Perlu Divalidasi
 
@@ -138,6 +152,7 @@ Hal-hal berikut tidak boleh dianggap sudah terkonfirmasi hanya karena prototype 
 - Detail template PDF yang belum dapat dipastikan dari dokumen sumber.
 - Batas ukuran unggahan dan parameter kompresi final.
 - Kebutuhan operasional LAN untuk beberapa pengguna setelah evaluasi prototype.
+- Format dan posisi cetak NIP Kepala pada blok pengesahan (D-041).
 
 Temuan validasi harus dicatat dan diselesaikan melalui proses rekonsiliasi kebutuhan. Perubahan yang memengaruhi perilaku bisnis, keamanan, workflow, atau baseline yang sudah dikunci harus ditinjau dan disetujui secara eksplisit sebelum diterapkan.
 

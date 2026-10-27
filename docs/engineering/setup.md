@@ -1,7 +1,7 @@
 # Setup Lingkungan Lokal — Windows
 
 > **Status dokumen:** DRAFT — dibuat dari hasil verifikasi lingkungan pemilik proyek (23 Oktober 2026)  
-> **Rujukan:** D-024 pada `docs/project-management/decisions.md`; task ENV-001 dan DOC-003  
+> **Rujukan:** D-024, D-030, dan D-042 pada `docs/project-management/decisions.md`; task ENV-001, DOC-003, dan BOOT-001  
 > **Penting:** Dokumen ini tidak membuka gate implementasi dan tidak mengotorisasi bootstrap, schema, migration, atau seed. Langkah yang menyentuh database ditandai dan dijalankan setelah gate dibuka.
 
 ## 1. Tujuan dan Batas
@@ -56,7 +56,7 @@ Perintah ini hanya menyiapkan database kosong. Tabel, kolom, dan migration mengi
 
 ## 5. Pengaturan PHP untuk Upload Lampiran
 
-Batas ukuran lampiran belum diputuskan (`database.md` bagian 25 butir 3), sehingga nilai final ditunda. Yang perlu dipastikan saat bootstrap:
+Batas ukuran lampiran belum diputuskan (`database.md` bagian 25 butir 3), sehingga nilai final ditunda. Empat lampiran wajib harus berupa gambar (D-034), sehingga ekstensi `gd` dan `fileinfo` diperlukan untuk memproses dan memeriksa isi file. Yang perlu dipastikan saat bootstrap:
 
 - Periksa dan naikkan dari bawaan: `upload_max_filesize`, `post_max_size`, `max_file_uploads`, dan `memory_limit` pada `php.ini` milik PHP aktif.
 - Pastikan perubahan berlaku pada PHP yang dipakai web server, lalu mulai ulang layanan Laragon.
@@ -89,6 +89,15 @@ Batas ukuran lampiran belum diputuskan (`database.md` bagian 25 butir 3), sehing
 - Gunakan data dummy. Jangan memasukkan data warga asli ke repository, database prototype, atau lampiran demo.
 - Repository GitHub bersifat private. `git push`, force-push, dan perubahan riwayat Git hanya atas persetujuan eksplisit pemilik proyek (lihat `AGENTS.md`).
 
-## 9. Perubahan Dokumen Ini
+## 9. Lokasi Kode dan Konfigurasi Aplikasi (setelah gate dibuka)
+
+Bagian ini mencatat keputusan yang memengaruhi bootstrap (BOOT-001). Belum ada kode; langkah di bawah dijalankan hanya setelah gate implementasi dibuka.
+
+- Aplikasi Laravel ditempatkan di `project/web/`, bukan di akar `project/` (D-042). Perintah `composer`, `php artisan`, dan `npm` untuk aplikasi dijalankan dari `project/web/`; dokumen tetap di `project/docs/`.
+- Konfigurasi infrastruktur dibuat minimal (D-030): `SESSION_DRIVER=file`, `CACHE_STORE=file`, dan `QUEUE_CONNECTION=sync` pada `.env` lokal; fitur registrasi publik dan reset password dinonaktifkan. Nama variabel `.env` diverifikasi terhadap versi Laravel 13 saat bootstrap.
+- Migration bawaan starter kit ditinjau terhadap Database v1.1 (termasuk amandemen D-041) sebelum dijalankan; tabel infrastruktur yang tersisa praktis hanya `migrations`.
+- Konstanta wilayah (Kelurahan Manukan Kulon, Kecamatan Tandes) disimpan pada konfigurasi aplikasi (D-036), bukan di database.
+
+## 10. Perubahan Dokumen Ini
 
 Perubahan versi alat, kebijakan PHP, atau pengaturan upload dicatat pada dokumen ini. Bila memengaruhi keputusan, catat juga di `decisions.md`.
