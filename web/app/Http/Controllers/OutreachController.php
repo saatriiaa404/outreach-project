@@ -104,6 +104,7 @@ class OutreachController extends Controller
                     'key' => $key,
                     'title' => $definition['title'],
                     'state' => OutreachFormSchema::completion($outreach, $key),
+                    'missing' => count(OutreachFormSchema::missingFields($outreach, $key)),
                 ])->values(),
                 ...collect(OutreachFormSchema::upcomingSteps($outreach->source->code))->map(fn (string $title, string $key) => [
                     'key' => $key,

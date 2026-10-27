@@ -9,7 +9,8 @@ use InvalidArgumentException;
  * Field definitions of the Outreach stepper steps that hold form data
  * (Workflow v2.1 section 8.1, outreach.md section 4). Labels follow the blank
  * template; rules apply to Draft saves (types and ranges only). "required"
- * drives the step completion indicator and, later, Finalisasi validation.
+ * and "requiredIf" drive the Finalisasi completeness check, which also feeds
+ * the step completion indicator. NULL means not filled and is never read as 0.
  *
  * Field shape: label, input (text|textarea|integer|money|date|select|boolean),
  * required (bool), optional options, requiredIf ([field, value]), group.
@@ -204,19 +205,70 @@ class OutreachFormSchema
     public static function completion(Outreach $outreach, string $step): string
     {
         $fields = self::steps()[$step]['fields'];
-        $filled = fn (string $name) => ! self::isBlank($outreach->getAttribute($name));
 
-        if (collect(array_keys($fields))->doesntContain($filled)) {
+        if (collect(array_keys($fields))->every(fn (string $name) => self::isBlank($outreach->getAttribute($name)))) {
             return 'untouched';
         }
 
-        foreach ($fields as $name => $field) {
-            if (self::isRequired($outreach, $field) && ! $filled($name)) {
-                return 'incomplete';
+        return self::missingFields($outreach, $step) === [] ? 'complete' : 'incomplete';
+    }
+
+    /**
+     * Labels of the fields of one step that Finalisasi still needs
+     * (outreach.md section 4). Draft saves never require them.
+     *
+     * @return list<string>
+     */
+    public static function missingFields(Outreach $outreach, string $step): array
+    {
+        $missing = [];
+
+        foreach (self::steps()[$step]['fields'] as $name => $field) {
+            if (self::isRequired($outreach, $field) && self::isBlank($outreach->getAttribute($name))) {
+                $missing[] = $field['label'];
             }
         }
 
-        return 'complete';
+        return $missing;
+    }
+
+    /**
+     * The form-data part of Finalisasi validation, per step. Mustahik,
+     * Kifayah, attachments, and signatures are checked by their own phases.
+     *
+     * @return array<string, list<string>>
+     */
+    public static function missingForFinalization(Outreach $outreach): array
+    {
+        return collect(array_keys(self::steps()))
+            ->mapWithKeys(fn (string $step) => [$step => self::missingFields($outreach, $step)])
+            ->filter()
+            ->all();
+    }
+
+    /**
+     * Sum of a derived total's components (outreach.md 4.2, 4.3), or null
+     * while any component is still empty: an empty value is not zero.
+     */
+    public static function total(Outreach $outreach, string $group): ?int
+    {
+        $total = 0;
+
+        foreach (self::steps()['keluarga']['fields'] as $name => $field) {
+            if (($field['group'] ?? null) !== $group) {
+                continue;
+            }
+
+            $value = $outreach->getAttribute($name);
+
+            if ($value === null) {
+                return null;
+            }
+
+            $total += (int) $value;
+        }
+
+        return $total;
     }
 
     /**

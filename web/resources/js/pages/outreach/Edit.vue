@@ -50,7 +50,12 @@ type Props = {
         edit_version: number;
         outreach_date: string;
     };
-    steps: { key: string; title: string; state: StepState }[];
+    steps: {
+        key: string;
+        title: string;
+        state: StepState;
+        missing?: number;
+    }[];
     step: string;
     fields: Field[];
 };
@@ -132,10 +137,27 @@ const isVisible = (field: Field) => {
         : values[controller] === (expected ? '1' : '0');
 };
 
-const sum = (group: string) =>
-    props.fields
-        .filter((field) => field.group === group)
-        .reduce((total, field) => total + Number(values[field.name] || 0), 0);
+// Derived total of a group (outreach.md 4.2, 4.3). An empty component is not
+// zero, so the total stays open until every component is filled.
+const total = (group: string) => {
+    const parts = props.fields.filter((field) => field.group === group);
+    const empty = parts.filter((field) => values[field.name] === '').length;
+    const sum = parts.reduce(
+        (acc, field) => acc + Number(values[field.name] || 0),
+        0,
+    );
+
+    return { sum, empty };
+};
+
+// Fields of this step that Finalisasi still needs; Draft saves never do.
+const missing = computed(() =>
+    props.fields.filter(
+        (field) =>
+            (field.required || (field.requiredIf && isVisible(field))) &&
+            values[field.name] === '',
+    ),
+);
 
 // Age in full years on the Outreach date (D-045); empty until a valid birth date is entered.
 const ageOnOutreachDate = (birthDate: string) => {
@@ -198,7 +220,11 @@ const stateLabel: Record<StepState, string> = {
                         :href="edit(outreach.id, { query: { step: item.key } })"
                         class="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted"
                         :class="{ 'bg-muted font-medium': item.key === step }"
-                        :title="stateLabel[item.state]"
+                        :title="
+                            item.state === 'incomplete'
+                                ? `belum lengkap: ${item.missing} isian`
+                                : stateLabel[item.state]
+                        "
                     >
                         <span class="w-4 text-center">{{
                             item.key === step ? '●' : stateMarker[item.state]
@@ -388,13 +414,41 @@ const stateLabel: Record<StepState, string> = {
                     v-if="step === 'keluarga'"
                     class="grid gap-1 rounded-md bg-muted/50 p-3 text-sm"
                 >
-                    <p>
-                        Total Pendapatan Keluarga:
-                        <strong>{{ rupiah(sum('pendapatan')) }}</strong>
+                    <p
+                        v-for="group in [
+                            {
+                                key: 'pendapatan',
+                                label: 'Total Pendapatan Keluarga',
+                            },
+                            {
+                                key: 'pengeluaran',
+                                label: 'Total Pengeluaran Keluarga',
+                            },
+                        ]"
+                        :key="group.key"
+                    >
+                        {{ group.label }}:
+                        <strong v-if="total(group.key).empty === 0">{{
+                            rupiah(total(group.key).sum)
+                        }}</strong>
+                        <span v-else class="text-muted-foreground">
+                            belum dapat dihitung,
+                            {{ total(group.key).empty }} komponen belum diisi
+                            (isi 0 bila memang tidak ada)
+                        </span>
                     </p>
-                    <p>
-                        Total Pengeluaran Keluarga:
-                        <strong>{{ rupiah(sum('pengeluaran')) }}</strong>
+                </div>
+
+                <div
+                    v-if="missing.length"
+                    class="rounded-md border border-dashed p-3 text-sm"
+                    data-test="missing-for-finalization"
+                >
+                    <p class="font-medium">
+                        Belum lengkap untuk Finalisasi ({{ missing.length }}):
+                    </p>
+                    <p class="text-muted-foreground">
+                        {{ missing.map((field) => field.label).join(', ') }}
                     </p>
                 </div>
 

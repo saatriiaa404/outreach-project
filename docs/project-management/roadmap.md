@@ -32,7 +32,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 | R2.1 | Buat Outreach: Source → Type → Date, `draft_code`, status `DRAFT` — ✅ selesai 27 Oktober 2026 (halaman daftar dan buat, history `CREATED`) |
 | R2.2 | Stepper dan form Data Klien, Keluarga, Rumah & Aset, Narasi (D-019 sampai D-021, D-025, D-027, D-032) — ✅ selesai 27 Oktober 2026 (Simpan Draft dan Simpan & Lanjutkan dengan `edit_version`; tanggal form buat terisi hari ini) |
 | R2.3 | Save Draft dan autosave dengan `edit_version` serta state autosave — ✅ selesai 27 Oktober 2026 (autosave ±60 detik saat ada perubahan dan sebelum pindah langkah, lewat service yang sama dengan Save Draft tanpa event History; state `IDLE`/`SAVING`/`SAVED`/`FAILED`/`CONFLICT`/`CONNECTION_LOST`; konflik versi menjawab 409 dan menawarkan muat ulang) |
-| R2.4 | Validasi Draft vs Finalisasi, semantik `NULL`/`0`/`-`, total turunan |
+| R2.4 | Validasi Draft vs Finalisasi, semantik `NULL`/`0`/`-`, total turunan — ✅ selesai 27 Oktober 2026 (pemeriksaan kelengkapan Finalisasi untuk data form di `OutreachFormSchema::missingForFinalization`, dipakai indikator stepper dan nanti aksi Finalisasi R6.2; Draft tetap boleh tidak lengkap; total pendapatan/pengeluaran diturunkan dari komponen dan belum dihitung selama ada komponen kosong; representasi `-` diterapkan saat render PDF R7.2) |
 | R2.5 | Ganti Source/Type sebelum Finalisasi beserta penanganan destruktif |
 
 ## Fase 3 — Lampiran
