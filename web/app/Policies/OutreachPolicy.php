@@ -68,6 +68,17 @@ class OutreachPolicy
             && $outreach->status->isEditableByPetugas();
     }
 
+    /**
+     * Source and Type change by normal editing only before the first
+     * Finalisasi; afterwards only through Special Unlock (Workflow v2.1 7.3).
+     */
+    public function changeSourceType(User $user, Outreach $outreach): bool
+    {
+        return $user->role === UserRole::Petugas
+            && $this->owns($user, $outreach)
+            && $outreach->status === OutreachStatus::Draft;
+    }
+
     public function finalize(User $user, Outreach $outreach): bool
     {
         return $this->update($user, $outreach);

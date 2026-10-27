@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Outreach\ChangeOutreachSourceType;
 use App\Actions\Outreach\CreateOutreach;
 use App\Actions\Outreach\SaveOutreachStep;
+use App\Http\Requests\Outreach\ChangeSourceTypeRequest;
 use App\Http\Requests\Outreach\SaveOutreachStepRequest;
 use App\Http\Requests\Outreach\StoreOutreachRequest;
 use App\Models\Outreach;
@@ -88,6 +90,7 @@ class OutreachController extends Controller
         $step = $request->query('step');
         $step = is_string($step) && array_key_exists($step, $steps) ? $step : 'klien';
         $outreach->load(['source:id,code,name', 'type:id,name']);
+        $sources = OutreachSource::query()->where('active', true)->orWhere('id', $outreach->source_id)->orderBy('name')->get(['id', 'code', 'name']);
 
         return Inertia::render('outreach/Edit', [
             'outreach' => [
@@ -98,7 +101,18 @@ class OutreachController extends Controller
                 'status' => $outreach->status->value,
                 'edit_version' => $outreach->edit_version,
                 'outreach_date' => $outreach->outreach_date->toDateString(),
+                'source_id' => $outreach->source_id,
+                'type_id' => $outreach->type_id,
             ],
+            // Choices for changing Source and Type on the Identitas step (Workflow v2.1 7.3).
+            'sourceTypeChoices' => $step === 'identitas' && $request->user()->can('changeSourceType', $outreach) ? [
+                'sources' => $sources->map(fn (OutreachSource $source) => [
+                    'id' => $source->id,
+                    'name' => $source->name,
+                    'destructive' => ChangeOutreachSourceType::isDestructive($outreach->source, $source),
+                ]),
+                'types' => OutreachType::query()->where('active', true)->orWhere('id', $outreach->type_id)->orderBy('name')->get(['id', 'name']),
+            ] : null,
             'steps' => [
                 ...collect($steps)->map(fn (array $definition, string $key) => [
                     'key' => $key,
@@ -137,6 +151,26 @@ class OutreachController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Draft tersimpan.']);
 
         return to_route('outreaches.edit', ['outreach' => $outreach, 'step' => $target]);
+    }
+
+    /**
+     * Change Source and Type of a Draft, then reload the stepper so the new
+     * configuration applies (Workflow v2.1 sections 7.3, 9.5, 9.7).
+     */
+    public function changeSourceType(ChangeSourceTypeRequest $request, Outreach $outreach, ChangeOutreachSourceType $change): RedirectResponse
+    {
+        $change->handle(
+            $outreach,
+            $request->user(),
+            OutreachSource::query()->findOrFail($request->integer('source_id')),
+            OutreachType::query()->findOrFail($request->integer('type_id')),
+            $request->integer('edit_version'),
+            $request->boolean('confirm_destructive'),
+        );
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Source dan Jenis Outreach tersimpan.']);
+
+        return to_route('outreaches.edit', ['outreach' => $outreach, 'step' => 'identitas']);
     }
 
     /**

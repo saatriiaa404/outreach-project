@@ -28,4 +28,13 @@ class OutreachSource extends Model
             'active' => 'boolean',
         ];
     }
+
+    /**
+     * Baznas and CSR use the Mustahik and Kifayah forms; Bangga Surabaya does
+     * not (Workflow v2.1 sections 9.1 to 9.3).
+     */
+    public function usesMustahikKifayah(): bool
+    {
+        return $this->code !== 'BANGGA_SURABAYA';
+    }
 }

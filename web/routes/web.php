@@ -11,6 +11,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('outreach', OutreachController::class)
         ->only(['index', 'create', 'store', 'edit', 'update'])
         ->names('outreaches');
+    Route::put('outreach/{outreach}/source-type', [OutreachController::class, 'changeSourceType'])
+        ->name('outreaches.source-type');
     Route::put('outreach/{outreach}/autosave', [OutreachController::class, 'autosave'])
         ->name('outreaches.autosave');
 });

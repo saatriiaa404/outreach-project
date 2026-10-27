@@ -4,6 +4,8 @@ import { computed, reactive, ref, watch } from 'vue';
 import OutreachController from '@/actions/App/Http/Controllers/OutreachController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
+import SourceTypeChange from '@/components/outreach/SourceTypeChange.vue';
+import type { SourceTypeChoices } from '@/components/outreach/SourceTypeChange.vue';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -49,7 +51,10 @@ type Props = {
         status: string;
         edit_version: number;
         outreach_date: string;
+        source_id: number;
+        type_id: number;
     };
+    sourceTypeChoices: SourceTypeChoices | null;
     steps: {
         key: string;
         title: string;
@@ -241,6 +246,16 @@ const stateLabel: Record<StepState, string> = {
                 :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · Draft`"
             />
 
+            <SourceTypeChange
+                v-if="step === 'identitas' && sourceTypeChoices"
+                :outreach-id="outreach.id"
+                :source-id="outreach.source_id"
+                :type-id="outreach.type_id"
+                :version="autosave.version.value"
+                :choices="sourceTypeChoices"
+                :before-submit="autosave.save"
+            />
+
             <Form
                 v-bind="OutreachController.update.form(outreach.id)"
                 :options="{ preserveScroll: true }"
@@ -295,7 +310,10 @@ const stateLabel: Record<StepState, string> = {
                 />
                 <input type="hidden" name="next" :value="goNext ? 1 : 0" />
 
-                <div v-if="step === 'identitas'" class="grid gap-2 text-sm">
+                <div
+                    v-if="step === 'identitas' && !sourceTypeChoices"
+                    class="grid gap-2 text-sm"
+                >
                     <p>Source Outreach: {{ outreach.source }}</p>
                     <p>Jenis Outreach: {{ outreach.type }}</p>
                 </div>
