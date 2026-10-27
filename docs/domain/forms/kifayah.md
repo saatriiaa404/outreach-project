@@ -250,8 +250,8 @@ terkunci.
 Label dan opsi di bawah ditranskripsi secara literal dari `kifayah.pdf`
 (D-037) dengan pemeriksaan teks dan tampilan visual PDF: ejaan, kapitalisasi,
 dan urutan opsi mengikuti sumber dari atas ke bawah. Transkripsi dikerjakan
-agent atas izin pemilik proyek (27 Oktober 2026) dan menunggu konfirmasi
-pemilik proyek (VAL-003).
+agent atas izin pemilik proyek dan dikonfirmasi benar oleh pemilik proyek
+pada 27 Oktober 2026 (VAL-003 selesai).
 
 | `question_code` | Bagian pada sumber | Label pada sumber | Opsi pada sumber (urutan sumber) | Cardinality |
 |---|---|---|---|---|
@@ -360,8 +360,6 @@ bukan dari data Outreach terkini.
 
 ## 7. Hal yang Masih Perlu Validasi
 
--   Konfirmasi pemilik proyek atas transkripsi literal opsi pada bagian 3
-    (VAL-003).
 -   Makna kotak centang di samping setiap nominal pengeluaran pada PDF
     sumber; jangan menafsirkannya sebagai pengganti aturan `0`/`NULL`
     sebelum dikonfirmasi.

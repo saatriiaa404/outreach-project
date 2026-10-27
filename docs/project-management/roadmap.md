@@ -48,7 +48,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 | ID | Task | Bergantung pada |
 |---|---|---|
 | R4.1 | Form Mustahik: 25 pertanyaan single-choice literal, header sesuai D-036 | VAL-005 (aturan wajib header) |
-| R4.2 | Form Kifayah: nominal `0`/`NULL`, identitas read-only, 7 pertanyaan pilihan | Register opsi VAL-003 |
+| R4.2 | Form Kifayah: nominal `0`/`NULL`, identitas read-only, 7 pertanyaan pilihan | — (VAL-003 selesai) |
 
 ## Fase 5 — Tanda tangan dan Review
 

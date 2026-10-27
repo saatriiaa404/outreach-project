@@ -700,7 +700,8 @@ dibuka. Dokumen terdampak disesuaikan satu file per giliran.
 
 Tambahan 27 Oktober 2026 (setelah gate dibuka): pemilik proyek mengizinkan
 agent mengerjakan transkripsi literal opsi Kifayah yang pada D-037 semula
-dikerjakan pemilik proyek; hasilnya menunggu konfirmasi pemilik (VAL-003).
+dikerjakan pemilik proyek; hasilnya dikonfirmasi benar oleh pemilik (VAL-003
+selesai).
 Tata letak blok pengesahan untuk D-041 dikonfirmasi dan dicatat pada
 `outreach.md` bagian 8.4 tanpa mencantumkan nama atau NIP pejabat nyata;
 tanggal pada blok tersebut adalah tanggal Kepala mengesahkan, bukan Tanggal
