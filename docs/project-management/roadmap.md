@@ -68,7 +68,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 
 | ID | Task | Persetujuan / ketergantungan |
 |---|---|---|
-| R7.1 | Pasang Dompdf (stack D-013) | 🔒 |
+| R7.1 | Pasang Dompdf (stack D-013) | ✅ Selesai 28 Oktober 2026: `dompdf/dompdf` 3.1.6 langsung (D-052) dan `PdfRenderer` tanpa akses remote/PHP/JavaScript, chroot ke `resources/views/pdf`, huruf DejaVu Sans, gambar privat sebagai data URI |
 | R7.2 | Template PDF Outreach (halaman lampiran gambar dan halaman rujukan PDF), Mustahik, Kifayah; `document_template_versions`; blok pengesahan sesuai VAL-004 | — |
 | R7.3 | Antrean Kepala, Return dengan catatan wajib, `OUTREACH_RETURNED` | — |
 | R7.4 | Approve dengan PDF gate dan uji kegagalan | — |

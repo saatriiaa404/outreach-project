@@ -840,6 +840,29 @@ rujuk keputusan pengganti.
                            satu builder yang
                            diuji terhadap
                            kontrak.
+
+  D-052       LOCKED       Dompdf dipasang        Persetujuan     Dependensi backend      `architecture.md`,
+                           langsung sebagai       eksplisit       baru beserta            `security.md`, `roadmap.md`,
+                           paket composer         pemilik         dompdf/php-font-lib,    kode `web/`
+                           dompdf/dompdf versi    proyek, 28      dompdf/php-svg-lib,
+                           3.1.6 (dikunci,        Oktober 2026    masterminds/html5, dan
+                           LGPL-2.1), tanpa       (opsi A).       sabberworm/php-css-
+                           pembungkus                             parser. Huruf PDF
+                           barryvdh/laravel-                      tidak identik dengan
+                           dompdf. Renderer                       Calibri pada template;
+                           mematikan akses                        huruf lain memerlukan
+                           remote, PHP, dan                       keputusan terpisah.
+                           JavaScript, membatasi
+                           akses berkas lokal
+                           (chroot) ke folder
+                           resources/views/pdf,
+                           memakai huruf DejaVu
+                           Sans bawaan, dan
+                           menyisipkan gambar
+                           lampiran serta tanda
+                           tangan sebagai data
+                           URI dari storage
+                           privat.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

@@ -36,6 +36,10 @@ dan audit perubahan NIP Kepala (D-041).
     dan duplicate hash. Jangan hanya mengandalkan ekstensi atau
     `Content-Type` dari client. Terapkan batas ukuran berdasarkan hasil
     pengujian prototype; jangan mengklaim batas final sebelum diuji.
+-   **Render PDF (D-052):** Dompdf dijalankan tanpa akses remote,
+    tanpa PHP dan JavaScript, dengan akses berkas lokal dibatasi ke
+    folder template PDF. Gambar lampiran dan tanda tangan disisipkan
+    sebagai data URI dari storage privat, bukan melalui URL.
 -   **Penanganan kegagalan file:** Jika file tidak dapat diproses,
     dikompresi, disimpan, atau dimasukkan ke PDF, tampilkan error yang
     jelas. Jangan diam-diam menghilangkan lampiran atau menganggap

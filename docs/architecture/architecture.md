@@ -28,7 +28,9 @@ konstanta wilayah (D-036), dan lokasi kode (D-042). Keputusan tercatat pada
     MySQL, Dompdf, dan Laravel Filesystem (D-013). Lapisan tampilan
     memakai Tailwind CSS + shadcn-vue melalui starter kit resmi Laravel
     untuk Vue (D-018). Signature pad Petugas/Warga memakai pustaka
-    `signature_pad` 5.1.4 dengan versi terkunci (D-049).
+    `signature_pad` 5.1.4 dengan versi terkunci (D-049). PDF memakai
+    paket `dompdf/dompdf` 3.1.6 secara langsung dengan versi terkunci
+    (D-052).
 -   Lokasi kode: aplikasi Laravel ditempatkan di `project/web/`, bukan
     di akar `project/`, agar tidak bertabrakan dengan `README.md`,
     `.gitignore`, dan `docs/` (D-042).
