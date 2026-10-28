@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
  * @property string $message
  * @property int $outreach_id
  * @property int $outreach_version_id
+ * @property int|null $approval_id
  * @property Carbon|null $read_at
  */
 class InAppNotification extends Model
@@ -24,6 +25,8 @@ class InAppNotification extends Model
     public const UPDATED_AT = null;
 
     public const OUTREACH_FINALIZED = 'OUTREACH_FINALIZED';
+
+    public const OUTREACH_RETURNED = 'OUTREACH_RETURNED';
 
     protected $table = 'notifications';
 

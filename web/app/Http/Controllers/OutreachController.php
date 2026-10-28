@@ -6,20 +6,29 @@ use App\Actions\Outreach\ChangeOutreachSourceType;
 use App\Actions\Outreach\CreateOutreach;
 use App\Actions\Outreach\SaveOutreachStep;
 use App\Enums\AttachmentCategory;
+use App\Enums\HistoryEventType;
+use App\Enums\OutreachStatus;
+use App\Enums\UserRole;
 use App\Http\Requests\Outreach\ChangeSourceTypeRequest;
 use App\Http\Requests\Outreach\SaveOutreachStepRequest;
 use App\Http\Requests\Outreach\StoreAttachmentRequest;
 use App\Http\Requests\Outreach\StoreOutreachRequest;
+use App\Models\HistoryEvent;
 use App\Models\Outreach;
+use App\Models\OutreachApproval;
 use App\Models\OutreachAttachment;
 use App\Models\OutreachSource;
 use App\Models\OutreachType;
+use App\Models\OutreachVersion;
+use App\Models\OutreachVersionAttachment;
 use App\Models\Signature;
+use App\Support\FormResults;
 use App\Support\FormSignatures;
 use App\Support\KifayahFormSchema;
 use App\Support\MustahikFormSchema;
 use App\Support\OutreachDocument;
 use App\Support\OutreachFormSchema;
+use App\Support\OutreachSnapshot;
 use App\Support\OutreachSteps;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -32,32 +41,102 @@ use Inertia\Response;
 class OutreachController extends Controller
 {
     /**
-     * List the Outreach records visible to the user (D-039).
+     * List the Outreach records visible to the user (D-039), optionally by
+     * status. The Kepala starts on the approval queue, oldest submission
+     * first.
      */
     public function index(Request $request): Response
     {
         Gate::authorize('viewAny', Outreach::class);
 
-        $outreaches = Outreach::query()
-            ->visibleTo($request->user())
-            ->with(['source:id,name', 'type:id,name'])
-            ->latest('id')
+        $user = $request->user();
+        $isKepala = $user->role === UserRole::Kepala;
+        $status = OutreachStatus::tryFrom($request->string('status')->toString());
+        $status ??= $isKepala && ! $request->has('status') ? OutreachStatus::MenungguPengesahan : null;
+
+        $query = Outreach::query()
+            ->visibleTo($user)
+            ->when($status, fn ($query, OutreachStatus $status) => $query->where('status', $status))
+            ->with(['source:id,name', 'type:id,name']);
+
+        if ($status === OutreachStatus::MenungguPengesahan) {
+            $query->orderBy(OutreachVersion::query()
+                ->select('finalized_at')
+                ->whereColumn('outreach_id', 'outreaches.id')
+                ->orderByDesc('version_number')
+                ->limit(1))->orderBy('id');
+        } else {
+            $query->latest('id');
+        }
+
+        $outreaches = $query
             ->paginate(20)
+            ->withQueryString()
             ->through(fn (Outreach $outreach) => [
                 'id' => $outreach->id,
                 'code' => $outreach->outreach_number ?? $outreach->draft_code,
                 // Content is hidden where only the status may be seen (D-039).
-                'nama' => $request->user()->can('view', $outreach) ? $outreach->nama : null,
+                'nama' => $user->can('view', $outreach) ? $outreach->nama : null,
                 'source' => $outreach->source->name,
                 'type' => $outreach->type->name,
                 'outreach_date' => $outreach->outreach_date->toDateString(),
                 'status' => $outreach->status->value,
-                'can_edit' => $request->user()->can('update', $outreach),
+                'can_edit' => $user->can('update', $outreach),
+                'can_open' => $user->can('viewSummary', $outreach),
             ]);
 
         return Inertia::render('outreach/Index', [
             'outreaches' => $outreaches,
-            'canCreate' => $request->user()->can('create', Outreach::class),
+            'statuses' => collect(OutreachStatus::cases())
+                ->reject(fn (OutreachStatus $item) => $isKepala && $item === OutreachStatus::Draft)
+                ->map(fn (OutreachStatus $item) => $item->value)
+                ->values(),
+            'status' => $status?->value,
+            'canCreate' => $user->can('create', Outreach::class),
+        ]);
+    }
+
+    /**
+     * Read-only view of the latest submission (Workflow v2.1 20.3) with the
+     * Return action for the Kepala. Where only the status may be seen, as for
+     * the Kepala on PERLU_PERBAIKAN, it carries the status and the decision
+     * history with Return notes only (D-039).
+     */
+    public function show(Request $request, Outreach $outreach): Response
+    {
+        Gate::authorize('viewSummary', $outreach);
+
+        $user = $request->user();
+        $outreach->load(['source:id,code,name', 'type:id,code,name', 'petugas:id,name']);
+        $full = $user->can('view', $outreach);
+        $version = $full ? $outreach->latestVersion()->first() : null;
+
+        return Inertia::render('outreach/Show', [
+            'outreach' => [
+                'id' => $outreach->id,
+                'code' => $outreach->outreach_number ?? $outreach->draft_code,
+                'source' => $outreach->source->name,
+                'type' => $outreach->type->name,
+                'status' => $outreach->status->value,
+                'petugas' => $outreach->petugas->name,
+                'nama' => $full ? $outreach->nama : null,
+            ],
+            'history' => HistoryEvent::query()
+                ->where('outreach_id', $outreach->id)
+                ->whereIn('event_type', [HistoryEventType::Finalized, HistoryEventType::Refinalized, HistoryEventType::Returned, HistoryEventType::Approved])
+                ->orderBy('id')
+                ->get()
+                ->map(fn (HistoryEvent $event) => [
+                    'id' => $event->id,
+                    'type' => $event->event_type->value,
+                    'actor' => $event->actor_name_snapshot,
+                    'at' => $event->created_at?->toIso8601String(),
+                    'description' => $event->description,
+                    'reason' => $event->reason,
+                ]),
+            'version' => $version === null ? null : $this->versionReview($outreach, $version),
+            'canReturn' => $user->can('return', $outreach),
+            'canEdit' => $user->can('update', $outreach),
         ]);
     }
 
@@ -115,6 +194,8 @@ class OutreachController extends Controller
             ],
             'steps' => $stepList,
             'step' => $step,
+            // Why the Kepala returned it, shown while the Petugas revises (21.6).
+            'returned' => $outreach->status === OutreachStatus::PerluPerbaikan ? $this->latestReturn($outreach) : null,
         ];
 
         if ($step === 'mustahik') {
@@ -183,6 +264,7 @@ class OutreachController extends Controller
         if ($step === 'review') {
             $missing = OutreachFormSchema::missingForFinalization($outreach);
             $usesForms = $outreach->source->usesMustahikKifayah();
+            $snapshot = OutreachSnapshot::build($outreach);
 
             return Inertia::render('outreach/Review', [
                 ...$shared,
@@ -194,8 +276,8 @@ class OutreachController extends Controller
                 ])->values(),
                 'ready' => $missing === [],
                 'document' => OutreachDocument::build($outreach),
-                'mustahik' => $usesForms ? $this->mustahikResult($outreach) : null,
-                'kifayah' => $usesForms ? $this->kifayahResult($outreach) : null,
+                'mustahik' => $usesForms ? FormResults::mustahik($snapshot['mustahik']) : null,
+                'kifayah' => $usesForms ? FormResults::kifayah($snapshot['kifayah']) : null,
                 'signatures' => $usesForms ? collect(FormSignatures::FORMS)->map(fn (array $definition, string $form) => [
                     'title' => $definition['title'],
                     'signed' => FormSignatures::form($outreach, $form)?->signature_id !== null,
@@ -333,56 +415,57 @@ class OutreachController extends Controller
     }
 
     /**
-     * Mustahik answers as the labels printed on the source form.
+     * What is reviewed: the version as submitted, never the current data.
      *
-     * @return array{header: list<array{label: string, value: string|null}>, answers: list<array{label: string, value: string|null}>}
+     * @return array<string, mixed>
      */
-    private function mustahikResult(Outreach $outreach): array
+    private function versionReview(Outreach $outreach, OutreachVersion $version): array
     {
-        $form = $outreach->mustahikForm;
-        $header = [];
-        $answers = [];
+        $snapshot = $version->snapshot_data;
+        $usesForms = $outreach->source->usesMustahikKifayah();
+        $attachments = $version->attachments()->with('file')->orderBy('sort_order')->get()
+            ->sortBy(fn (OutreachVersionAttachment $attachment) => array_search($attachment->category, AttachmentCategory::cases(), true), SORT_NUMERIC)
+            ->map(fn (OutreachVersionAttachment $attachment) => [
+                'label' => $attachment->title ?: $attachment->category->label(),
+                'name' => $attachment->file->original_name,
+                'is_image' => $attachment->file->isImage(),
+                'url' => route('outreaches.versions.attachments.show', [$outreach, $version, $attachment]),
+            ])->values()->all();
 
-        foreach (MustahikFormSchema::HEADER as $name => $field) {
-            $value = $name === 'survey_date'
-                ? $form?->survey_date?->translatedFormat('l, j F Y')
-                : $form?->getAttribute($name);
-            $header[] = ['label' => $field['label'], 'value' => $value === '' ? null : $value];
-        }
-
-        foreach (MustahikFormSchema::QUESTIONS as $code => $question) {
-            $option = $form?->answers->firstWhere('question_code', $code)?->answer['option'];
-            $answers[] = ['label' => $question['label'], 'value' => $option === null ? null : $question['options'][(int) $option] ?? null];
-        }
-
-        return ['header' => $header, 'answers' => $answers];
+        return [
+            'id' => $version->id,
+            'number' => $version->version_number,
+            'status' => $version->status,
+            'finalized_at' => $version->finalized_at->toIso8601String(),
+            'document' => OutreachDocument::fromSnapshot($snapshot, $attachments),
+            'mustahik' => $usesForms ? FormResults::mustahik($snapshot['mustahik']) : null,
+            'kifayah' => $usesForms ? FormResults::kifayah($snapshot['kifayah']) : null,
+            'signatures' => $usesForms ? collect(FormSignatures::FORMS)->map(fn (array $definition, string $form) => [
+                'title' => $definition['title'],
+                'url' => $version->getAttribute("{$form}_signature_id") === null
+                    ? null
+                    : route('outreaches.versions.signatures.show', [$outreach, $version, $form]),
+            ])->values()->all() : [],
+        ];
     }
 
     /**
-     * Kifayah values (0 shown as "-", empty as not filled) and answer labels.
-     *
-     * @return array{fields: list<array{label: string, value: string|null}>, answers: list<array{label: string, value: string|null}>}
+     * @return array{note: string|null, kepala: string, decided_at: string}|null
      */
-    private function kifayahResult(Outreach $outreach): array
+    private function latestReturn(Outreach $outreach): ?array
     {
-        $form = $outreach->kifayahForm;
-        $fields = [];
-        $answers = [];
+        $approval = OutreachApproval::query()
+            ->where('outreach_id', $outreach->id)
+            ->where('decision', OutreachApproval::RETURNED)
+            ->with('kepala:id,name')
+            ->latest('id')
+            ->first();
 
-        foreach (KifayahFormSchema::FIELDS as $name => $field) {
-            $value = $form?->getAttribute($name);
-            $fields[] = [
-                'label' => $field['label'],
-                'value' => $field['input'] === 'money' ? OutreachDocument::rupiah($value) : ($value === null ? null : (string) $value),
-            ];
-        }
-
-        foreach (KifayahFormSchema::QUESTIONS as $code => $question) {
-            $option = $form?->answers->firstWhere('question_code', $code)?->answer['option'];
-            $answers[] = ['label' => $question['label'], 'value' => $option === null ? null : $question['options'][(int) $option] ?? null];
-        }
-
-        return ['fields' => $fields, 'answers' => $answers];
+        return $approval === null ? null : [
+            'note' => $approval->note,
+            'kepala' => $approval->kepala->name,
+            'decided_at' => $approval->decided_at->toIso8601String(),
+        ];
     }
 
     private function fieldValue(Outreach $outreach, string $name): mixed

@@ -5,6 +5,8 @@ import OutreachController from '@/actions/App/Http/Controllers/OutreachControlle
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import OutreachStepper from '@/components/outreach/OutreachStepper.vue';
+import ReturnNotice from '@/components/outreach/ReturnNotice.vue';
+import type { Returned } from '@/components/outreach/ReturnNotice.vue';
 import type { Step } from '@/components/outreach/OutreachStepper.vue';
 import SourceTypeChange from '@/components/outreach/SourceTypeChange.vue';
 import type { SourceTypeChoices } from '@/components/outreach/SourceTypeChange.vue';
@@ -57,6 +59,7 @@ type Props = {
     sourceTypeChoices: SourceTypeChoices | null;
     steps: Step[];
     step: string;
+    returned: Returned | null;
     fields: Field[];
 };
 
@@ -193,8 +196,10 @@ const rupiah = (amount: number) =>
         <div class="flex max-w-3xl flex-1 flex-col gap-6">
             <Heading
                 :title="currentStep.title"
-                :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · Draft`"
+                :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · ${outreach.status === 'PERLU_PERBAIKAN' ? 'Perlu Perbaikan' : 'Draft'}`"
             />
+
+            <ReturnNotice v-if="returned" :returned="returned" />
 
             <SourceTypeChange
                 v-if="step === 'identitas' && sourceTypeChoices"

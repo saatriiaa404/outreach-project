@@ -114,8 +114,9 @@ class CreateOutreachTest extends TestCase
                 ->where('outreaches.data.0.nama', 'Warga Demo Satu')
                 ->where('canCreate', true));
 
+        // "Semua"; the Kepala otherwise starts on the approval queue.
         $this->actingAs(User::factory()->kepala()->create())
-            ->get(route('outreaches.index'))
+            ->get(route('outreaches.index', ['status' => '']))
             ->assertInertia(fn (Assert $page) => $page
                 ->has('outreaches.data', 1)
                 ->where('outreaches.data.0.status', 'PERLU_PERBAIKAN')

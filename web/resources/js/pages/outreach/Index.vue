@@ -3,7 +3,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import Heading from '@/components/Heading.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { create, edit, index } from '@/routes/outreaches';
+import { create, edit, index, show } from '@/routes/outreaches';
 
 type OutreachRow = {
     id: number;
@@ -14,6 +14,7 @@ type OutreachRow = {
     outreach_date: string;
     status: 'DRAFT' | 'MENUNGGU_PENGESAHAN' | 'PERLU_PERBAIKAN' | 'SELESAI';
     can_edit: boolean;
+    can_open: boolean;
 };
 
 type Props = {
@@ -21,6 +22,8 @@ type Props = {
         data: OutreachRow[];
         links: { url: string | null; label: string; active: boolean }[];
     };
+    statuses: OutreachRow['status'][];
+    status: OutreachRow['status'] | null;
     canCreate: boolean;
 };
 
@@ -54,11 +57,30 @@ const statusLabels: Record<OutreachRow['status'], string> = {
             </Button>
         </div>
 
+        <nav class="flex flex-wrap gap-2" data-test="status-filter">
+            <Link
+                v-for="item in [null, ...statuses]"
+                :key="item ?? 'all'"
+                :href="index({ query: { status: item ?? '' } })"
+                class="rounded-full border px-3 py-1 text-sm"
+                :class="
+                    item === status
+                        ? 'bg-primary text-primary-foreground'
+                        : 'hover:bg-muted'
+                "
+                >{{ item ? statusLabels[item] : 'Semua' }}</Link
+            >
+        </nav>
+
         <p
             v-if="outreaches.data.length === 0"
             class="text-sm text-muted-foreground"
         >
-            Belum ada Outreach.
+            {{
+                status
+                    ? `Tidak ada Outreach berstatus ${statusLabels[status]}.`
+                    : 'Belum ada Outreach.'
+            }}
         </p>
 
         <div v-else class="overflow-x-auto rounded-xl border">
@@ -83,6 +105,13 @@ const statusLabels: Record<OutreachRow['status'], string> = {
                             <Link
                                 v-if="outreach.can_edit"
                                 :href="edit(outreach.id)"
+                                class="underline underline-offset-4"
+                            >
+                                {{ outreach.code }}
+                            </Link>
+                            <Link
+                                v-else-if="outreach.can_open"
+                                :href="show(outreach.id)"
                                 class="underline underline-offset-4"
                             >
                                 {{ outreach.code }}

@@ -6,6 +6,8 @@ import Heading from '@/components/Heading.vue';
 import OutreachDocumentPreview from '@/components/outreach/OutreachDocumentPreview.vue';
 import type { OutreachDocument } from '@/components/outreach/OutreachDocumentPreview.vue';
 import OutreachStepper from '@/components/outreach/OutreachStepper.vue';
+import ReturnNotice from '@/components/outreach/ReturnNotice.vue';
+import type { Returned } from '@/components/outreach/ReturnNotice.vue';
 import type { Step } from '@/components/outreach/OutreachStepper.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -31,6 +33,7 @@ const props = defineProps<{
     };
     steps: Step[];
     step: string;
+    returned: Returned | null;
     checklist: { key: string; title: string; missing: string[] }[];
     ready: boolean;
     document: OutreachDocument;
@@ -80,8 +83,10 @@ defineOptions({
         <div class="flex min-w-0 flex-1 flex-col gap-6">
             <Heading
                 title="Review"
-                :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · Draft`"
+                :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · ${outreach.status === 'PERLU_PERBAIKAN' ? 'Perlu Perbaikan' : 'Draft'}`"
             />
+
+            <ReturnNotice v-if="returned" :returned="returned" />
 
             <section
                 class="rounded-md border p-4"
@@ -112,7 +117,11 @@ defineOptions({
                     data-test="finalize"
                     @click="confirming = true"
                 >
-                    Finalisasi
+                    {{
+                        outreach.status === 'PERLU_PERBAIKAN'
+                            ? 'Finalisasi Ulang'
+                            : 'Finalisasi'
+                    }}
                 </Button>
             </section>
 

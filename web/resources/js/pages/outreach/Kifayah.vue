@@ -35,6 +35,7 @@ const props = defineProps<{
         code: string;
         source: string;
         type: string;
+        status: string;
         edit_version: number;
     };
     steps: Step[];
@@ -153,7 +154,7 @@ const saveStatus = computed(() => {
         <div class="flex max-w-3xl flex-1 flex-col gap-6">
             <Heading
                 title="Had Kifayah"
-                :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · Draft`"
+                :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · ${outreach.status === 'PERLU_PERBAIKAN' ? 'Perlu Perbaikan' : 'Draft'}`"
             />
 
             <Form

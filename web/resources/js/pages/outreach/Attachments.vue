@@ -36,7 +36,13 @@ type Attachment = {
 };
 
 const props = defineProps<{
-    outreach: { id: number; code: string; source: string; type: string };
+    outreach: {
+        id: number;
+        code: string;
+        source: string;
+        type: string;
+        status: string;
+    };
     steps: Step[];
     step: string;
     categories: Category[];
@@ -166,7 +172,7 @@ const remove = () => {
         <div class="flex max-w-3xl flex-1 flex-col gap-6">
             <Heading
                 title="Lampiran"
-                :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · Draft`"
+                :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · ${outreach.status === 'PERLU_PERBAIKAN' ? 'Perlu Perbaikan' : 'Draft'}`"
             />
 
             <p class="text-sm text-muted-foreground">

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use LogicException;
 
@@ -23,12 +24,17 @@ use LogicException;
  * @property int|null $kifayah_signature_id
  * @property int $created_by
  * @property Carbon $finalized_at
+ * @property-read OutreachApproval|null $approval
  */
 class OutreachVersion extends Model
 {
     public const UPDATED_AT = null;
 
     public const PENDING_APPROVAL = 'PENDING_APPROVAL';
+
+    public const RETURNED = 'RETURNED';
+
+    public const APPROVED = 'APPROVED';
 
     /**
      * Get the attributes that should be cast.
@@ -76,5 +82,13 @@ class OutreachVersion extends Model
     public function attachments(): HasMany
     {
         return $this->hasMany(OutreachVersionAttachment::class);
+    }
+
+    /**
+     * @return HasOne<OutreachApproval, $this>
+     */
+    public function approval(): HasOne
+    {
+        return $this->hasOne(OutreachApproval::class);
     }
 }

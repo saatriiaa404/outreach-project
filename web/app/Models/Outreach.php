@@ -97,6 +97,24 @@ class Outreach extends Model
     }
 
     /**
+     * @return HasMany<OutreachVersion, $this>
+     */
+    public function versions(): HasMany
+    {
+        return $this->hasMany(OutreachVersion::class);
+    }
+
+    /**
+     * The submission the Outreach status refers to (database.md, status invariants).
+     *
+     * @return HasOne<OutreachVersion, $this>
+     */
+    public function latestVersion(): HasOne
+    {
+        return $this->hasOne(OutreachVersion::class)->ofMany('version_number');
+    }
+
+    /**
      * @return BelongsTo<User, $this>
      */
     public function petugas(): BelongsTo

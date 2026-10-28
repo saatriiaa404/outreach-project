@@ -62,7 +62,8 @@ Desktop memakai vertical stepper; mobile memakai `Langkah X dari N`. Status step
 ## Dashboard dan Pencarian
 
 - PETUGAS: daftar Outreach miliknya per status.
-- KEPALA: antrean `MENUNGGU_PENGESAHAN` dan daftar `SELESAI`. Draft tidak ditampilkan; `PERLU_PERBAIKAN` hanya menampilkan status dan catatan Return pada riwayat (D-039).
+- KEPALA: antrean `MENUNGGU_PENGESAHAN` dan daftar `SELESAI`. Draft tidak ditampilkan; `PERLU_PERBAIKAN` hanya menampilkan status dan catatan Return pada riwayat (D-039). Prototype (R7.3): daftar Kepala dibuka pada antrean dengan pengajuan terlama di atas; filter status tersedia untuk semua peran.
+- Halaman tinjau Kepala menampilkan versi yang diajukan, bukan data yang sedang berjalan. Return membuka dialog dengan catatan wajib; Petugas melihat catatan Return terbaru di langkah pengisian dan Review selama `PERLU_PERBAIKAN`.
 - ADMIN: semua Outreach per status, permintaan Special Unlock, dan status arsip.
 - Pencarian: nama, NIK, ID internal, Source, Type, status, dan rentang tanggal. Hasil selalu dibatasi scope role; NIK tidak dipakai sebagai identifier URL.
 
