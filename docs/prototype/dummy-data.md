@@ -12,7 +12,7 @@ Baseline aktif: Workflow v2.1 dan Database v1.1 (22 tabel). Dokumen ini menyedia
 | KEPALA | Budi Kepala | `kepala.demo@example.test` |
 | ADMIN | Sari Admin | `admin.demo@example.test` |
 
-Gunakan password demo yang berbeda dari password pribadi dan jangan memakai akun produksi. Jika sistem belum memiliki akun dummy, penyiapannya dilakukan hanya setelah gate implementasi dibuka dan mengikuti keputusan implementasi yang disetujui.
+Gunakan password demo yang berbeda dari password pribadi dan jangan memakai akun produksi. Pada prototype, password ketiga akun diambil dari `DEMO_USER_PASSWORD` di `web/.env` lokal (tidak di-commit) saat `php artisan db:seed` dijalankan; NIP Kepala demo adalah nilai sintetis `000000000000000001`, dan Kepala demo mendapat satu template tanda tangan sintetis bertanda DEMO agar Approve dapat didemokan sebelum R9.3 (D-054). Jika sistem belum memiliki akun dummy, penyiapannya dilakukan hanya setelah gate implementasi dibuka dan mengikuti keputusan implementasi yang disetujui.
 
 ## Record Demo
 
@@ -22,6 +22,8 @@ Gunakan password demo yang berbeda dari password pribadi dan jangan memakai akun
 | DEMO-002 | CSR | BEASISWA | MENUNGGU_PENGESAHAN | Kepala melakukan Return; Petugas revisi dan Finalisasi Ulang; uji approval dan PDF gate |
 | DEMO-003 | BANGGA_SURABAYA | BANTUAN_MODAL_USAHA | DRAFT | Alur Bangga Surabaya; pastikan form Mustahik/Kifayah dan signature Petugas/Warga sebelum approval tidak ditampilkan jika tidak diwajibkan Workflow v2.1 |
 | DEMO-004 | BAZNAS | ALAT_KESEHATAN | SELESAI | Uji Special Unlock dan pastikan history lama tetap utuh |
+
+Sejak 29 Oktober 2026 `DemoSeeder` menyiapkan keempat record: DEMO-001 dan DEMO-003 sebagai Draft; DEMO-002 dan DEMO-004 dibangun melalui alur aplikasi (isi data, empat lampiran sintetis, tanda tangan sintetis, Finalisasi, dan untuk DEMO-004 Approve oleh Kepala demo). Kepala demo memakai pangkat sintetis `Penata Tk. I`.
 
 Gunakan nama sintetis seperti `Warga Demo Satu`, `Warga Demo Dua`, dan token identitas seperti `DUMMY-NIK-001`. Jangan gunakan nomor identitas yang menyerupai atau berpotensi menjadi NIK warga nyata. Data alamat, nomor kontak, dan tanggal lahir—jika dibutuhkan untuk demonstrasi—harus jelas sintetis.
 

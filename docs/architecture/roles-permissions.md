@@ -9,6 +9,11 @@ Revisi 23 Oktober 2026: batas peran ADMIN diselaraskan dengan
 keputusan D-016 (`docs/project-management/decisions.md`). Workflow v2.1
 dan Database v1.1 tidak berubah.
 
+Revisi 27 Oktober 2026: visibilitas, dashboard, dan pencarian (D-039),
+pengelolaan master Source/Type dan larangan unduh PDF final oleh PETUGAS
+(D-040), arsip dan backup manual oleh ADMIN (D-038), serta pengelolaan NIP
+Kepala (D-041) ditambahkan pada matriks. Workflow v2.1 tidak berubah.
+
 ## Aturan Otorisasi
 
 ``` text
@@ -65,11 +70,45 @@ atau izin terhadap resource.
                                                               administratif dan
                                                               aturan workflow
 
-  Mengelola               Tidak             Tidak             Ya
-  user/template/storage                                       
+  Mengelola               Tidak             Tidak             Ya, termasuk NIP
+  user/template/storage                                       Kepala (D-041)
 
-  Print PDF               Tidak             Ya, dalam scope   Ya, dalam scope
-                                            Kelurahan         administratif
+  Mengganti password      Password: Ya;     Password: Ya;     Password: Ya;
+  sendiri / mengubah      profil dan hapus  profil dan hapus  profil dan hapus
+  profil atau menghapus   akun: Tidak       akun: Tidak       akun: Tidak
+  akun sendiri            (D-044)           (D-044)           (D-044)
+
+  Print / unduh PDF       Tidak, termasuk   Ya, dalam scope   Ya, dalam scope
+                          PDF final (D-040) Kelurahan         administratif
+
+  Melihat Outreach        Milik sendiri     Tidak (D-039)     Ya, dalam scope
+  `DRAFT`                                                     administratif
+
+  Melihat Outreach        Milik sendiri     Hanya status dan  Ya, dalam scope
+  `PERLU_PERBAIKAN`                         catatan Return    administratif
+                                            pada riwayat,
+                                            tanpa isi yang
+                                            sedang diedit
+                                            (D-039)
+
+  Mengisi                 Ya, milik sendiri Tidak             Hanya selama
+  Mustahik/Kifayah dan    selama status                       Special Unlock
+  mengelola lampiran      editable
+
+  Dashboard dan pencarian Outreach milik    Sesuai batas      Semua Outreach
+                          sendiri (D-039)   visibilitas       dalam scope
+                                            KEPALA (D-039)    administratif
+                                                              (D-039)
+
+  Mengelola master        Tidak             Tidak             Ya; `code` tidak
+  Source/Type                                                 dapat diubah
+                                                              (D-040)
+
+  Menandai status arsip   Tidak             Tidak             Ya, manual
+                                                              (D-038)
+
+  Backup mingguan         Tidak             Tidak             Ya, manual
+  database dan lampiran                                       (D-038)
   -----------------------------------------------------------------------------
 
 Keterangan: - Izin administratif ADMIN tetap dibatasi oleh scope
@@ -102,6 +141,23 @@ Selaras dengan D-016 (`docs/project-management/decisions.md`):
     telah difinalisasi, termasuk lewat `Lock & Ajukan`, masuk antrean
     KEPALA.
 
+## Visibilitas, Dashboard, dan Pencarian
+
+Selaras dengan D-039:
+
+-   KEPALA tidak melihat Outreach berstatus `DRAFT`. Untuk
+    `PERLU_PERBAIKAN`, KEPALA hanya melihat status dan catatan Return
+    pada riwayat, tanpa isi yang sedang diedit Petugas.
+-   Dashboard minimum: PETUGAS melihat Outreach miliknya per status;
+    KEPALA melihat antrean `MENUNGGU_PENGESAHAN` dan Outreach `SELESAI`;
+    ADMIN melihat semua Outreach per status, permintaan Special Unlock,
+    dan status arsip.
+-   Pencarian memakai nama, NIK, ID internal, Source, Type, status, dan
+    rentang tanggal. Hasil pencarian selalu dibatasi scope dan
+    visibilitas role yang sama dengan dashboard dan URL langsung.
+-   NIK boleh menjadi kriteria pencarian, tetapi tidak menjadi
+    identifier URL (lihat `security.md`).
+
 ## Batas Per Peran
 
 ### PETUGAS
@@ -112,6 +168,7 @@ Selaras dengan D-016 (`docs/project-management/decisions.md`):
 -   Dapat mengajukan Request Special Unlock, tetapi tidak dapat
     mengaktifkan Special Unlock sendiri.
 -   Tidak dapat melakukan Return atau Approve.
+-   Tidak mengunduh atau mencetak PDF final (D-040).
 
 ### KEPALA
 
@@ -122,6 +179,8 @@ Selaras dengan D-016 (`docs/project-management/decisions.md`):
     workflow.
 -   Tidak dapat mengambil alih kewenangan ADMIN untuk Lock / Lock &
     Ajukan atau pengelolaan administratif.
+-   Tidak melihat Draft; untuk `PERLU_PERBAIKAN` hanya melihat status
+    dan catatan Return (D-039).
 
 ### ADMIN
 
@@ -135,6 +194,10 @@ Selaras dengan D-016 (`docs/project-management/decisions.md`):
 -   Tidak dapat melakukan Approve atau Return sebagai approver normal.
 -   Tidak boleh mengabaikan validasi, gate PDF, pemeriksaan versi, atau
     jejak audit hanya karena memiliki hak administratif.
+-   Satu-satunya peran yang mengelola master Source/Type; `code` tidak
+    dapat diubah dan penonaktifan memakai `active` (D-040).
+-   Melakukan penandaan arsip dan backup mingguan secara manual (D-038).
+-   Mengelola NIP Kepala; perubahan NIP dicatat pada audit (D-041).
 
 ## Aturan Tambahan
 

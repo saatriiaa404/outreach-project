@@ -11,6 +11,11 @@
 | Partner | Kelurahan Manukan Kulon, Kota Surabaya |
 | Development Team | 2 mahasiswa Teknik Informatika — Studi Independen |
 | Development Method | Prototype |
+| Penyelarasan | D-031, D-033, D-034, D-035, dan D-038 (27 Oktober 2026); lihat `docs/project-management/decisions.md` |
+
+Penyelarasan 27 Oktober 2026 memperbarui teks pada bagian 13.3, 15.2, 18.1,
+25, 26.2, 27, 28.2, 32.2, 39, dan 41 sesuai keputusan di atas. State, action,
+transisi, dan gate bisnis Workflow v2.1 tidak berubah.
 
 ### Document Responsibility
 
@@ -744,12 +749,9 @@ Context dari Outreach boleh ditampilkan untuk membantu proses survey, tetapi:
 
 ## 13.3 Multiplicity
 
-Baseline pertanyaan Mustahik menggunakan single choice.
-
-Pengecualian yang masih `PENDING VALIDATION`:
-
-- Tanggungan;
-- Hutang.
+Seluruh 25 pertanyaan Mustahik menggunakan single choice, termasuk Tanggungan
+dan Hutang. Pengecualian multiple choice yang sebelumnya `PENDING VALIDATION`
+dicabut untuk prototype (D-035).
 
 ## 13.4 Signature
 
@@ -831,7 +833,7 @@ Empat lampiran dasar wajib tersedia untuk Finalisasi:
 - Foto Klien;
 - Foto Rumah.
 
-Draft tetap boleh disimpan meskipun lampiran dasar belum lengkap. Finalisasi ditolak jika salah satu lampiran dasar yang diwajibkan belum tersedia. Lampiran tambahan dapat disediakan sesuai kebutuhan; persyaratan wajib tambahan per Jenis Outreach masih `PENDING VALIDATION` sampai dikonfirmasi dengan Kelurahan.
+Draft tetap boleh disimpan meskipun lampiran dasar belum lengkap. Finalisasi ditolak jika salah satu lampiran dasar yang diwajibkan belum tersedia. Empat lampiran dasar harus berupa gambar (D-034). Lampiran tambahan dapat disediakan sesuai kebutuhan dan tidak memblokir Finalisasi pada prototype (D-033); persyaratan wajib tambahan per Jenis Outreach masih `PENDING VALIDATION` sampai dikonfirmasi dengan Kelurahan.
 
 ## 15.3 Upload Pipeline
 
@@ -969,8 +971,9 @@ dapat direkonstruksi dengan template yang tepat.
 
 Template stamp disiapkan secara versioned.
 
-Penggunaan stempel digital pada PDF masih `PENDING VALIDATION` terhadap kebijakan
-Kelurahan.
+Stempel digital boleh dicetak pada PDF (D-065). Stempel aktif dicatat pada
+approval dan dicetak menimpa sisi kiri tanda tangan Lurah; pengesahan tanpa
+stempel aktif tetap berjalan.
 
 # 17. Review Workflow
 
@@ -1016,7 +1019,7 @@ Untuk Finalisasi/Finalisasi Ulang oleh Petugas, Outreach harus:
 - memenuhi full validation;
 - memenuhi required related forms;
 - memiliki empat lampiran dasar: KTP, KK, Foto Klien, dan Foto Rumah;
-- memenuhi lampiran tambahan yang telah ditetapkan sebagai wajib setelah validasi resmi;
+- memenuhi lampiran tambahan yang telah ditetapkan sebagai wajib setelah validasi resmi (pada prototype belum ada lampiran tambahan yang memblokir Finalisasi, D-033);
 - memenuhi required signatures sesuai Source;
 - lolos version/conflict check.
 
@@ -1499,6 +1502,11 @@ PERLU_PERBAIKAN
 
 dan proses dilanjutkan oleh Petugas.
 
+`Lock` tidak membuat historical version baru. Versi terbaru tetap berstatus
+seperti sebelumnya (`APPROVED` atau `PENDING_APPROVAL`) sampai submission
+berikutnya, dan `Lock` dicatat pada History dengan event `SPECIAL_UNLOCK_LOCKED`
+(D-031).
+
 ## 25.6 Lock & Ajukan untuk Pengesahan
 
 Jika submission sudah lengkap dan tidak membutuhkan pekerjaan lanjutan
@@ -1514,6 +1522,8 @@ Action ini langsung:
 2. membuat historical version baru;
 3. mengunci hasil koreksi;
 4. mengubah status menjadi `MENUNGGU_PENGESAHAN`.
+
+Action ini dicatat pada History dengan event `SPECIAL_UNLOCK_SUBMITTED` (D-031).
 
 Admin tidak melakukan approval.
 
@@ -1539,6 +1549,8 @@ Event minimum:
 ```text
 SPECIAL_UNLOCKED
 SPECIAL_UNLOCK_EDITED
+SPECIAL_UNLOCK_LOCKED
+SPECIAL_UNLOCK_SUBMITTED
 ```
 
 ## 25.9 Administrative Request Queue
@@ -1580,6 +1592,8 @@ PDF wajib dibuat berdasarkan Source dan submission/historical version yang berla
 1. **Outreach PDF** — halaman utama form Outreach, dilanjutkan halaman lampiran wajib.
 
 Mustahik dan Kifayah tidak dibuat untuk Bangga Surabaya. Halaman lampiran merupakan bagian dari Outreach PDF, tetapi dipisahkan secara visual dari halaman form utama. Lampiran yang gagal diproses tidak boleh diam-diam dihilangkan.
+
+Pada prototype, hanya lampiran berupa gambar yang dicetak pada halaman lampiran. Lampiran berformat PDF tetap tersimpan sebagai attachment dan ditampilkan sebagai halaman rujukan berisi nama berkas; tidak ada penggabungan halaman PDF (D-034).
 
 ## 26.3 Approval Gate and Generation Failure
 
@@ -1648,11 +1662,20 @@ Record dapat mencatat:
 - archived_at;
 - verified_at jika tersedia.
 
-## 27.3 Pending Validation
+## 27.3 Keputusan Arsip (D-038)
+
+- Admin mengarsipkan secara manual paling lambat satu bulan sejak persetujuan
+  Kepala: PDF diunduh, diunggah manual ke E-Surat/E-Arsip, lalu status arsip
+  ditandai pada aplikasi.
+- Data dan lampiran tetap berada di aplikasi setelah diarsipkan.
+- Tidak ada integrasi E-Surat/E-Arsip.
+- ID internal aplikasi digunakan untuk pencarian/pelacakan, bukan sebagai nomor
+  arsip resmi.
+
+## 27.4 Pending Validation
 
 Masih perlu dikonfirmasi:
 
-- siapa yang mengunggah ke E-Surat;
 - apakah sistem perlu menyimpan nomor/reference archive;
 - bagaimana verifikasi dokumen dianggap telah benar-benar terarsip.
 
@@ -1675,7 +1698,12 @@ REFINALIZED
 APPROVED
 SPECIAL_UNLOCKED
 SPECIAL_UNLOCK_EDITED
+SPECIAL_UNLOCK_LOCKED
+SPECIAL_UNLOCK_SUBMITTED
 ```
+
+`SPECIAL_UNLOCK_LOCKED` mencatat `Lock` setelah Special Unlock dan
+`SPECIAL_UNLOCK_SUBMITTED` mencatat `Lock & Ajukan untuk Pengesahan` (D-031).
 
 `SECTION_SAVED` digunakan untuk penyimpanan manual/important save yang dianggap
 relevan untuk timeline, bukan setiap autosave.
@@ -1810,11 +1838,9 @@ Enforcement dilakukan di service/transaction boundary.
 
 ## 31.3 Head Change with Pending Queue
 
-Penanganan antrean ketika terjadi pergantian Kepala masih:
-
-```text
-PENDING VALIDATION
-```
+Diputuskan Kelurahan (D-064): antrean `MENUNGGU_PENGESAHAN` tetap ada saat
+Kepala berganti dan boleh diputuskan oleh Kepala aktif yang baru. Pengesahan
+yang sudah ada tetap mencatat Kepala yang mengesahkan sebelumnya.
 
 Workflow teknis harus menjaga agar approval tidak dapat dilakukan oleh actor
 yang tidak berwenang.
@@ -1867,7 +1893,10 @@ melewati ownership/status gate.
 
 ## 32.2 KEPALA
 
-Kepala dapat melihat lintas Petugas dalam scope Kelurahan yang sah.
+Kepala dapat melihat lintas Petugas dalam scope Kelurahan yang sah, dengan
+batas D-039: Draft tidak terlihat, dan untuk `PERLU_PERBAIKAN` Kepala hanya
+melihat status serta catatan Return pada riwayat, tanpa isi yang sedang diedit.
+Detail visibilitas mengikuti `docs/architecture/roles-permissions.md`.
 
 Kepala hanya dapat melakukan approval terhadap latest submission yang masih
 pending.
@@ -2138,7 +2167,7 @@ Scheduler digunakan untuk tugas operasional terjadwal yang diperlukan oleh
 sistem.
 
 Detail konfigurasi scheduler/cron merupakan concern engineering/deployment dan
-diatur pada `docs/engineering/deployment.md`.
+diatur pada `docs/engineering/deployment.md` (belum dibuat).
 
 Workflow-level maintenance dapat mencakup:
 
@@ -2164,8 +2193,13 @@ Backup harus mencakup keduanya sesuai baseline deployment.
 
 Restore test dilakukan sebelum handover.
 
-Detail owner, frequency, media, hosting target, dan operational backup policy
-mengikuti hasil validasi Kelurahan dan dokumentasi deployment.
+Pada prototype, backup dilakukan manual oleh Admin setiap minggu, mencakup
+database dan seluruh lampiran, dan disimpan pada media terpisah (D-038).
+Perintahnya `php artisan backup:create` dan `php artisan backup:restore`;
+prosedur rinci ada di `docs/engineering/setup.md`.
+
+Hosting target dan kebijakan backup operasional setelah serah terima mengikuti
+hasil validasi Kelurahan dan dokumentasi deployment.
 
 Backup bukan pengganti historical version atau archive workflow.
 
@@ -2236,10 +2270,15 @@ Masih perlu dikonfirmasi:
 - lampiran wajib untuk Pendidikan (Kejar Paket);
 - lampiran wajib untuk Bantuan Modal Usaha.
 
+Sampai dikonfirmasi, lampiran tambahan tidak memblokir Finalisasi pada
+prototype (D-033).
+
 ## 41.2 Format Lampiran
 
-Masih perlu dikonfirmasi apakah lampiran tertentu harus berupa foto atau boleh
-menggunakan PDF/dokumen lain.
+Pada prototype, empat lampiran dasar harus berupa gambar, sedangkan lampiran
+lain boleh berupa PDF dan ditampilkan sebagai halaman rujukan pada Outreach PDF
+(D-034). Masih perlu dikonfirmasi apakah Kelurahan mempunyai ketentuan format
+lain untuk lampiran tertentu.
 
 ## 41.3 Operational File Limits
 
@@ -2262,70 +2301,73 @@ harus tersedia.
 
 ## 41.6 Data Lama / Archive
 
-Masih perlu dikonfirmasi bagaimana Kelurahan menangani data Outreach lama atau
-sudah tidak aktif.
+Prosedur arsip manual ditetapkan pada D-038 (lihat Bagian 27.3). Masih perlu
+dikonfirmasi bagaimana Kelurahan menangani data Outreach lama atau sudah tidak
+aktif di luar prosedur tersebut.
 
 ## 41.7 E-Surat / E-Arsip
 
-Masih perlu dikonfirmasi:
+Uploader adalah Admin secara manual (D-038). Masih perlu dikonfirmasi:
 
-- siapa uploader;
 - apakah reference/nomor archive perlu disimpan;
 - bagaimana verifikasi arsip dianggap berhasil.
 
 ## 41.8 Mustahik Multiplicity
 
-Masih perlu dikonfirmasi apakah pertanyaan Tanggungan dan Hutang benar-benar
-boleh multiple choice dan kategori lain yang memerlukan lebih dari satu jawaban.
+Diputuskan pada D-035: Tanggungan dan Hutang single choice, seperti seluruh 25
+pertanyaan Mustahik. Tidak ada lagi pending validation untuk multiplicity pada
+prototype.
 
 ## 41.9 Field Outreach Tambahan
 
 Masih perlu dikonfirmasi apakah ada data operasional yang biasa dicatat Petugas
 namun belum ada dalam baseline form.
 
-## 41.9 Signature Template Kepala
+## 41.10 Signature Template Kepala
 
 Masih perlu dikonfirmasi apakah template signature Kepala yang disimpan di
 sistem dapat digunakan untuk dokumen resmi.
 
-## 41.9 Digital Stamp
+## 41.11 Digital Stamp
 
 Masih perlu dikonfirmasi apakah digital stamp boleh ditempatkan pada PDF atau
 harus menggunakan stamp fisik setelah cetak.
 
-## 41.9 Prosedur Koreksi Resmi
+## 41.12 Prosedur Koreksi Resmi
 
 Secara desain sistem, Admin merupakan executor Special Unlock.
 
 Yang masih perlu divalidasi adalah kesesuaian mekanisme tersebut dengan SOP dan
 kewenangan operasional Kelurahan.
 
-## 41.9 Petugas Setelah Return
+## 41.13 Petugas Setelah Return
 
 Masih perlu dikonfirmasi apakah pada praktik Kelurahan Return selalu dikerjakan
 oleh Petugas yang sama atau ada mekanisme penugasan lain.
 
-## 41.9 Concurrent Usage
+## 41.14 Concurrent Usage
 
 Target desain sementara sekitar 10 user bersamaan, bukan hard limit.
 
 Validasi lapangan tetap diperlukan untuk mengetahui penggunaan nyata.
 
-## 41.9 Head Replacement
+## 41.15 Head Replacement
 
 Masih perlu dikonfirmasi bagaimana submission yang menunggu approval ditangani
 ketika terjadi pergantian Kepala.
 
-## 41.9 Backup
+## 41.16 Backup
 
-Masih perlu dikonfirmasi:
+Untuk prototype sudah diputuskan pada D-038: Admin, mingguan, database dan
+seluruh lampiran, media terpisah. Untuk operasional setelah serah terima masih
+perlu dikonfirmasi:
 
 - siapa owner backup;
 - frekuensi;
 - media/lokasi backup;
 - pembagian tanggung jawab dengan hosting.
 
-## 41.9 Hosting & Domain
+## 41.17 Hosting & Domain
 
 Masih perlu dikonfirmasi apakah Kelurahan sudah mempunyai hosting/domain atau
 perlu disiapkan baru.
@@ -2349,7 +2391,7 @@ hal tersebut sudah menjadi baseline internal.
 | Security | `docs/architecture/security.md` |
 | UI/UX | `docs/ux/design.md` |
 | Prototype | `docs/prototype/prototype.md` |
-| Deployment | `docs/engineering/deployment.md` |
+| Deployment | `docs/engineering/deployment.md` (belum dibuat) |
 
 Satu concern memiliki satu canonical source. Checkpoint/planner proyek berada
 di luar repository dan tidak menjadi dependency runtime atau implementation

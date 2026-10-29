@@ -17,10 +17,33 @@ menangani persistence; filesystem menyimpan file fisik secara privat.
 Modul: Outreach, Mustahik, Kifayah, Attachments, Workflow, Approval,
 Documents/PDF, Signatures, History/Audit, Notifications, dan Admin.
 
+Revisi 27 Oktober 2026: menambahkan pustaka UI (D-018), konfigurasi
+infrastruktur Laravel minimal (D-030), aturan lampiran pada PDF (D-034),
+konstanta wilayah (D-036), dan lokasi kode (D-042). Keputusan tercatat pada
+`docs/project-management/decisions.md`.
+
 ## Batas Implementasi
 
 -   Stack prototype: Laravel 13, Vue 3 + TypeScript, Inertia, Vite,
-    MySQL, Dompdf, dan Laravel Filesystem.
+    MySQL, Dompdf, dan Laravel Filesystem (D-013). Lapisan tampilan
+    memakai Tailwind CSS + shadcn-vue melalui starter kit resmi Laravel
+    untuk Vue (D-018). Signature pad Petugas/Warga memakai pustaka
+    `signature_pad` 5.1.4 dengan versi terkunci (D-049). PDF memakai
+    paket `dompdf/dompdf` 3.1.6 secara langsung dengan versi terkunci
+    (D-052).
+-   Lokasi kode: aplikasi Laravel ditempatkan di `project/web/`, bukan
+    di akar `project/`, agar tidak bertabrakan dengan `README.md`,
+    `.gitignore`, dan `docs/` (D-042).
+-   Infrastruktur Laravel dibuat minimal (D-030): session dan cache
+    memakai driver file, queue sinkron (`sync`), tanpa reset password dan
+    tanpa registrasi publik, sehingga tabel infrastruktur praktis hanya
+    `migrations` dan berada di luar hitungan 22 tabel domain. Model User
+    disesuaikan untuk memakai kolom `password_hash`; kolom bawaan seperti
+    `remember_token`, `email_verified_at`, dan 2FA tidak ditambahkan.
+    Detail teknis diverifikasi saat bootstrap.
+-   Kelurahan dan Kecamatan pada form Mustahik dan Kifayah berasal dari
+    konstanta konfigurasi aplikasi (Kelurahan Manukan Kulon, Kecamatan
+    Tandes), bukan data per Outreach (D-036).
 -   Controller tetap tipis. Aturan bisnis, transisi status, pemeriksaan
     gate, dan invariant ditempatkan pada service/domain action agar
     tidak hanya bergantung pada UI.
@@ -62,6 +85,9 @@ Pembuatan PDF mengikuti jenis bantuan dan workflow canonical:
     yang jelas dan tidak boleh diam-diam melewatkan output atau lampiran.
 -   Pembuatan/unduhan PDF tidak dengan sendirinya mengubah status bisnis
     atau menggantikan proses pengiriman manual ke E-Surat/E-Arsip.
+-   Halaman lampiran PDF Outreach hanya mencetak lampiran gambar.
+    Lampiran berformat PDF ditampilkan sebagai halaman rujukan berisi nama
+    berkas; tidak ada pustaka penggabung PDF pada prototype (D-034).
 
 ## Batas Persistence dan Workflow
 

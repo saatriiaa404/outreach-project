@@ -4,6 +4,8 @@ Gunakan checklist ini saat walkthrough prototype bersama pihak terkait. Catat se
 
 Baseline aktif: Workflow v2.1 dan Database v1.1 (22 tabel). Demo menggunakan database lokal non-production dan data dummy/sintetis saja. Checklist ini tidak membuka gate implementasi dan tidak mengotorisasi perubahan baseline.
 
+Hasil uji otomatis per skenario (R11.1, 29 Oktober 2026) dicatat di `docs/engineering/testing.md` bagian "Hasil Eksekusi R11.1". Kotak di bawah tetap untuk walkthrough bersama pihak terkait dan baru dicentang saat walkthrough itu dijalankan.
+
 ## Persiapan Demo
 
 - [ ] Pastikan demo menggunakan database lokal non-production dan data dummy/sintetis; tidak ada data pribadi warga nyata.

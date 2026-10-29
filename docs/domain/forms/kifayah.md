@@ -1,5 +1,10 @@
 # Kifayah Form Specification --- v1.7
 
+Revisi 27 Oktober 2026: identitas Mustahik ditampilkan read-only dari
+Outreach (D-036), dan opsi pertanyaan pilihan ditetapkan untuk ditranskripsi
+secara literal dari `kifayah.pdf` (D-037). Keputusan tercatat pada
+`docs/project-management/decisions.md`. Tidak ada perubahan schema.
+
 ## 1. Authority dan Batasan
 
 -   Kifayah berlaku hanya untuk Source `BAZNAS` dan `CSR`;
@@ -242,38 +247,34 @@ Pertanyaan pilihan bersifat **single-choice**: satu jawaban aktif untuk
 setiap `question_code`. Nama kode mengikuti baseline Database v1.1 yang
 terkunci.
 
-  ----------------------------------------------------------------------------------
-  `question_code`     Label pada     Opsi yang         Cardinality   Applicability
-                      Form Had       tercetak pada                   
-                      Kifayah        sumber                          
-  ------------------- -------------- ----------------- ------------- ---------------
-  `HOUSE_OWNERSHIP`   Kepemilikan    Tidak memiliki    Single        Baznas/CSR
-                      Tempat Tinggal rumah;                          
-                                     menyewa/kontrak                 
+Label dan opsi di bawah ditranskripsi secara literal dari `kifayah.pdf`
+(D-037) dengan pemeriksaan teks dan tampilan visual PDF: ejaan, kapitalisasi,
+dan urutan opsi mengikuti sumber dari atas ke bawah. Transkripsi dikerjakan
+agent atas izin pemilik proyek dan dikonfirmasi benar oleh pemilik proyek
+pada 27 Oktober 2026 (VAL-003 selesai).
 
-  `ELECTRICITY`       Daya Listrik   450 watt; 900     Single        Baznas/CSR
-                                     watt; lebih dari                
-                                     900 watt                        
+| `question_code` | Bagian pada sumber | Label pada sumber | Opsi pada sumber (urutan sumber) | Cardinality |
+|---|---|---|---|---|
+| `HOUSE_OWNERSHIP` | STATUS TEMPAT TINGGAL | Kepemilikan Rumah/Kontrakan | Tidak Memiliki Tempat Tinggal; Sewa/Kontrak; Memiliki Tempat Tinggal Sendiri | Single |
+| `ELECTRICITY` | STATUS TEMPAT TINGGAL | Penerangan Listrik | 450 Watt; 900 Watt; Lebih dari 900 Watt | Single |
+| `GOVERNMENT_AID` | MENERIMA BANTUAN PEMERINTAH | Bansos | Tidak Menerima Bansos; Menerima Bansos | Single |
+| `BPJS_KIS_PBI` | MENERIMA BANTUAN PEMERINTAH | Penerima BPJS | Bukan Penerima BPJS/KIS/PBI; Penerima BPJS/KIS/PBI | Single |
+| `MOTOR_VEHICLE` | KEPEMILIKAN ASET | Memiliki Kendaraan Bermotor | Tidak Memiliki Kendaraan Bermotor; Memiliki Kendaraan Bermotor | Single |
+| `SAVINGS` | KEPEMILIKAN ASET | Memiliki Tabungan | Tidak Memiliki Tabungan; Memiliki Tabungan | Single |
+| `DEBT` | BEBAN KEUANGAN | Memiliki Hutang | Tidak Memiliki Hutang; Memiliki Hutang | Single |
 
-  `GOVERNMENT_AID`    Bantuan        Ya; Tidak         Single        Baznas/CSR
-                      Pemerintah                                     
+**Catatan transkripsi:**
 
-  `BPJS_KIS_PBI`      BPJS/KIS/PBI   Ya; Tidak         Single        Baznas/CSR
-
-  `MOTOR_VEHICLE`     Kendaraan      Ya; Tidak         Single        Baznas/CSR
-                      Bermotor                                       
-
-  `SAVINGS`           Tabungan       Ya; Tidak         Single        Baznas/CSR
-
-  `DEBT`              Hutang         Ya; Tidak         Single        Baznas/CSR
-  ----------------------------------------------------------------------------------
-
-**Catatan validasi sumber:** daftar di atas merangkum label dan opsi
-yang terbaca dari formulir Had Kifayah. Pastikan ejaan, pemetaan
-label-ke-kode, dan seluruh opsi terhadap salinan PDF sumber sebelum
-dianggap sebagai transkripsi final. Jika PDF memuat rincian opsi
-tambahan yang tidak tercantum di tabel ini, jangan menambahkannya
-berdasarkan asumsi.
+-   Pemetaan label ke `question_code` mengikuti makna label dan urutan kode
+    pada Database v1.1; tidak ada kode baru.
+-   Sumber menandai pilihan dengan petunjuk "Centang ✔ pada kotak pilihan".
+    Pada aplikasi, pilihan tetap single-choice tanpa default; jawaban tidak
+    diisi otomatis dari data Outreach.
+-   Beberapa label fixed field pada sumber memuat salah ketik (mis.
+    "Ibu Menyusi", "Pendidika Tinggi", "PENGELURAN TAMBAHAN"). D-037 hanya
+    mencakup opsi pertanyaan pilihan. Penulisan label fixed field pada
+    tampilan dan PDF memakai ejaan yang dibetulkan ("Ibu Menyusui",
+    "Pendidikan Tinggi", "PENGELUARAN TAMBAHAN"; D-053).
 
 ## 4. Identitas Mustahik dan Penggunaan Data Outreach
 
@@ -286,10 +287,23 @@ Form Had Kifayah menampilkan informasi identitas berikut:
 -   Kecamatan
 -   No. HP
 
-Belum diputuskan apakah identitas ini diisi mandiri pada form Kifayah
-atau ditampilkan dari data Outreach yang terkait. Karena itu, jangan
-mengasumsikan perilaku salin otomatis atau membuat sumber data baru.
-Perilaku tersebut perlu ditetapkan saat validasi tampilan form.
+Sesuai D-036, identitas ini **ditampilkan read-only dari data Outreach
+yang terkait** dan tidak diketik ulang pada form Kifayah. Tidak ada kolom
+identitas baru pada `kifayah_forms`.
+
+| Bagian pada PDF sumber | Sumber data |
+|---|---|
+| Nama | `outreaches.nama` |
+| NIK | `outreaches.nik` |
+| Alamat Tempat Tinggal | `outreaches.alamat_domisili` (Alamat Domisili) |
+| Kelurahan | Konstanta konfigurasi: Kelurahan Manukan Kulon |
+| Kecamatan | Konstanta konfigurasi: Kecamatan Tandes |
+| No. HP | `outreaches.no_telp` |
+
+Penampilan identitas ini bukan pengisian otomatis jawaban Kifayah;
+larangan memilih atau mengisi jawaban Kifayah dari data Outreach tetap
+berlaku. Identitas pada PDF historis diambil dari snapshot versi terkait,
+bukan dari data Outreach terkini.
 
 ## 5. PDF, Snapshot, dan Approval
 
@@ -312,9 +326,9 @@ Perilaku tersebut perlu ditetapkan saat validasi tampilan form.
     mengikuti aturan workflow untuk memperbarui tanda tangan yang
     relevan. Perubahan yang hanya terjadi pada lampiran tidak mengubah
     data Kifayah dan tidak memicu re-sign.
--   Jangan menambahkan kalkulasi skor otomatis. Perilaku kolom skor yang
-    terlihat pada formulir sumber belum ditetapkan sebagai fitur
-    aplikasi.
+-   Jangan menambahkan kalkulasi skor otomatis. Formulir sumber
+    `kifayah.pdf` tidak memuat kolom skor, sehingga tidak ada perilaku
+    skor yang perlu diterapkan.
 
 ## 6. Aturan Implementasi yang Sudah Dikonfirmasi
 
@@ -322,7 +336,9 @@ Perilaku tersebut perlu ditetapkan saat validasi tampilan form.
 2.  Satu Outreach memiliki maksimal satu form Kifayah aktif sesuai
     baseline database.
 3.  Setiap `question_code` memiliki satu jawaban aktif; jawaban harus
-    berasal dari opsi pertanyaan tersebut.
+    berasal dari opsi pertanyaan tersebut. Jawaban disimpan sebagai
+    `{"option": "<kode>"}` dengan kode = posisi opsi pada sumber dari atas
+    ke bawah (Q-07).
 4.  Data Outreach tidak boleh memilih jawaban Kifayah secara otomatis.
 5.  Semua kategori pengeluaran wajib diisi secara eksplisit sebelum
     finalisasi. `0` dapat dipakai ketika tidak ada pengeluaran atau
@@ -330,7 +346,8 @@ Perilaku tersebut perlu ditetapkan saat validasi tampilan form.
     menyamakan keduanya.
 6.  Input nominal dan hitungan harus numerik dan minimal 0; tolak nilai
     negatif atau nonnumerik. Jangan menetapkan batas maksimum arbitrer
-    untuk jumlah anggota keluarga yang menempuh pendidikan tinggi.
+    untuk jumlah anggota keluarga yang menempuh pendidikan tinggi; batas
+    teknis 65.535 hanya mengikuti tipe kolom `SMALLINT UNSIGNED`.
 7.  Tahun/tanggal PDF Kifayah mengikuti tanggal Outreach yang tersimpan.
 8.  Kegagalan membuat PDF Kifayah yang diwajibkan menggagalkan approval;
     status tetap `MENUNGGU_PENGESAHAN` dan notifikasi
@@ -339,15 +356,18 @@ Perilaku tersebut perlu ditetapkan saat validasi tampilan form.
 10. Jangan mengubah Database v1.1, menambah/mengganti kode pertanyaan,
     atau membuat migration sebagai bagian dari pembaruan spesifikasi
     ini.
+11. Identitas Mustahik ditampilkan read-only dari Outreach; alamat
+    memakai Alamat Domisili, sedangkan Kelurahan dan Kecamatan memakai
+    konstanta konfigurasi (D-036).
+12. Opsi pertanyaan pilihan mengikuti transkripsi literal dari
+    `kifayah.pdf` (D-037).
 
 ## 7. Hal yang Masih Perlu Validasi
 
--   Apakah identitas Mustahik diketik ulang atau ditampilkan dari
-    Outreach.
--   Transkripsi final label dan opsi tiap pertanyaan dengan pemeriksaan
-    visual terhadap PDF sumber.
--   Makna dan perlakuan kolom skor pada formulir sumber; tidak ada
-    scoring otomatis yang disetujui.
+-   ~~Makna kotak centang di samping setiap nominal pengeluaran.~~ Diputuskan
+    (VAL-006, D-064): kotak dicentang bila nominal pengeluaran bukan 0. Aturan
+    `0`/`NULL` pada isian tetap berlaku; PDF dengan template versi 1 tetap
+    mencetak kotak kosong (D-053).
 -   Format dan posisi tanda tangan pada PDF keluaran.
 -   Validasi formal oleh Kelurahan bahwa spesifikasi ini sesuai dengan
     formulir Had Kifayah yang digunakan.

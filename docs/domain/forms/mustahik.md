@@ -1,6 +1,6 @@
 # Mustahik Form Specification — v1.7
 
-Revisi Oktober 2026: register 25 pertanyaan dilengkapi dan diselaraskan secara literal dengan PDF sumber (D-022); `docs/project-management/decisions.md` memuat keputusannya.
+Revisi Oktober 2026: register 25 pertanyaan dilengkapi dan diselaraskan secara literal dengan PDF sumber (D-022); `docs/project-management/decisions.md` memuat keputusannya. Revisi 27 Oktober 2026: Tanggungan dan Hutang ditetapkan single-choice (D-035) dan sumber data header form ditetapkan (D-036).
 
 ## 1. Authority dan Batasan
 
@@ -19,8 +19,8 @@ Database v1.1 tetap menjadi baseline terkunci:
 | Properti | Aturan |
 |---|---|
 | Applicability | Baznas/CSR; tidak berlaku untuk Bangga Surabaya. |
-| Answer persistence | `mustahik_answers.question_code` + `answer` JSON. |
-| Cardinality | **Single-choice untuk seluruh 25 pertanyaan**, termasuk `PHYSICAL_DEPENDENTS` dan `PHYSICAL_DEBT`. |
+| Answer persistence | `mustahik_answers.question_code` + `answer` JSON `{"option": "<kode>"}`; kode opsi adalah posisi opsi 1–4 pada PDF sumber, label literal disimpan di kode aplikasi (Q-07). |
+| Cardinality | **Single-choice untuk seluruh 25 pertanyaan**, termasuk `PHYSICAL_DEPENDENTS` dan `PHYSICAL_DEBT` (D-035). |
 | Required | **Seluruh 25 pertanyaan wajib dijawab** sebelum finalisasi form Mustahik. Validasi tetap diperlukan untuk perilaku tampilan dan representasi PDF. |
 | Snapshot/PDF | Snapshot harus merekam jawaban yang disubmit. Representasi final pada PDF masih perlu validasi. |
 | Signature | Perubahan data form yang relevan memerlukan pembaruan tanda tangan sesuai workflow. Perubahan attachment saja tidak memicu tanda tangan ulang. |
@@ -62,7 +62,7 @@ PDF kosong adalah sumber label dan opsi untuk prototipe. Tabel di bawah membedak
 ### Catatan fidelitas sumber
 
 - Rentang luas bangunan dan pendapatan ditulis mengikuti teks PDF sumber. Rentang pendapatan yang tumpang tindih atau menyisakan celah tidak dinormalisasi.
-- Opsi berikut beririsan atau menyisakan celah pada sumber dan dipertahankan apa adanya: tabungan `Emas > 5 grm` dan `Emas > 10 grm`; aset `Sawah/Kebun > 500 m2` dan `> 1000 m2`; pendapatan `< 300.000` dan `< 750.000,-` beririsan, serta tidak ada opsi untuk Rp1.500.000 sampai Rp3.500.000 maupun untuk nilai tepat di batas (mis. emas 5 gram). Klarifikasi ke pemilik form berstatus `PENDING VALIDATION` (D-023).
+- Opsi berikut beririsan atau menyisakan celah pada sumber dan dipertahankan apa adanya: tabungan `Emas > 5 grm` dan `Emas > 10 grm`; aset `Sawah/Kebun > 500 m2` dan `> 1000 m2`; pendapatan `< 300.000` dan `< 750.000,-` beririsan, serta tidak ada opsi untuk Rp1.500.000 sampai Rp3.500.000 maupun untuk nilai tepat di batas (mis. emas 5 gram). Kelurahan memutuskan opsi ini dipakai apa adanya karena Petugas sudah terbiasa memilih jawaban yang paling sesuai (VAL-001 ditutup, D-064). Catatan lama: klarifikasi ke pemilik form berstatus `PENDING VALIDATION` (D-023).
 - Opsi keempat `Anak` pada pertanyaan Asumsi Subsidi Lain, serta label dan opsi delapan pertanyaan lain yang sebelumnya belum ditranskripsikan, dicocokkan dengan teks dan tampilan visual PDF sumber (D-022). Ejaan sumber seperti `Tekel`, `Motr`, `Asbas`, dan `lainya` dipertahankan.
 - Ejaan, istilah, satuan, dan urutan opsi pada prototipe harus mengikuti PDF sumber. Bila pembacaan teks/OCR tidak cukup untuk memastikan posisi label atau opsi, periksa tampilan visual PDF; jangan menebak.
 - Kolom skor pada PDF sumber tidak berarti aplikasi harus menghitung atau memilih skor otomatis. Perilaku skor masih perlu dikonfirmasi kepada pemilik form jika diperlukan dalam alur kerja.
@@ -70,6 +70,22 @@ PDF kosong adalah sumber label dan opsi untuk prototipe. Tabel di bawah membedak
 ### Petunjuk pengisian opsi yang beririsan
 
 Petugas memilih opsi yang paling mendekati kondisi sebenarnya (misalnya emas 12 gram memilih `Emas > 10 grm`). Ini panduan pengisian, bukan perubahan opsi, tidak menormalisasi rentang, dan bukan aturan scoring (D-022).
+
+### Header form dan Data Kepala Keluarga (D-036)
+
+Bagian header PDF sumber diisi dari sumber berikut. Label PDF sumber tidak diubah (D-022), dan tidak ada perubahan schema.
+
+| Bagian pada PDF sumber | Sumber data | Catatan |
+|---|---|---|
+| Nama Petugas | Nama user dari `mustahik_forms.petugas_id` | Read-only |
+| Tanggal/Hari (Survey) | `mustahik_forms.survey_date` | Hari diturunkan dari tanggal |
+| Kelurahan dan Kecamatan (header survei) | Konstanta konfigurasi: Kelurahan Manukan Kulon, Kecamatan Tandes | Bukan data per Outreach |
+| Nama, NIK/No KK Kepala Keluarga | `kepala_keluarga_nama`, `kepala_keluarga_nik_no_kk` | Data khusus Mustahik; Klien Outreach tidak otomatis dianggap Kepala Keluarga |
+| Alamat Kepala Keluarga: Jalan, RT, RW | `kepala_keluarga_alamat`, `kepala_keluarga_rt`, `kepala_keluarga_rw` | Data khusus Mustahik |
+| Alamat Kepala Keluarga: Kelurahan dan Kecamatan | Konstanta konfigurasi yang sama | Bukan data per Outreach |
+| Nomor Telepon HP | `outreaches.no_telp` (field 15 Outreach) | Kontak Outreach, **bukan** nomor Kepala Keluarga yang terverifikasi; tidak ada kolom nomor Kepala Keluarga pada Database v1.1 |
+
+**Aturan wajib header (D-048, VAL-005 selesai).** Seluruh field header yang diisi Petugas wajib sebelum Finalisasi: Tanggal survei (`survey_date`), Nama, NIK/No KK, Alamat (Jalan), RT, dan RW Kepala Keluarga. Draft boleh kosong. Tanggal survei terisi awal dari Tanggal Outreach saat form pertama kali dibuka dan tetap dapat diubah. Tombol eksplisit "Salin dari data Klien" menyalin Nama, NIK, dan Alamat Domisili Klien bila Klien memang Kepala Keluarga; penyalinan tidak pernah terjadi otomatis, dan RT/RW diisi manual.
 
 ## 4. Data Konteks dan Batas Perilaku
 
@@ -81,8 +97,8 @@ Perubahan spesifikasi tidak mengubah jawaban pada versi historis. Jika label ata
 
 1. Validasi pemilik form atas penerapan 25 pertanyaan wajib, termasuk penanganan input yang belum lengkap sebelum finalisasi.
 2. Konfirmasi pemetaan `question_code` terhadap posisi pertanyaan pada PDF. Label dan opsi register telah dilengkapi dan dicocokkan dengan teks serta tampilan visual PDF (D-022); pemetaan kode ke posisi mengikuti nama dan urutan kode.
-3. Apakah kolom skor diisi manual, hanya dicetak, atau memiliki aturan lain. Tidak ada scoring otomatis sebelum ada keputusan eksplisit.
-4. Pemetaan metadata/header pada PDF dan representasi jawaban pada PDF hasil aplikasi.
+3. ~~Apakah kolom skor diisi manual, hanya dicetak, atau memiliki aturan lain.~~ Diputuskan (D-053): kolom "score" pada PDF hanya berisi tanda centang pada baris opsi yang dipilih; tidak ada angka atau scoring.
+4. Representasi jawaban pada PDF hasil aplikasi. Sumber data header (D-036) dan aturan wajib header (D-048) sudah ditetapkan.
 5. Persetujuan formal pemilik form terhadap PDF sumber yang dipakai sebagai acuan prototipe.
 6. Klarifikasi opsi yang beririsan atau menyisakan celah (D-023).
 
@@ -94,7 +110,8 @@ Hal-hal yang belum divalidasi di atas tidak menghalangi pencatatan keputusan sin
 - PDF Mustahik dihasilkan sebagai file terpisah dari PDF Outreach dan PDF Kifayah untuk alur Baznas/CSR.
 - Jawaban yang dirender harus berasal dari jawaban yang tersimpan pada submission version terkait. Jangan mengambil jawaban terkini untuk mengganti isi PDF atau snapshot versi lama.
 - Jika PDF Mustahik yang diwajibkan gagal dibuat pada proses approval, approval harus gagal. Status Outreach tetap `MENUNGGU_PENGESAHAN` dan notifikasi `OUTREACH_COMPLETED` tidak dikirim.
-- Kolom skor pada PDF sumber tidak mengizinkan sistem menghitung skor atau memilih jawaban otomatis.
+- Kolom skor pada PDF sumber tidak mengizinkan sistem menghitung skor atau memilih jawaban otomatis. Kolom itu hanya berisi tanda centang pada opsi yang dipilih (D-053).
+- Tanggal "Surabaya, ..." di atas tanda tangan Surveyor memakai tanggal survei (D-053).
 
 ## 7. Batas Perubahan Database
 

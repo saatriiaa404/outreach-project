@@ -32,9 +32,10 @@ Prototype menunjukkan alur lengkap `PETUGAS → KEPALA → ADMIN`:
 
 ## Lampiran
 
-- Empat lampiran wajib Outreach: **KTP, KK, foto klien, dan foto rumah**.
+- Empat lampiran wajib Outreach: **KTP, KK, foto klien, dan foto rumah**, berupa gambar (D-034).
 - Draft boleh disimpan walaupun lampiran belum lengkap; Finalisasi harus ditolak sampai keempat lampiran wajib tersedia.
-- Lampiran tambahan berdasarkan jenis bantuan dapat didukung untuk kebutuhan prototype, tetapi persyaratan formalnya tetap `PENDING VALIDATION` sampai dikonfirmasi Kelurahan.
+- Lampiran di luar empat wajib diunggah sebagai "Lampiran lain"; Kelurahan tidak menetapkan daftar per jenis bantuan, lampiran ini tidak memblokir Finalisasi, dan satu Outreach memuat paling banyak 10 lampiran termasuk empat wajib (D-033, D-064).
+- PDF Outreach hanya mencetak lampiran gambar; lampiran berformat PDF ditampilkan sebagai halaman rujukan berisi nama berkas, tanpa pustaka penggabung PDF (D-034).
 - Kegagalan upload atau pemrosesan/kompresi harus menampilkan error yang jelas; lampiran tidak boleh dihilangkan secara diam-diam.
 - Batas ukuran dan jumlah lampiran final harus ditentukan dari pengujian prototype, bukan diasumsikan tanpa bukti.
 - Perubahan lampiran saja tidak otomatis mewajibkan tanda tangan ulang. Perubahan data form yang relevan setelah signature/approval harus mengikuti pembaruan signature dan alur approval yang diwajibkan.
@@ -60,6 +61,7 @@ Backup/restore dan prosedur operasional production bukan bagian dari demonstrasi
 - Nilai numerik Kifayah `0` berarti tidak ada pengeluaran atau kategori tidak berlaku; `NULL` berarti belum diisi. Jangan otomatis mengubah field kosong menjadi `0`. Tolak nilai negatif dan input nonnumerik.
 - Form Mustahik memiliki 25 pertanyaan wajib single-choice. Jangan menambahkan default, pemilihan otomatis, scoring, atau mesin penentu kelayakan. Label/opsi yang belum didukung bukti tetap `PENDING VALIDATION`.
 - Tahun pada PDF Kifayah berasal dari tanggal Outreach yang tersimpan.
+- Kendaraan pada Outreach diinput sebagai angka per jenis tanpa auto-fill; PDF merangkai satu baris dari jenis bernilai lebih dari 0, atau `Tidak ada` bila semuanya 0 (D-020).
 - Jangan membuat migration, schema, tabel, field, relasi, constraint, seed, bootstrap, atau konfigurasi deployment production pada tahap ini.
 - Jangan menganggap keputusan lokal non-production sebagai izin membuka gate implementasi. Gate tetap CLOSED sampai readiness summary ditinjau dan persetujuan eksplisit pemilik proyek diberikan.
 

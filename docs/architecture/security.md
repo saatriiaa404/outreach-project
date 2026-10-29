@@ -10,6 +10,10 @@ atau migrasi database.
 Revisi 23 Oktober 2026: menambahkan kontrol autentikasi prototype sesuai
 D-014 (`docs/project-management/decisions.md`). Tidak ada perubahan lain.
 
+Revisi 27 Oktober 2026: menambahkan batas fitur autentikasi bawaan (D-030),
+tipe file lampiran wajib (D-034), batas visibilitas pada pencarian (D-039),
+dan audit perubahan NIP Kepala (D-041).
+
 ## Kontrol Wajib
 
 -   **Otorisasi server-side:** Authentication, role, ownership/scope,
@@ -19,7 +23,8 @@ D-014 (`docs/project-management/decisions.md`). Tidak ada perubahan lain.
     dengan akun dummy. Akun dibuat dan dikelola ADMIN; registrasi publik
     dinonaktifkan. Prototype tidak menambahkan kebijakan password atau
     sesi khusus di luar bawaan Laravel; kebijakan production tetap
-    `PENDING VALIDATION`.
+    `PENDING VALIDATION`. Fitur reset password dan registrasi tidak
+    disediakan; session memakai driver file (D-030).
 -   **Validasi parent Outreach:** Akses atau perubahan attachment, form
     Mustahik/Kifayah, signature, historical version, PDF, dan approval
     harus memvalidasi hak akses terhadap parent Outreach serta scope dan
@@ -31,13 +36,18 @@ D-014 (`docs/project-management/decisions.md`). Tidak ada perubahan lain.
     dan duplicate hash. Jangan hanya mengandalkan ekstensi atau
     `Content-Type` dari client. Terapkan batas ukuran berdasarkan hasil
     pengujian prototype; jangan mengklaim batas final sebelum diuji.
+-   **Render PDF (D-052):** Dompdf dijalankan tanpa akses remote,
+    tanpa PHP dan JavaScript, dengan akses berkas lokal dibatasi ke
+    folder template PDF. Gambar lampiran dan tanda tangan disisipkan
+    sebagai data URI dari storage privat, bukan melalui URL.
 -   **Penanganan kegagalan file:** Jika file tidak dapat diproses,
     dikompresi, disimpan, atau dimasukkan ke PDF, tampilkan error yang
     jelas. Jangan diam-diam menghilangkan lampiran atau menganggap
     proses berhasil.
 -   **Lampiran wajib dan Finalisasi:** Empat lampiran dasar---KTP, KK,
-    Foto Klien, dan Foto Rumah---harus tersedia agar Finalisasi dapat
-    berhasil. Draft boleh disimpan saat lampiran belum lengkap.
+    Foto Klien, dan Foto Rumah---harus tersedia dan berupa gambar yang
+    lolos validasi isi file (bukan hanya ekstensi) agar Finalisasi dapat
+    berhasil (D-034). Draft boleh disimpan saat lampiran belum lengkap.
     Kegagalan validasi tidak boleh dilewati dengan memanipulasi UI atau
     request.
 -   **PDF dan approval gate:** Semua PDF wajib untuk jenis bantuan
@@ -45,6 +55,10 @@ D-014 (`docs/project-management/decisions.md`). Tidak ada perubahan lain.
     PDF wajib gagal dibuat, approval harus gagal, status tetap
     `MENUNGGU_PENGESAHAN`, status tidak menjadi `SELESAI`, dan
     notifikasi `OUTREACH_COMPLETED` tidak dikirim.
+-   **Pencarian dan visibilitas:** Dashboard, daftar, pencarian, dan URL
+    langsung menerapkan batas scope dan visibilitas role yang sama
+    (D-039). Kriteria pencarian NIK tidak diletakkan pada path atau query
+    string URL agar tidak tercatat pada log atau riwayat browser.
 -   **Identifier dan data uji:** Jangan gunakan NIK sebagai identifier
     URL. Gunakan data dummy yang tidak mengandung PII nyata; jangan
     menyalin data warga nyata ke fixture, log, screenshot, atau laporan
@@ -55,6 +69,8 @@ D-014 (`docs/project-management/decisions.md`). Tidak ada perubahan lain.
     ditindaklanjuti, bukan ditimpa diam-diam.
 -   **History dan audit:** History versi serta audit untuk tindakan
     sensitif harus append-only sesuai rancangan yang telah disepakati.
+    Perubahan NIP Kepala termasuk tindakan yang dicatat pada audit
+    (D-041).
     Jangan mengubah atau menghapus jejak historis melalui alur aplikasi
     biasa.
 -   **Perubahan dan tanda tangan:** Perubahan data yang memengaruhi
@@ -80,7 +96,9 @@ D-014 (`docs/project-management/decisions.md`). Tidak ada perubahan lain.
     uji restore dilakukan setelah alur utama prototype stabil dan
     sebelum serah terima.
 -   Batas ukuran upload dan kompresi akhir harus ditentukan melalui
-    pengujian prototype. Persyaratan lampiran tambahan per jenis bantuan
+    pengujian prototype. Batas teknis sementara (D-047): gambar JPEG,
+    PNG, WEBP, PDF hanya untuk lampiran tambahan, maksimal 10 MB per
+    berkas sebelum kompresi. Persyaratan lampiran tambahan per jenis bantuan
     perlu dikonfirmasi kepada Kelurahan sebelum ditetapkan sebagai
     aturan formal.
 -   Prototype awal tetap lokal, non-production, dan menggunakan data

@@ -1,7 +1,7 @@
 # Setup Lingkungan Lokal — Windows
 
 > **Status dokumen:** DRAFT — dibuat dari hasil verifikasi lingkungan pemilik proyek (23 Oktober 2026)  
-> **Rujukan:** D-024 pada `docs/project-management/decisions.md`; task ENV-001 dan DOC-003  
+> **Rujukan:** D-024, D-030, dan D-042 pada `docs/project-management/decisions.md`; task ENV-001, DOC-003, dan BOOT-001  
 > **Penting:** Dokumen ini tidak membuka gate implementasi dan tidak mengotorisasi bootstrap, schema, migration, atau seed. Langkah yang menyentuh database ditandai dan dijalankan setelah gate dibuka.
 
 ## 1. Tujuan dan Batas
@@ -56,7 +56,7 @@ Perintah ini hanya menyiapkan database kosong. Tabel, kolom, dan migration mengi
 
 ## 5. Pengaturan PHP untuk Upload Lampiran
 
-Batas ukuran lampiran belum diputuskan (`database.md` bagian 25 butir 3), sehingga nilai final ditunda. Yang perlu dipastikan saat bootstrap:
+Batas ukuran lampiran belum diputuskan (`database.md` bagian 25 butir 3), sehingga nilai final ditunda. Empat lampiran wajib harus berupa gambar (D-034), sehingga ekstensi `gd` dan `fileinfo` diperlukan untuk memproses dan memeriksa isi file. Yang perlu dipastikan saat bootstrap:
 
 - Periksa dan naikkan dari bawaan: `upload_max_filesize`, `post_max_size`, `max_file_uploads`, dan `memory_limit` pada `php.ini` milik PHP aktif.
 - Pastikan perubahan berlaku pada PHP yang dipakai web server, lalu mulai ulang layanan Laragon.
@@ -89,6 +89,77 @@ Batas ukuran lampiran belum diputuskan (`database.md` bagian 25 butir 3), sehing
 - Gunakan data dummy. Jangan memasukkan data warga asli ke repository, database prototype, atau lampiran demo.
 - Repository GitHub bersifat private. `git push`, force-push, dan perubahan riwayat Git hanya atas persetujuan eksplisit pemilik proyek (lihat `AGENTS.md`).
 
-## 9. Perubahan Dokumen Ini
+## 9. Lokasi Kode dan Konfigurasi Aplikasi (setelah gate dibuka)
+
+Bagian ini mencatat keputusan yang memengaruhi bootstrap (BOOT-001). Belum ada kode; langkah di bawah dijalankan hanya setelah gate implementasi dibuka.
+
+- Aplikasi Laravel ditempatkan di `project/web/`, bukan di akar `project/` (D-042). Perintah `composer`, `php artisan`, dan `npm` untuk aplikasi dijalankan dari `project/web/`; dokumen tetap di `project/docs/`.
+- Konfigurasi infrastruktur dibuat minimal (D-030): `SESSION_DRIVER=file`, `CACHE_STORE=file`, dan `QUEUE_CONNECTION=sync` pada `.env` lokal; fitur registrasi publik dan reset password dinonaktifkan. Nama variabel `.env` diverifikasi terhadap versi Laravel 13 saat bootstrap.
+- Migration bawaan starter kit ditinjau terhadap Database v1.1 (termasuk amandemen D-041) sebelum dijalankan; tabel infrastruktur yang tersisa praktis hanya `migrations`.
+- Konstanta wilayah (Kelurahan Manukan Kulon, Kecamatan Tandes) disimpan pada konfigurasi aplikasi (D-036), bukan di database.
+
+### Hasil BOOT-001 (27 Oktober 2026)
+
+| Komponen | Versi / kondisi |
+|---|---|
+| Starter kit | `laravel/vue-starter-kit` cabang `dev-main` (tag stabil v1.0.x masih Laravel 12, sehingga tidak dipakai) |
+| Laravel | 13.38.0 pada PHP 8.5.12 (tanpa peringatan deprecation) |
+| Inertia | `inertiajs/inertia-laravel` 3.5.2; `@inertiajs/vue3` 3.9.1 |
+| Fortify | 1.41.0; daftar fitur kosong (tanpa registrasi, reset password, verifikasi email, 2FA, passkeys) |
+| Frontend | Vue 3.5.44, TypeScript 5.9.3, Tailwind CSS 4.3.3, reka-ui 2.11.0 (shadcn-vue), vite-plus 1.4.0 |
+| Database | MySQL 8.4.3, database `outreach_prototype`, user `outreach_app`; 0 tabel (belum ada migration yang dijalankan) |
+
+Langkah yang dipakai, dijalankan dari `project/`:
+
+1. `composer create-project laravel/vue-starter-kit web dev-main --no-scripts` — opsi `--no-scripts` wajib karena skrip bawaan menjalankan `php artisan migrate` otomatis pada SQLite.
+2. Di `web/`: salin `.env.example` ke `.env`, `php artisan key:generate`, `npm install`.
+3. `php artisan install:features --answers='{"auth_features":["password-confirmation"]}'` untuk membuang registrasi, verifikasi email, 2FA, dan passkeys; reset password dihapus manual dari `config/fortify.php`, `FortifyServiceProvider`, halaman auth, dan tesnya.
+4. Buat database dan user MySQL seperti bagian 4; password hanya ditulis pada `web/.env`.
+
+Basis data uji (R1.5, diputuskan pemilik proyek 27 Oktober 2026) memakai MySQL terpisah `outreach_prototype_test` dengan user yang sama; `web/phpunit.xml` mengarahkan `DB_CONNECTION=mysql` dan `DB_DATABASE=outreach_prototype_test`, sehingga tes tidak menyentuh `outreach_prototype`:
+
+```sql
+CREATE DATABASE outreach_prototype_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+GRANT ALL PRIVILEGES ON outreach_prototype_test.* TO 'outreach_app'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+Data demo (R1.6): isi `DEMO_USER_PASSWORD` (minimal 12 karakter) di `web/.env`, lalu jalankan `php artisan db:seed` dari `web/`. Seeder bersifat idempoten dan hanya membuat data sintetis sesuai `docs/prototype/dummy-data.md`.
+
+### Tugas terjadwal (R10.3, D-063)
+
+Notifikasi in-app berumur lebih dari 30 hari dihapus oleh `php artisan notifications:prune`, yang dijadwalkan setiap hari pada scheduler Laravel (`web/routes/console.php`). Notifikasi kedaluwarsa sudah disembunyikan dari tampilan, jadi keterlambatan pembersihan tidak mengubah apa yang dilihat pengguna. Pilih salah satu cara menjalankan scheduler, dari `project/web/`:
+
+- Selama aplikasi dipakai, biarkan satu terminal menjalankan `php artisan schedule:work`.
+- Atau buat sendiri entri Windows Task Scheduler yang menjalankan `php artisan schedule:run` setiap menit dengan folder kerja `project/web/` dan `php.exe` dari Laragon. Agent tidak membuat entri ini.
+
+Pembersihan juga dapat dijalankan manual kapan saja dengan `php artisan notifications:prune`; `php artisan schedule:list` menampilkan jadwalnya.
+
+Catatan: `web/.env.example` terkena pola `.env.*` pada `.gitignore` akar repository sehingga perlu `git add -f` agar template (tanpa secret) ikut ter-commit. Dompdf belum dipasang; pemasangannya dilakukan pada task fitur PDF.
+
+### Backup dan restore (R11.3, D-038)
+
+Backup dilakukan manual oleh Admin setiap minggu ke media terpisah, yaitu hard disk atau flashdisk eksternal. Isinya database MySQL dan seluruh berkas privat (`web/storage/app/private`: lampiran, tanda tangan, template tanda tangan dan stempel). Perintah dijalankan dari `project/web/` di laptop aplikasi, dengan Laragon dalam keadaan Start All. `mysqldump` dan `mysql` dari Laragon harus ada di PATH (`mysql --version` di terminal menampilkan versinya).
+
+**Backup mingguan**
+
+1. Colokkan media eksternal dan buat folder tujuan, misalnya `E:\backup-outreach`.
+2. Jalankan `php artisan backup:create E:\backup-outreach`.
+3. Perintah membuat folder baru `outreach-backup-<tanggal>-<jam>` berisi `database.sql`, folder `files`, dan `manifest.json` (jumlah baris per tabel serta hash SHA-256 setiap berkas). Salinan langsung dicocokkan dengan sumbernya. Backup hanya sah bila pesan akhirnya "Backup selesai" beserta jumlah tabel, baris, dan berkas.
+4. Lepas media dengan aman dan simpan terpisah dari laptop. Simpan beberapa backup terakhir; hapus yang lama secara manual.
+
+`web/.env` tidak ikut di-backup karena berisi rahasia. Simpan salinannya sendiri di tempat aman yang terpisah; tanpa `.env` aplikasi tidak dapat dijalankan setelah laptop diganti.
+
+**Restore**
+
+1. Hentikan pemakaian aplikasi; Laragon tetap Start All.
+2. Jalankan `php artisan backup:restore E:\backup-outreach\outreach-backup-<tanggal>-<jam>`.
+3. Perintah lebih dulu memeriksa seluruh isi backup terhadap `manifest.json`. Bila ada berkas yang hilang atau berubah, pemulihan dibatalkan tanpa mengubah data.
+4. Setelah konfirmasi, folder berkas yang sekarang dipindahkan ke `storage/app/private-sebelum-restore-<tanggal>-<jam>` (tidak dihapus), database diimpor dari `database.sql`, berkas disalin kembali, lalu jumlah baris dan hash berkas dicocokkan dengan backup.
+5. Buka aplikasi dan periksa beberapa Outreach serta lampirannya. Setelah yakin, hapus folder `private-sebelum-restore-...` secara manual.
+
+Restore mengganti seluruh isi database yang dipakai `.env` saat itu. Jangan menjalankannya ke database lain tanpa memeriksa `DB_DATABASE`.
+
+## 10. Perubahan Dokumen Ini
 
 Perubahan versi alat, kebijakan PHP, atau pengaturan upload dicatat pada dokumen ini. Bila memengaruhi keputusan, catat juga di `decisions.md`.

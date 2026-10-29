@@ -6,16 +6,21 @@ UI mobile-first untuk Petugas, mudah direview Kepala, dan terkontrol untuk Admin
 
 Prototype ini menggunakan data dummy dan ditujukan untuk demonstrasi lokal. Desain UI tidak mengubah Workflow v2.1 atau Database v1.1 (22 tabel).
 
+Pustaka UI: Tailwind CSS + shadcn-vue melalui starter kit resmi Laravel untuk Vue (D-018). Revisi 27 Oktober 2026 menyelaraskan dokumen ini dengan D-015, D-016, D-018 sampai D-020, D-025, D-027, D-032 sampai D-034, D-036, dan D-038 sampai D-041 pada `docs/project-management/decisions.md`.
+
 ## Layar Minimum
 
 | Layar | Pengguna | Fungsi |
 |---|---|---|
 | Login | Semua | Masuk dengan akun dummy sesuai role. |
-| Dashboard/daftar Outreach | Semua | Ringkasan sesuai scope akses dan status. |
+| Dashboard/daftar Outreach | Semua | Ringkasan sesuai scope dan visibilitas role (D-039; lihat bagian Dashboard dan Pencarian). |
 | Create/Stepper | PETUGAS | Source, Type, Date, lalu form kondisional. |
 | Review/Finalisasi | PETUGAS | Ringkasan, blocker, status kelengkapan, preview, dan konfirmasi finalisasi. |
 | Approval Queue | KEPALA | Review read-only, Return, Approve, dan status proses PDF. |
-| Special Unlock Queue | ADMIN | Request, Direct Unlock, Lock, dan Lock & Ajukan sesuai workflow. |
+| Special Unlock Queue | ADMIN | Request, Direct Unlock, Lock, dan Lock & Ajukan sesuai workflow. Prototype (R8.1): antrean menampilkan permintaan terbuka (terlama di atas) dengan filter status; Admin memulai proses lalu menolak dengan alasan wajib, sedangkan permintaan yang diproses selesai otomatis saat Lock atau Lock & Ajukan (D-055). Petugas dan Kepala meminta serta membatalkan dari halaman Outreach. |
+| Arsip | ADMIN | Penandaan status arsip manual dan catatan referensi, tanpa integrasi E-Surat/E-Arsip (D-038). |
+| Master Source/Type | ADMIN | Menambah dan menonaktifkan Source/Type; `code` tampil read-only setelah dibuat (D-040). Prototype: tiga Source baseline hanya dapat diganti nama dan diaktifkan/dinonaktifkan; Jenis dapat ditambah (D-057). |
+| Manajemen user dan template | ADMIN | Akun dummy, status aktif, NIP Kepala (D-041), template tanda tangan Kepala, dan template stempel. Tidak ada registrasi publik (D-014). Prototype (R9.3): template diunggah sebagai gambar dan setiap unggahan menjadi versi aktif baru; stempel belum dicetak pada PDF (D-058). |
 | History/Notification | Semua | Timeline dan notifikasi in-app sesuai resource serta hak akses. |
 
 ## Stepper Petugas
@@ -35,11 +40,32 @@ Desktop memakai vertical stepper; mobile memakai `Langkah X dari N`. Status step
 
 ## Validasi dan Lampiran
 
-- Tampilkan empat lampiran dasar secara jelas: KTP, KK, foto warga, dan foto rumah.
+- Tampilkan empat lampiran dasar secara jelas: KTP, KK, Foto Klien, dan Foto Rumah (D-015). Keempatnya hanya menerima gambar (D-034).
 - Draft boleh disimpan meskipun lampiran dasar belum lengkap. Finalisasi diblokir jika satu atau lebih lampiran dasar belum tersedia.
 - Tampilkan blocker finalisasi secara spesifik dan arahkan Petugas ke bagian yang perlu diperbaiki.
 - Jika unggah atau pemrosesan lampiran gagal, tampilkan pesan kesalahan yang jelas; jangan menampilkan lampiran sebagai berhasil tersimpan jika proses gagal.
-- Persyaratan lampiran tambahan berdasarkan jenis bantuan ditandai `PENDING VALIDATION` sampai dikonfirmasi Kelurahan.
+- Lampiran di luar empat wajib diunggah sebagai "Lampiran lain" dengan keterangan bebas; tidak ada daftar per jenis bantuan dan tidak memblokir Finalisasi. Halaman Lampiran menampilkan batas 10 MB per berkas dan 10 lampiran per Outreach (D-033, D-064).
+- Lampiran berformat PDF ditandai bahwa pada PDF Outreach ia muncul sebagai halaman rujukan berisi nama berkas, bukan halaman yang dicetak ulang (D-034).
+
+## Field Formulir
+
+- **Tempat dan Tanggal Lahir / Umur:** tiga isian: Tempat lahir, Tanggal lahir (isian tanggal seperti Google Form: ketik dd/mm/yyyy atau pilih dari kalender), dan Umur read-only yang terisi otomatis terhadap Tanggal Outreach (D-045).
+- **Status Kesejahteraan:** pilihan desil 1–10; label pasangannya tampil otomatis dan tidak dapat diketik terpisah (D-019).
+- **Kendaraan:** input angka per jenis (sepeda angin, sepeda listrik, becak, sepeda motor, roda 4, lainnya) tanpa auto-fill; nama kendaraan lainnya wajib bila jumlahnya lebih dari 0 (D-020).
+- **Fasilitas MCK:** pilihan Layak, Kurang layak, Tidak layak, Tidak ada (D-021).
+- **Opsi formulir:** dropdown hanya bila opsinya tertulis pada PDF atau ketentuan yang disetujui; selain itu teks bebas (D-025). Status Kependudukan memakai `WNI`/`WNA`.
+- **Bantuan yang pernah diterima:** pilihan Ya/Tidak; uraian teks bebas tampil dan wajib bila Ya (D-027).
+- **Penghasilan klien sebulan dan Pendidikan terakhir:** ditandai opsional; tidak muncul sebagai blocker Finalisasi (D-032).
+- **Identitas Kifayah:** Nama, NIK, Alamat (Alamat Domisili), dan No. HP tampil read-only dari Outreach; Kelurahan dan Kecamatan dari konstanta konfigurasi (D-036).
+- **Header Mustahik:** Nama Petugas dan wilayah tampil read-only; No. Telepon HP tampil dari No. telp Outreach dengan keterangan bahwa itu kontak Outreach (D-036).
+
+## Dashboard dan Pencarian
+
+- PETUGAS: daftar Outreach miliknya per status.
+- KEPALA: antrean `MENUNGGU_PENGESAHAN` dan daftar `SELESAI`. Draft tidak ditampilkan; `PERLU_PERBAIKAN` hanya menampilkan status dan catatan Return pada riwayat (D-039). Prototype (R7.3): daftar Kepala dibuka pada antrean dengan pengajuan terlama di atas; filter status tersedia untuk semua peran.
+- Halaman tinjau Kepala menampilkan versi yang diajukan, bukan data yang sedang berjalan. Return membuka dialog dengan catatan wajib; Petugas melihat catatan Return terbaru di langkah pengisian dan Review selama `PERLU_PERBAIKAN`.
+- ADMIN: semua Outreach per status, permintaan Special Unlock, dan status arsip.
+- Pencarian: nama, NIK, ID internal, Source, Type, status, dan rentang tanggal. Hasil selalu dibatasi scope role; NIK tidak dipakai sebagai identifier URL.
 
 ## State Tampilan
 
@@ -61,6 +87,8 @@ Desktop memakai vertical stepper; mobile memakai `Langkah X dari N`. Status step
 
 - Perubahan data formulir setelah tanda tangan atau persetujuan harus mengikuti alur pembaruan tanda tangan dan persetujuan yang relevan.
 - Perubahan lampiran saja tidak otomatis mewajibkan tanda tangan ulang.
+- Penerapan prototype untuk workflow 16.4 sebelum Finalisasi: tanda tangan Petugas dihapus bila isian Mustahik atau No. telp Outreach berubah; tanda tangan Warga dihapus bila isian Kifayah atau Nama, NIK, Alamat Domisili, atau No. telp Outreach berubah (data yang tercetak pada form yang ditandatangani). Menyimpan data yang sama tidak menghapus tanda tangan. Halaman Mustahik dan Kifayah memperingatkan bila form sudah ditandatangani.
+- Signature pad (D-049) menyediakan tombol "Ulangi" dan "Batalkan goresan terakhir"; tanda tangan selalu dibuat baru untuk setiap Outreach.
 - Riwayat versi, tanda tangan, persetujuan, dan referensi lampiran historis harus tetap dapat ditelusuri sesuai hak akses.
 - UI harus membedakan data operasional yang masih dapat diedit dari historical version yang tidak dapat diubah.
 
@@ -69,6 +97,8 @@ Desktop memakai vertical stepper; mobile memakai `Langkah X dari N`. Status step
 - Status Outreach, pemilik/ownership, serta kondisi lock harus terlihat pada layar yang relevan.
 - Kepala meninjau submission secara read-only dan menggunakan tindakan Return atau Approve sesuai workflow.
 - Aksi khusus Admin hanya ditampilkan pada konteks dan state yang sesuai; server tetap wajib memvalidasi otorisasi dan transisi status.
+- ADMIN tidak memiliki tombol membuat Outreach dan tidak memiliki Draft. Edit data oleh ADMIN hanya tersedia selama Special Unlock, dengan isian alasan wajib; ADMIN tidak memiliki aksi Approve atau Return (D-016).
+- PETUGAS tidak memiliki aksi unduh atau cetak PDF final (D-040).
 - State locked harus menjelaskan bahwa pengeditan tidak tersedia dan, jika sesuai, menampilkan jalur tindakan yang diizinkan.
 - Jangan menyimpulkan bahwa menyembunyikan tombol sudah cukup untuk mengamankan tindakan.
 

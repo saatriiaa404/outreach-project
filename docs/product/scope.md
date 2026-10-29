@@ -18,13 +18,16 @@ Prototype mencakup:
 - Form kondisional berdasarkan Source dan Type.
 - Form Mustahik dan Kifayah untuk Baznas/CSR; Bangga Surabaya menggunakan Outreach tanpa form Mustahik/Kifayah.
 - Penyimpanan draft, autosave, persistence setelah aplikasi ditutup dan dibuka kembali, serta perlindungan optimistic concurrency.
-- Empat lampiran dasar wajib untuk finalisasi: KTP, KK, foto klien, dan foto rumah. Draft tetap boleh disimpan sebelum lampiran lengkap.
-- Lampiran tambahan per jenis bantuan sebagai kemampuan prototype apabila dibutuhkan; daftar resmi lampiran tambahan masih `PENDING VALIDATION`.
+- Empat lampiran dasar wajib untuk finalisasi: KTP, KK, foto klien, dan foto rumah, berupa gambar (D-034). Draft tetap boleh disimpan sebelum lampiran lengkap.
+- Lampiran di luar empat wajib diunggah sebagai "Lampiran lain"; Kelurahan tidak menetapkan daftar per jenis bantuan, lampiran ini tidak memblokir Finalisasi, dan satu Outreach memuat paling banyak 10 lampiran termasuk empat wajib (D-033, D-064).
 - Signature dummy, preview, submission version, historical version, history/audit, dan notifikasi in-app.
 - Workflow Return/Revision/Approval dan pemeriksaan keberhasilan pembuatan semua PDF wajib sebelum approval berhasil.
 - Pembuatan PDF sesuai jenis bantuan: Outreach, Mustahik, dan Kifayah untuk Baznas/CSR; Outreach untuk Bangga Surabaya. Halaman lampiran yang diwajibkan disertakan setelah halaman utama PDF Outreach.
 - Special Unlock ADMIN secara terkendali sesuai Workflow dan permission; ADMIN tidak dapat menyetujui Outreach.
-- Pemeriksaan dasar backup database dan lampiran serta uji restore sebelum serah terima prototype, setelah alur utama stabil. Ini tidak berarti menyediakan operasi backup terjadwal untuk penggunaan produksi.
+- Dashboard per role dan pencarian berdasarkan nama, NIK, ID internal, Source, Type, status, dan rentang tanggal, selalu dibatasi scope role (D-039).
+- Pengelolaan oleh ADMIN: master Source/Type dengan kode yang tidak dapat diubah (D-040), akun dummy termasuk NIP Kepala (D-041), template tanda tangan Kepala, dan template stempel.
+- Penandaan status arsip secara manual oleh ADMIN paling lambat satu bulan sejak persetujuan Kepala; data tetap di aplikasi dan tanpa integrasi E-Surat/E-Arsip (D-038).
+- Pemeriksaan dasar backup database dan lampiran serta uji restore sebelum serah terima prototype, setelah alur utama stabil. Pada prototype, backup dilakukan manual oleh ADMIN setiap minggu ke media terpisah (D-038). Ini tidak berarti menyediakan operasi backup terjadwal untuk penggunaan produksi.
 - Pengujian menggunakan data dummy, termasuk alur sukses, kegagalan PDF/lampiran, pembatasan akses, versioning, dan persistence.
 
 ## 3. Out of Scope
@@ -47,15 +50,15 @@ Hal-hal berikut tidak dibangun sebagai kemampuan operasional dalam prototype awa
 Hal-hal berikut harus tetap ditandai `PENDING VALIDATION` sampai ada bukti atau konfirmasi yang memadai:
 
 - Sumber resmi label/status kesejahteraan atau desil.
-- Daftar lampiran tambahan yang diwajibkan untuk setiap Type di luar empat lampiran dasar.
 - Format PDF final yang belum dapat dipastikan dari template sumber.
-- Batas ukuran unggahan, format file yang diterima, dan parameter kompresi final; nilai awal untuk pengujian harus didokumentasikan sebagai konfigurasi prototype, bukan aturan operasional final.
-- Kebijakan retention/archive dan prosedur koreksi resmi.
+- Batas ukuran unggahan, tipe file yang diterima, dan parameter kompresi final; nilai awal untuk pengujian harus didokumentasikan sebagai konfigurasi prototype, bukan aturan operasional final. Empat lampiran wajib sudah ditetapkan berupa gambar (D-034).
+- Kebijakan retensi dan prosedur koreksi resmi. Prosedur arsip manual untuk prototype sudah ditetapkan pada D-038.
 - Prosedur pergantian Kepala dan penyesuaian kewenangan terkait.
-- Mekanisme atau uploader E-Surat/E-Arsip.
-- Pemilik, frekuensi, dan media backup untuk operasional setelah prototype.
+- Penyimpanan nomor/reference arsip dan cara verifikasi arsip E-Surat/E-Arsip; uploader adalah ADMIN secara manual (D-038).
+- Pemilik, frekuensi, dan media backup untuk operasional setelah serah terima; backup prototype mengikuti D-038.
 - Kebutuhan hosting/domain atau penggunaan LAN setelah evaluasi awal.
 - Persyaratan digital stamp atau tanda tangan digital resmi.
+- Format dan posisi cetak NIP Kepala pada blok pengesahan PDF (D-041).
 
 Prototype boleh menampilkan placeholder atau mencatat pertanyaan validasi, tetapi tidak boleh menyimpulkan jawaban atau menerapkannya sebagai aturan final tanpa persetujuan yang sesuai.
 

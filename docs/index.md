@@ -42,8 +42,10 @@ Checkpoint v1.6 (`.md`) disimpan di luar repositori pada folder `../checkpoint/`
 | Scope dan validasi prototype | `docs/prototype/` | ACTIVE — prototype scope and validation planning |
 | Testing | `docs/engineering/testing.md` | ACTIVE — prototype test plan; execution pending prototype |
 | Setup lingkungan lokal | `docs/engineering/setup.md` | DRAFT |
+| Desain migration | `docs/engineering/migration-design.md` | ACTIVE — disetujui (D-043) |
 | Deployment | `docs/engineering/deployment.md` | NOT YET CREATED |
 | Tugas | `docs/project-management/tasks.md` | ACTIVE — v1.6 Worklist |
+| Roadmap implementasi | `docs/project-management/roadmap.md` | ACTIVE — Tahap 2, disetujui 27 Oktober 2026 |
 | Changelog | `docs/project-management/changelog.md` | NOT YET CREATED |
 | Materi sumber | `docs/reference/` | SOURCE FILES PRESENT — registry/path verification required |
 
