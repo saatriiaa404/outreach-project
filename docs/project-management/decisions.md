@@ -1110,6 +1110,37 @@ rujuk keputusan pengganti.
                            isi PERLU_PERBAIKAN
                            tidak bocor lewat
                            hasil pencarian.
+
+  D-062       —            Implementasi           Keputusan       Tanpa perubahan         `workflow.md` 30; `design.md`;
+                           notifikasi dan         implementasi    schema. Jumlah          kode `web/`
+                           timeline (R10.2):      agent dalam     notifikasi belum
+                           setiap pengguna hanya  batas Workflow  dibaca tampil di menu
+                           melihat notifikasinya  20.2, 30 dan    samping. Pembersihan
+                           sendiri; membuka       D-039, 29       notifikasi 30 hari
+                           notifikasi             Oktober 2026.   tetap di R10.3.
+                           menandainya dibaca
+                           lalu mengarah ke
+                           Outreach sesuai hak
+                           akses saat itu
+                           (pengisian bila boleh
+                           mengedit, halaman
+                           tinjau bila boleh
+                           melihat), karena
+                           notifikasi bukan
+                           sumber kebenaran.
+                           Timeline pada halaman
+                           tinjau memuat semua
+                           event bagi yang boleh
+                           melihat isi, termasuk
+                           field dan nilai yang
+                           diubah Admin selama
+                           Special Unlock;
+                           Kepala pada
+                           PERLU_PERBAIKAN hanya
+                           melihat event
+                           pengajuan dan
+                           keputusan beserta
+                           catatannya (D-039).
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

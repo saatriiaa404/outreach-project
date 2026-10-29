@@ -133,22 +133,7 @@ class OutreachController extends Controller
                 'petugas' => $outreach->petugas->name,
                 'nama' => $full ? $outreach->nama : null,
             ],
-            'history' => HistoryEvent::query()
-                ->where('outreach_id', $outreach->id)
-                ->whereIn('event_type', [
-                    HistoryEventType::Finalized, HistoryEventType::Refinalized, HistoryEventType::Returned, HistoryEventType::Approved,
-                    HistoryEventType::SpecialUnlocked, HistoryEventType::SpecialUnlockLocked, HistoryEventType::SpecialUnlockSubmitted,
-                ])
-                ->orderBy('id')
-                ->get()
-                ->map(fn (HistoryEvent $event) => [
-                    'id' => $event->id,
-                    'type' => $event->event_type->value,
-                    'actor' => $event->actor_name_snapshot,
-                    'at' => $event->created_at?->toIso8601String(),
-                    'description' => $event->description,
-                    'reason' => $event->reason,
-                ]),
+            'history' => $this->timeline($outreach, $full),
             'version' => $version === null ? null : $this->versionReview($outreach, $version),
             'canReturn' => $user->can('return', $outreach),
             'canApprove' => $user->can('approve', $outreach),
@@ -476,6 +461,58 @@ class OutreachController extends Controller
                     : route('outreaches.versions.signatures.show', [$outreach, $version, $form]),
             ])->values()->all() : [],
         ];
+    }
+
+    /**
+     * The business timeline (design.md History). Whoever may see the content
+     * sees every event, including saved sections and the fields an Admin
+     * changed under Special Unlock; where only the status may be seen, the
+     * submission and decision events with their Return notes (D-039).
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function timeline(Outreach $outreach, bool $full): array
+    {
+        $labels = [];
+        $steps = [];
+
+        foreach (OutreachFormSchema::steps() as $key => $step) {
+            $steps[$key] = $step['title'];
+
+            foreach ($step['fields'] as $name => $field) {
+                $labels[$name] = $field['label'];
+            }
+        }
+
+        $steps += ['mustahik' => 'Mustahik', 'kifayah' => 'Kifayah', 'lampiran' => 'Lampiran', 'tanda_tangan' => 'Tanda Tangan'];
+
+        return array_values(HistoryEvent::query()
+            ->where('outreach_id', $outreach->id)
+            ->when(! $full, fn ($query) => $query->whereIn('event_type', [
+                HistoryEventType::Finalized, HistoryEventType::Refinalized, HistoryEventType::Returned, HistoryEventType::Approved,
+                HistoryEventType::SpecialUnlocked, HistoryEventType::SpecialUnlockLocked, HistoryEventType::SpecialUnlockSubmitted,
+            ]))
+            ->orderBy('id')
+            ->get()
+            ->map(fn (HistoryEvent $event) => [
+                'id' => $event->id,
+                'type' => $event->event_type->value,
+                'actor' => $event->actor_name_snapshot,
+                'actor_role' => $event->actor_role_snapshot,
+                'at' => $event->created_at?->toIso8601String(),
+                'description' => $event->description,
+                'reason' => $event->reason,
+                'step' => $steps[$event->metadata['step'] ?? ''] ?? null,
+                'changes' => collect($event->field_changes ?? [])
+                    ->map(fn ($change, $field) => [
+                        'label' => $labels[$field] ?? $field,
+                        'from' => is_array($change) ? ($change['from'] ?? null) : null,
+                        'to' => is_array($change) ? ($change['to'] ?? null) : $change,
+                    ])
+                    ->values()
+                    ->all(),
+            ])
+            ->all());
     }
 
     /**

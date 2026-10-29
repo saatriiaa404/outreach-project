@@ -37,17 +37,23 @@ const props = defineProps<{
     history: {
         id: number;
         type:
+            | 'CREATED'
+            | 'SECTION_SAVED'
             | 'FINALIZED'
             | 'REFINALIZED'
             | 'RETURNED'
             | 'APPROVED'
             | 'SPECIAL_UNLOCKED'
+            | 'SPECIAL_UNLOCK_EDITED'
             | 'SPECIAL_UNLOCK_LOCKED'
             | 'SPECIAL_UNLOCK_SUBMITTED';
         actor: string;
+        actor_role: string;
         at: string | null;
         description: string | null;
         reason: string | null;
+        step: string | null;
+        changes: { label: string; from: unknown; to: unknown }[];
     }[];
     version: {
         id: number;
@@ -74,6 +80,9 @@ const statusLabels: Record<Status, string> = {
 };
 
 const eventLabels: Record<(typeof props.history)[number]['type'], string> = {
+    CREATED: 'Dibuat',
+    SECTION_SAVED: 'Disimpan',
+    SPECIAL_UNLOCK_EDITED: 'Diedit Admin (Special Unlock)',
     FINALIZED: 'Finalisasi',
     REFINALIZED: 'Finalisasi Ulang',
     RETURNED: 'Dikembalikan',
@@ -82,6 +91,11 @@ const eventLabels: Record<(typeof props.history)[number]['type'], string> = {
     SPECIAL_UNLOCK_LOCKED: 'Lock setelah Special Unlock',
     SPECIAL_UNLOCK_SUBMITTED: 'Lock & Ajukan',
 };
+
+const shown = (value: unknown) =>
+    value === null || value === undefined || value === ''
+        ? '(kosong)'
+        : String(value);
 
 const versionLabels = {
     PENDING_APPROVAL: 'menunggu pengesahan',
@@ -264,12 +278,12 @@ defineOptions({
         />
 
         <section class="grid gap-2" data-test="history">
-            <h3 class="font-medium">Riwayat pengajuan</h3>
+            <h3 class="font-medium">Riwayat</h3>
             <p
                 v-if="history.length === 0"
                 class="text-sm text-muted-foreground"
             >
-                Belum pernah diajukan.
+                Belum ada riwayat.
             </p>
             <ol v-else class="divide-y rounded-md border text-sm">
                 <li v-for="event in history" :key="event.id" class="p-3">
@@ -279,9 +293,34 @@ defineOptions({
                         }}</span>
                         · {{ event.actor }} · {{ dateTime(event.at) }}
                     </p>
-                    <p v-if="event.description" class="text-muted-foreground">
-                        {{ event.description }}
+                    <p
+                        v-if="event.description || event.step"
+                        class="text-muted-foreground"
+                    >
+                        {{ event.description ?? `Bagian ${event.step}` }}
                     </p>
+                    <details
+                        v-if="event.changes.length"
+                        class="mt-1"
+                        data-test="history-changes"
+                    >
+                        <summary class="cursor-pointer text-muted-foreground">
+                            {{ event.changes.length }} isian berubah
+                        </summary>
+                        <ul class="mt-1 grid gap-1">
+                            <li
+                                v-for="change in event.changes"
+                                :key="change.label"
+                                class="break-words"
+                            >
+                                <span class="font-medium">{{
+                                    change.label
+                                }}</span
+                                >: {{ shown(change.from) }} →
+                                {{ shown(change.to) }}
+                            </li>
+                        </ul>
+                    </details>
                     <p
                         v-if="event.reason"
                         class="mt-1 whitespace-pre-line"

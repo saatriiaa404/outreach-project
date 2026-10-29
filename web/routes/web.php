@@ -7,6 +7,7 @@ use App\Http\Controllers\FinalizeOutreachController;
 use App\Http\Controllers\KifayahController;
 use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\MustahikController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OutreachAttachmentController;
 use App\Http\Controllers\OutreachController;
 use App\Http\Controllers\OutreachPdfController;
@@ -24,6 +25,9 @@ Route::inertia('/', 'Welcome')->name('home');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+    Route::get('notifications/{notification}', [NotificationController::class, 'open'])->name('notifications.open');
 
     Route::post('outreach/search', [OutreachSearchController::class, 'store'])
         ->name('outreaches.search');

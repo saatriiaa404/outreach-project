@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import {
     Archive,
     BookOpen,
+    Bell,
     ClipboardList,
     Database,
     FolderGit2,
@@ -28,6 +29,7 @@ import {
 import { dashboard } from '@/routes';
 import { index as archiveIndex } from '@/routes/archive';
 import { index as masterDataIndex } from '@/routes/master-data';
+import { index as notificationsIndex } from '@/routes/notifications';
 import { index as outreachIndex } from '@/routes/outreaches';
 import { index as specialUnlockIndex } from '@/routes/special-unlock-requests';
 import { index as templatesIndex } from '@/routes/templates';
@@ -47,6 +49,13 @@ const mainNavItems = computed<NavItem[]>(() => [
         title: 'Outreach',
         href: outreachIndex(),
         icon: ClipboardList,
+    },
+    {
+        title: page.props.unreadNotifications
+            ? `Notifikasi (${page.props.unreadNotifications})`
+            : 'Notifikasi',
+        href: notificationsIndex(),
+        icon: Bell,
     },
     ...(page.props.auth.user?.role === 'ADMIN'
         ? [
