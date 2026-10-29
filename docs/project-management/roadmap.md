@@ -104,7 +104,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 |---|---|
 | R11.1 | Skenario `docs/engineering/testing.md` 1–23 dan `docs/prototype/demo-checklist.md` — ✅ Uji otomatis 29 Oktober 2026: 22 skenario PASS (No. 15 dengan temuan 31.3), No. 14 menunggu R11.2; 5 tes baru untuk celah No. 8, 18, 20, 23; walkthrough demo checklist bersama pihak terkait dijalankan pemilik proyek |
 | R11.1a | Penerapan jawaban validasi Kelurahan — ✅ 29 Oktober 2026: label desil DTST, centang pengeluaran Kifayah, "Lampiran lain" dan batas 10 lampiran, pangkat/nama kapital/stempel pada pengesahan, logo Pemkot dan Baznas (template PDF v2), seed DEMO-002/DEMO-004, CI bawaan dihapus (D-064, D-065) |
-| R11.2 | PERS-001: simpan, tutup, buka kembali |
+| R11.2 | PERS-001: simpan, tutup, buka kembali — ✅ 30 Oktober 2026: 23 tabel dan 14 berkas identik setelah Laragon ditutup dan dibuka kembali (bukti di `testing.md`) |
 | R11.3 | Prosedur backup dan restore D-038 serta uji restore |
 
 ## Keputusan Terbuka

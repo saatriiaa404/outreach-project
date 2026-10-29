@@ -62,7 +62,7 @@ Dijalankan oleh coding agent pada database uji `outreach_prototype_test` dengan 
 | 11 | Otorisasi | PASS | `Authorization/OutreachPolicyTest`, tes "only the owner" di setiap fitur, `ApproveOutreachTest` (Admin bukan pengesah) | |
 | 12 | Validasi dan konflik edit | PASS | tes `stale` di Save/Autosave/Finalize/Return/ChangeSource, `AttachmentUploadTest` (duplikat), `FinalizeOutreachTest` (belum lengkap) | |
 | 13 | Nilai Kifayah | PASS | `Outreach/KifayahFormTest` | |
-| 14 | Persistence lokal | BLOCKED | — | Dijalankan pada R11.2 (PERS-001) |
+| 14 | Persistence lokal | PASS | Uji manual R11.2 (PERS-001), lihat bagian di bawah | 30 Oktober 2026 |
 | 15 | Tanda tangan dan identitas Kepala | PASS | `ApproveOutreachTest::test_the_approval_block_prints_the_stored_date_name_nip_and_template`, `test_the_block_prints_the_rank_held_at_approval_and_the_active_stamp`, `UserManagementTest`, `TemplateManagementTest::test_an_approval_keeps_the_version_it_used` | Pergantian Kepala: antrean boleh diputuskan Kepala baru (D-064). Nama kapital, pangkat, dan stempel sesuai D-065 |
 | 16 | Arsip manual | PASS | `ArchiveTest` | Halaman Arsip menyatakan proses manual dan ID internal bukan nomor arsip resmi |
 | 17 | Form Mustahik | PASS | `Outreach/MustahikFormTest`, `OutreachPdfTest` (header dan centang) | Opsi yang beririsan dipakai apa adanya (VAL-001, D-064) |
@@ -74,6 +74,17 @@ Dijalankan oleh coding agent pada database uji `outreach_prototype_test` dengan 
 | 23 | Autentikasi dan infrastruktur | PASS | `Auth/UnavailableAuthFeaturesTest` (baru) | |
 
 Belum dicakup oleh agent dan menjadi bagian walkthrough pemilik proyek: tampilan mobile stepper PETUGAS dan desktop antrean KEPALA/ADMIN pada satu alur utuh, screenshot bukti, serta feedback pihak Kelurahan.
+
+### Bukti PERS-001 (R11.2) — 30 Oktober 2026
+
+Database uji `outreach_prototype_test`, data dummy saja, satu komputer (Laragon, MySQL 8.4.3).
+
+1. **Simpan.** Database uji diisi ulang dengan `migrate:fresh --seed` (DEMO-001 sampai DEMO-004; DEMO-002 Menunggu Pengesahan dan DEMO-004 Selesai dibangun melalui alur aplikasi). Lewat action aplikasi, Petugas demo menyimpan langkah Data Klien pada Draft DEMO-001 dan mengunggah satu lampiran KTP sintetis.
+2. **Sidik sebelum ditutup.** Untuk setiap tabel dicatat jumlah baris dan hash SHA-256 seluruh isinya; untuk setiap berkas tersimpan dicatat hash isinya; tiga PDF DEMO-004 dirender ulang dari versi yang disahkan. Hasil: 23 tabel, 168 baris, 14 berkas (tidak ada yang hilang), tiga PDF terbentuk.
+3. **Tutup.** Server aplikasi tidak berjalan; pemilik proyek menjalankan Stop All, menutup Laragon sepenuhnya, lalu membuka kembali dan Start All. Uptime MySQL setelahnya 58 detik, yang menunjukkan server database benar-benar dimulai ulang; cache Laravel dibersihkan (`optimize:clear`).
+4. **Buka kembali dan bandingkan.** Sidik yang sama diambil ulang: seluruh 23 tabel dan 14 berkas identik, perubahan Draft (nama, tanggal lahir, lampiran, `edit_version`) tetap ada, dan tiga PDF DEMO-004 masih terbentuk. Aplikasi dijalankan lagi dengan `php artisan serve`: halaman login 200 dan halaman terlindungi mengalihkan tamu ke login.
+
+Keterbatasan: perubahan disimpan melalui action aplikasi, bukan klik di browser, dan login setelah restart tidak diuji di browser karena agent tidak membaca kata sandi akun uji. Restart Windows penuh tidak dilakukan.
 
 ## Di Luar Cakupan Saat Ini
 
