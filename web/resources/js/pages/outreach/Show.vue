@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import ApproveOutreachController from '@/actions/App/Http/Controllers/ApproveOutreachController';
 import ReturnOutreachController from '@/actions/App/Http/Controllers/ReturnOutreachController';
 import Heading from '@/components/Heading.vue';
 import OutreachDocumentPreview from '@/components/outreach/OutreachDocumentPreview.vue';
@@ -50,6 +51,7 @@ const props = defineProps<{
         signatures: { title: string; url: string | null }[];
     } | null;
     canReturn: boolean;
+    canApprove: boolean;
     canEdit: boolean;
 }>();
 
@@ -105,6 +107,26 @@ const submitReturn = () => {
     );
 };
 
+const approving = ref(false);
+
+// The server renders every required PDF before the approval is kept.
+const submitApprove = () => {
+    if (!props.version) {
+        return;
+    }
+
+    approving.value = false;
+    processing.value = true;
+    router.post(
+        ApproveOutreachController.url(props.outreach.id),
+        { outreach_version_id: props.version.id },
+        {
+            preserveScroll: true,
+            onFinish: () => (processing.value = false),
+        },
+    );
+};
+
 defineOptions({
     layout: {
         breadcrumbs: [{ title: 'Outreach', href: index() }],
@@ -127,31 +149,51 @@ defineOptions({
         </div>
 
         <section
-            v-if="canReturn"
+            v-if="canReturn || canApprove"
             class="rounded-md border p-4"
             data-test="decision"
         >
             <p class="font-medium">Keputusan Kepala</p>
             <p class="mt-1 text-sm text-muted-foreground">
                 Tinjau versi yang diajukan di bawah. Data tidak dapat diubah
-                dari halaman ini. Bila perlu diperbaiki, kembalikan kepada
-                Petugas dengan catatan. Approve tersedia pada tahap berikutnya.
+                dari halaman ini. Sahkan bila sudah sesuai, atau kembalikan
+                kepada Petugas dengan catatan bila perlu diperbaiki.
             </p>
             <p
-                v-if="errors.return"
+                v-if="errors.approve || errors.return"
                 class="mt-2 text-sm text-destructive"
-                data-test="return-error"
+                role="alert"
+                data-test="decision-error"
             >
-                {{ errors.return }}
+                {{ errors.approve ?? errors.return }}
             </p>
-            <Button
-                class="mt-3"
-                variant="outline"
-                data-test="return"
-                @click="returning = true"
+            <p
+                v-if="processing && !returning"
+                class="mt-2 text-sm"
+                role="status"
+                data-test="approve-processing"
             >
-                Kembalikan untuk perbaikan
-            </Button>
+                Membuat seluruh PDF wajib…
+            </p>
+            <div class="mt-3 flex flex-wrap gap-2">
+                <Button
+                    v-if="canApprove"
+                    :disabled="processing"
+                    data-test="approve"
+                    @click="approving = true"
+                >
+                    Sahkan
+                </Button>
+                <Button
+                    v-if="canReturn"
+                    variant="outline"
+                    :disabled="processing"
+                    data-test="return"
+                    @click="returning = true"
+                >
+                    Kembalikan untuk perbaikan
+                </Button>
+            </div>
         </section>
 
         <section v-else-if="canEdit" class="rounded-md border p-4 text-sm">
@@ -321,6 +363,27 @@ defineOptions({
                     @click="submitReturn"
                 >
                     Kembalikan
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+    <Dialog v-model:open="approving">
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Sahkan Outreach ini?</DialogTitle>
+                <DialogDescription>
+                    Versi {{ version?.number }} disahkan atas nama Anda dengan
+                    template tanda tangan Kepala dan tanggal hari ini. Sistem
+                    membuat seluruh PDF wajib lebih dulu; bila satu saja gagal,
+                    pengesahan dibatalkan dan status tetap Menunggu Pengesahan.
+                </DialogDescription>
+            </DialogHeader>
+            <DialogFooter class="gap-2">
+                <Button variant="outline" @click="approving = false">
+                    Batal
+                </Button>
+                <Button data-test="confirm-approve" @click="submitApprove">
+                    Ya, sahkan
                 </Button>
             </DialogFooter>
         </DialogContent>

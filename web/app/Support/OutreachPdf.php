@@ -3,9 +3,11 @@
 namespace App\Support;
 
 use App\Enums\AttachmentCategory;
+use App\Models\OutreachApproval;
 use App\Models\OutreachVersion;
 use App\Models\OutreachVersionAttachment;
 use App\Models\Signature;
+use App\Models\SignatureTemplate;
 use Illuminate\Support\Carbon;
 use InvalidArgumentException;
 
@@ -41,6 +43,27 @@ class OutreachPdf
 
         // Fixed order; stored JSON keys are unordered.
         return array_values(array_filter(array_keys(self::VIEWS), fn (string $document) => isset($package[$document])));
+    }
+
+    /**
+     * Approval block values of an APPROVED decision (outreach.md 8.4): the
+     * stored approval date, the approving Kepala's name and NIP read at
+     * render time (database.md 4.1), and the signature template it recorded.
+     *
+     * @return array{date: string, name: string, nip: string|null, signature: string|null}
+     */
+    public function approvalBlock(OutreachApproval $approval): array
+    {
+        $template = $approval->head_signature_template_id === null
+            ? null
+            : SignatureTemplate::query()->with('file')->find($approval->head_signature_template_id);
+
+        return [
+            'date' => $approval->decided_at->translatedFormat('j F Y'),
+            'name' => $approval->kepala->name,
+            'nip' => $approval->kepala->nip,
+            'signature' => $template ? PdfRenderer::dataUri($template->file) : null,
+        ];
     }
 
     /**

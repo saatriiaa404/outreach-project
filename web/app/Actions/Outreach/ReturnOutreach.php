@@ -11,7 +11,6 @@ use App\Models\OutreachApproval;
 use App\Models\OutreachVersion;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
 /**
  * Return by the Kepala (Workflow v2.1 section 21): a RETURNED decision with
@@ -21,21 +20,12 @@ use Illuminate\Validation\ValidationException;
  */
 class ReturnOutreach
 {
+    use LocksPendingVersion;
+
     public function handle(Outreach $outreach, User $kepala, int $versionId, string $note): OutreachApproval
     {
         return DB::transaction(function () use ($outreach, $kepala, $versionId, $note) {
-            // The row lock also stops a double submit from deciding twice.
-            $locked = Outreach::query()->whereKey($outreach->id)->lockForUpdate()->firstOrFail();
-            $version = $locked->latestVersion()->first();
-
-            // Only the latest submission that is still pending may be decided (32.2).
-            if ($locked->status !== OutreachStatus::MenungguPengesahan
-                || $version?->id !== $versionId
-                || $version->status !== OutreachVersion::PENDING_APPROVAL) {
-                throw ValidationException::withMessages([
-                    'return' => 'Pengajuan ini sudah diputuskan atau diganti versi baru. Muat ulang halaman.',
-                ]);
-            }
+            [$locked, $version] = $this->lockPending($outreach, $versionId, 'return');
 
             $approval = new OutreachApproval;
             $approval->forceFill([

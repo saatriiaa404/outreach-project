@@ -893,6 +893,30 @@ rujuk keputusan pengganti.
                            opsi pertanyaan
                            pilihan tetap literal
                            (D-037).
+
+  D-054       LOCKED       Approve (R7.4)         Persetujuan     Seed demo bertambah     `database.md` 9.2/10.2,
+                           mensyaratkan Kepala    eksplisit       satu file gambar dan    `roles-permissions.md`, kode
+                           memiliki NIP dan       pemilik         satu baris              `web/`
+                           template tanda tangan  proyek, 29      signature_templates;
+                           aktif; bila salah      Oktober 2026.   tidak ada perubahan
+                           satu tidak ada,                        schema. Template nyata
+                           Approve ditolak                        Kepala tidak pernah
+                           dengan pesan jelas                     dimasukkan.
+                           dan status tetap
+                           MENUNGGU_PENGESAHAN.
+                           Sebelum pengelolaan
+                           template oleh Admin
+                           (R9.3), DemoSeeder
+                           membuat satu template
+                           tanda tangan sintetis
+                           bertanda DEMO untuk
+                           Kepala demo. Stempel
+                           digital tidak
+                           diterapkan
+                           (stamp_template_id
+                           NULL) karena
+                           kebijakannya masih
+                           PENDING VALIDATION.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

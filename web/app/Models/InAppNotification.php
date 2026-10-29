@@ -28,6 +28,8 @@ class InAppNotification extends Model
 
     public const OUTREACH_RETURNED = 'OUTREACH_RETURNED';
 
+    public const OUTREACH_COMPLETED = 'OUTREACH_COMPLETED';
+
     protected $table = 'notifications';
 
     /**

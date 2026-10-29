@@ -136,6 +136,7 @@ class OutreachController extends Controller
                 ]),
             'version' => $version === null ? null : $this->versionReview($outreach, $version),
             'canReturn' => $user->can('return', $outreach),
+            'canApprove' => $user->can('approve', $outreach),
             'canEdit' => $user->can('update', $outreach),
         ]);
     }

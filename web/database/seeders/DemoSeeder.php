@@ -8,9 +8,12 @@ use App\Enums\UserStatus;
 use App\Models\Outreach;
 use App\Models\OutreachSource;
 use App\Models\OutreachType;
+use App\Models\SignatureTemplate;
+use App\Models\StoredFile;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
 /**
@@ -34,7 +37,8 @@ class DemoSeeder extends Seeder
         }
 
         $petugas = $this->user('Rina Petugas', 'petugas.demo@example.test', UserRole::Petugas, $password);
-        $this->user('Budi Kepala', 'kepala.demo@example.test', UserRole::Kepala, $password, '000000000000000001');
+        $kepala = $this->user('Budi Kepala', 'kepala.demo@example.test', UserRole::Kepala, $password, '000000000000000001');
+        $this->signatureTemplate($kepala);
         $this->user('Sari Admin', 'admin.demo@example.test', UserRole::Admin, $password);
 
         $this->draft($petugas, 'DRAFT-DEMO00000001', 'BAZNAS', 'RUTILAHU', [
@@ -59,6 +63,69 @@ class DemoSeeder extends Seeder
             'role' => $role,
             'status' => UserStatus::Active,
         ]);
+    }
+
+    /**
+     * A synthetic Kepala signature template (a scribble marked DEMO) so
+     * Approve can be demonstrated before template management (R9.3).
+     */
+    public static function signatureTemplate(User $kepala): SignatureTemplate
+    {
+        $existing = SignatureTemplate::query()->where('head_user_id', $kepala->id)->orderByDesc('version_number')->first();
+
+        if ($existing !== null) {
+            return $existing;
+        }
+
+        $image = imagecreatetruecolor(600, 200);
+        $transparent = imagecolorallocatealpha($image, 0, 0, 0, 127);
+        $ink = imagecolorallocate($image, 17, 24, 39);
+        $grey = imagecolorallocate($image, 150, 150, 150);
+
+        if ($transparent === false || $ink === false || $grey === false) {
+            throw new RuntimeException('Could not draw the demo signature template.');
+        }
+
+        imagesavealpha($image, true);
+        imagefill($image, 0, 0, $transparent);
+        imagesetthickness($image, 4);
+        imageline($image, 40, 140, 160, 60, $ink);
+        imageline($image, 160, 60, 240, 150, $ink);
+        imageline($image, 240, 150, 380, 70, $ink);
+        imageline($image, 380, 70, 560, 120, $ink);
+        imagestring($image, 5, 270, 170, 'DEMO', $grey);
+        ob_start();
+        imagepng($image);
+        $png = (string) ob_get_clean();
+
+        $key = "signature-templates/kepala-{$kepala->id}-v1.png";
+        Storage::disk('local')->put($key, $png);
+
+        return DB::transaction(function () use ($kepala, $key, $png) {
+            $file = new StoredFile;
+            $file->forceFill([
+                'storage_disk' => 'local',
+                'storage_key' => $key,
+                'original_name' => 'tanda-tangan-kepala-demo.png',
+                'mime_type' => 'image/png',
+                'extension' => 'png',
+                'size_bytes' => strlen($png),
+                'sha256_hash' => hash('sha256', $png),
+                'width' => 600,
+                'height' => 200,
+            ])->save();
+
+            $template = new SignatureTemplate;
+            $template->forceFill([
+                'file_id' => $file->id,
+                'head_user_id' => $kepala->id,
+                'version_number' => 1,
+                'valid_from' => now(),
+                'is_active' => true,
+            ])->save();
+
+            return $template;
+        });
     }
 
     /**

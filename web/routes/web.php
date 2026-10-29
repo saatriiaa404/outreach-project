@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApproveOutreachController;
 use App\Http\Controllers\FinalizeOutreachController;
 use App\Http\Controllers\KifayahController;
 use App\Http\Controllers\MustahikController;
@@ -47,6 +48,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('outreaches.finalize');
     Route::post('outreach/{outreach}/return', ReturnOutreachController::class)
         ->name('outreaches.return');
+    Route::post('outreach/{outreach}/approve', ApproveOutreachController::class)
+        ->name('outreaches.approve');
     Route::get('outreach/{outreach}/versions/{version}/attachments/{attachment}', [OutreachVersionController::class, 'attachment'])
         ->name('outreaches.versions.attachments.show');
     Route::get('outreach/{outreach}/versions/{version}/signatures/{form}', [OutreachVersionController::class, 'signature'])

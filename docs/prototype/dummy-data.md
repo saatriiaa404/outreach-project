@@ -12,7 +12,7 @@ Baseline aktif: Workflow v2.1 dan Database v1.1 (22 tabel). Dokumen ini menyedia
 | KEPALA | Budi Kepala | `kepala.demo@example.test` |
 | ADMIN | Sari Admin | `admin.demo@example.test` |
 
-Gunakan password demo yang berbeda dari password pribadi dan jangan memakai akun produksi. Pada prototype, password ketiga akun diambil dari `DEMO_USER_PASSWORD` di `web/.env` lokal (tidak di-commit) saat `php artisan db:seed` dijalankan; NIP Kepala demo adalah nilai sintetis `000000000000000001`. Jika sistem belum memiliki akun dummy, penyiapannya dilakukan hanya setelah gate implementasi dibuka dan mengikuti keputusan implementasi yang disetujui.
+Gunakan password demo yang berbeda dari password pribadi dan jangan memakai akun produksi. Pada prototype, password ketiga akun diambil dari `DEMO_USER_PASSWORD` di `web/.env` lokal (tidak di-commit) saat `php artisan db:seed` dijalankan; NIP Kepala demo adalah nilai sintetis `000000000000000001`, dan Kepala demo mendapat satu template tanda tangan sintetis bertanda DEMO agar Approve dapat didemokan sebelum R9.3 (D-054). Jika sistem belum memiliki akun dummy, penyiapannya dilakukan hanya setelah gate implementasi dibuka dan mengikuti keputusan implementasi yang disetujui.
 
 ## Record Demo
 
