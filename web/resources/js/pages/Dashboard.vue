@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import AdminCharts from '@/components/AdminCharts.vue';
+import type { AdminChartData } from '@/components/AdminCharts.vue';
 import Heading from '@/components/Heading.vue';
 import { Badge } from '@/components/ui/badge';
 import { dashboard } from '@/routes';
@@ -25,6 +27,7 @@ defineProps<{
         archive_pending: number;
         archive_overdue: number;
     } | null;
+    charts: AdminChartData | null;
 }>();
 
 defineOptions({
@@ -117,6 +120,8 @@ const focusTitle = {
                 </p>
             </Link>
         </section>
+
+        <AdminCharts v-if="charts" :charts="charts" />
 
         <section class="grid gap-2" data-test="focus">
             <h3 class="font-medium">{{ focusTitle[role] }}</h3>

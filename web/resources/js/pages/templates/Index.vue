@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, router, usePage } from '@inertiajs/vue3';
+import { Upload } from '@lucide/vue';
 import { computed, ref } from 'vue';
 import TemplateController from '@/actions/App/Http/Controllers/TemplateController';
 import Heading from '@/components/Heading.vue';
@@ -72,6 +73,11 @@ const upload = (key: string, url: string, event: Event) => {
         },
     );
 };
+
+const pickFile = (key: string) =>
+    (
+        document.getElementById(`upload-${key}`) as HTMLInputElement | null
+    )?.click();
 
 const deactivate = (url: string) => {
     processing.value = true;
@@ -175,17 +181,33 @@ const sections = computed(() => [
                 Belum ada versi aktif.
             </p>
 
-            <label class="grid gap-1 text-sm">
-                <span class="font-medium">Unggah versi baru</span>
+            <div class="flex flex-wrap items-center gap-3">
+                <Button
+                    type="button"
+                    :disabled="processing"
+                    data-test="upload-button"
+                    @click="pickFile(section.key)"
+                >
+                    <Upload class="size-4" />
+                    {{
+                        activeOf(section.versions)
+                            ? 'Unggah versi baru'
+                            : 'Unggah gambar'
+                    }}
+                </Button>
+                <span class="text-xs text-muted-foreground"
+                    >PNG atau JPG, latar sebaiknya transparan atau putih.</span
+                >
                 <input
+                    :id="`upload-${section.key}`"
                     type="file"
                     accept="image/png,image/jpeg"
                     :disabled="processing"
-                    class="text-sm"
+                    class="hidden"
                     data-test="upload"
                     @change="upload(section.key, section.uploadUrl, $event)"
                 />
-            </label>
+            </div>
             <InputError v-if="target === section.key" :message="errors.file" />
 
             <details v-if="section.versions.length > 1" class="text-sm">
