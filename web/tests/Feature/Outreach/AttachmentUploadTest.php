@@ -9,9 +9,11 @@ use App\Models\OutreachAttachment;
 use App\Models\OutreachSource;
 use App\Models\StoredFile;
 use App\Models\User;
+use App\Support\ImageOptimizer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
@@ -64,6 +66,31 @@ class AttachmentUploadTest extends TestCase
         $this->assertSame([640, 480], [$attachment->file->width, $attachment->file->height]);
         $this->assertStringStartsWith("attachments/{$outreach->id}/", $attachment->file->storage_key);
         Storage::disk('local')->assertExists($attachment->file->storage_key);
+    }
+
+    public function test_a_failed_upload_or_compression_says_why_and_keeps_the_existing_attachment()
+    {
+        $outreach = $this->draft();
+        $this->upload($outreach, UploadedFile::fake()->image('ktp.jpg', 640, 480))->assertSessionHasNoErrors();
+        $kept = OutreachAttachment::query()->with('file')->sole();
+
+        // A PNG cut after its header: readable size, undecodable pixels.
+        ob_start();
+        imagepng(imagecreatetruecolor(40, 40));
+        $broken = UploadedFile::fake()->createWithContent('ktp-rusak.png', substr((string) ob_get_clean(), 0, 40));
+
+        $this->upload($outreach, $broken, 'KTP', ['replaces' => $kept->id])
+            ->assertSessionHasErrors(['file' => 'Gambar tidak dapat diproses. Unggah ulang berkas yang utuh.']);
+
+        $this->mock(ImageOptimizer::class)->shouldReceive('optimize')->andThrow(
+            ValidationException::withMessages(['file' => 'Gambar gagal dikompresi. Coba unggah ulang.'])
+        );
+        $this->upload($outreach, UploadedFile::fake()->image('ktp-baru.jpg', 320, 240), 'KTP', ['replaces' => $kept->id])
+            ->assertSessionHasErrors(['file' => 'Gambar gagal dikompresi. Coba unggah ulang.']);
+
+        $this->assertTrue(OutreachAttachment::query()->sole()->is($kept), 'The replaced attachment stays.');
+        $this->assertSame(1, StoredFile::query()->count());
+        $this->assertSame([$kept->file->storage_key], Storage::disk('local')->allFiles());
     }
 
     public function test_content_decides_the_type_not_the_file_name()

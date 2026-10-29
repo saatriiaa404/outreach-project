@@ -3,8 +3,10 @@
 namespace Tests\Feature\Outreach;
 
 use App\Actions\Outreach\FinalizeOutreach;
+use App\Enums\AttachmentCategory;
 use App\Models\MustahikAnswer;
 use App\Models\Outreach;
+use App\Models\OutreachAttachment;
 use App\Models\OutreachVersion;
 use App\Support\OutreachPdf;
 use Database\Seeders\MasterDataSeeder;
@@ -68,6 +70,36 @@ class OutreachPdfTest extends TestCase
         $this->assertSame(4, substr_count($html, 'class="attachment"'));
         $this->assertSame(4, substr_count($html, 'src="data:image/'), 'Attachments are embedded, never linked.');
         $this->assertLessThan(strpos($html, 'Lampiran: Kartu Keluarga'), strpos($html, 'Lampiran: KTP'), 'Attachments follow the category order.');
+    }
+
+    public function test_a_pdf_attachment_prints_as_a_reference_page_and_the_document_still_renders()
+    {
+        $outreach = $this->ready();
+        $file = $this->file();
+        $file->forceFill(['mime_type' => 'application/pdf', 'extension' => 'pdf', 'original_name' => 'surat-keterangan.pdf'])->save();
+        (new OutreachAttachment)->forceFill([
+            'outreach_id' => $outreach->id, 'file_id' => $file->id, 'category' => AttachmentCategory::Tambahan, 'title' => 'Surat keterangan',
+        ])->save();
+        $version = app(FinalizeOutreach::class)->handle($outreach, $outreach->petugas, $outreach->refresh()->edit_version);
+        $pdf = app(OutreachPdf::class);
+
+        $html = $pdf->html($version, 'outreach', ['date' => '28 Oktober 2026', 'name' => 'KEPALA SINTETIS', 'nip' => '1', 'signature' => null]);
+
+        $this->assertSame(5, substr_count($html, 'class="attachment"'));
+        $this->assertStringContainsString('Lampiran berupa berkas PDF dengan nama <strong>surat-keterangan.pdf</strong>', $html);
+        $this->assertSame(4, substr_count($html, 'src="data:image/'), 'The PDF is referenced, not embedded.');
+        $this->assertStringStartsWith('%PDF-', $pdf->render($version, 'outreach'));
+    }
+
+    public function test_the_kifayah_date_follows_the_outreach_date_not_the_print_date()
+    {
+        $this->travelTo('2027-02-03 10:00');
+        $version = $this->finalized();
+
+        $html = app(OutreachPdf::class)->html($version, 'kifayah');
+
+        $this->assertStringContainsString('Surabaya, 27 Oktober 2026', $html);
+        $this->assertStringNotContainsString('2027', $html);
     }
 
     public function test_the_mustahik_pdf_checks_only_the_chosen_option_in_the_score_column()

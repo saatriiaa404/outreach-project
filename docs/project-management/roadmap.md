@@ -102,7 +102,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 
 | ID | Task |
 |---|---|
-| R11.1 | Skenario `docs/engineering/testing.md` 1–23 dan `docs/prototype/demo-checklist.md` |
+| R11.1 | Skenario `docs/engineering/testing.md` 1–23 dan `docs/prototype/demo-checklist.md` — ✅ Uji otomatis 29 Oktober 2026: 22 skenario PASS (No. 15 dengan temuan 31.3), No. 14 menunggu R11.2; 5 tes baru untuk celah No. 8, 18, 20, 23; walkthrough demo checklist bersama pihak terkait dijalankan pemilik proyek |
 | R11.2 | PERS-001: simpan, tutup, buka kembali |
 | R11.3 | Prosedur backup dan restore D-038 serta uji restore |
 

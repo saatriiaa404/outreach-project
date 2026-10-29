@@ -43,6 +43,38 @@ Workflow v2.1 dan Database v1.1 (22 tabel) tetap menjadi baseline terkunci. Renc
 - Simpan screenshot pada langkah penting untuk dokumentasi laporan, dengan hanya menggunakan data dummy.
 - Setelah alur utama stabil, lakukan uji backup mingguan database beserta seluruh lampiran oleh ADMIN secara manual ke media terpisah (D-038) dan uji restore sebelum serah terima. Ini merupakan kriteria kesiapan handover, bukan klaim bahwa backup/restore operasional sudah tersedia sekarang.
 
+## Hasil Eksekusi R11.1 — 29 Oktober 2026
+
+Dijalankan oleh coding agent pada database uji `outreach_prototype_test` dengan data dummy. Bukti utama adalah uji otomatis di `web/tests` (362 tes lulus pada commit R11.1), ditambah pemeriksaan browser per fitur yang dilakukan saat masing-masing task roadmap R3–R10 selesai. Walkthrough browser end-to-end tiga peran pada R11.1 sendiri tidak dijalankan oleh agent karena kata sandi akun uji tidak boleh dibaca agent; walkthrough itu dilakukan pemilik proyek memakai `docs/prototype/demo-checklist.md`.
+
+| No | Skenario | Hasil | Bukti utama (`web/tests/Feature/...`) | Catatan |
+|---|---|---|---|---|
+| 1 | Draft dan Finalisasi | PASS | `Outreach/FinalizeOutreachTest`, `FinalizationReadinessTest`, `AttachmentRequirementsTest`, `SignatureTest` | |
+| 2 | Source dan Type | PASS | `Outreach/SaveOutreachStepTest` (langkah mengikuti Source), `ChangeSourceTypeTest`, `ReviewTest` (Bangga Surabaya tanpa form/TTD) | |
+| 3 | Return dan Revisi | PASS | `Outreach/ReturnOutreachTest`, `FinalizeOutreachTest` (Finalisasi Ulang membuat versi berikutnya) | |
+| 4 | Approval dan PDF gate | PASS | `Outreach/ApproveOutreachTest` | |
+| 5 | Kegagalan PDF | PASS | `ApproveOutreachTest::test_a_failed_pdf_fails_the_whole_approval`, `test_a_missing_attachment_file_blocks_approval_and_a_retry_succeeds` | |
+| 6 | Output PDF | PASS | `Outreach/OutreachPdfTest`, `DownloadPdfTest` | Tampilan PDF diperiksa visual saat R6 dan R7.4 |
+| 7 | Lampiran | PASS | `AttachmentRequirementsTest`, `AttachmentUploadTest`, `SignatureTest::test_attachments_alone_do_not_clear_signatures` | Lampiran tambahan per jenis bantuan tetap `PENDING VALIDATION` (D-033) |
+| 8 | Pemrosesan lampiran | PASS | `AttachmentUploadTest::test_a_failed_upload_or_compression_says_why_and_keeps_the_existing_attachment` (baru), `ImageCompressionTest` | Batas 10 MB per berkas adalah batas prototype; batas final ukuran/jumlah `PENDING VALIDATION` |
+| 9 | Special Unlock | PASS | `Outreach/SpecialUnlockTest`, `SpecialUnlockRequestTest` | |
+| 10 | Integritas historis | PASS | `FinalizeOutreachTest::test_versions_are_immutable_and_unaffected_by_later_changes`, `ReturnOutreachTest::test_approval_decisions_are_immutable`, `OutreachPdfTest::test_pdfs_come_from_the_version_not_the_current_data` | |
+| 11 | Otorisasi | PASS | `Authorization/OutreachPolicyTest`, tes "only the owner" di setiap fitur, `ApproveOutreachTest` (Admin bukan pengesah) | |
+| 12 | Validasi dan konflik edit | PASS | tes `stale` di Save/Autosave/Finalize/Return/ChangeSource, `AttachmentUploadTest` (duplikat), `FinalizeOutreachTest` (belum lengkap) | |
+| 13 | Nilai Kifayah | PASS | `Outreach/KifayahFormTest` | |
+| 14 | Persistence lokal | BLOCKED | — | Dijalankan pada R11.2 (PERS-001) |
+| 15 | Tanda tangan dan identitas Kepala | PASS dengan temuan | `ApproveOutreachTest::test_the_approval_block_prints_the_stored_date_name_nip_and_template`, `UserManagementTest` (koreksi NIP diaudit), `TemplateManagementTest::test_an_approval_keeps_the_version_it_used` | Format cetak NIP `PENDING VALIDATION`. Temuan 31.3: saat Kepala berganti, antrean `MENUNGGU_PENGESAHAN` tetap ada dan dapat diputuskan oleh Kepala aktif yang baru (hanya satu Kepala aktif, D-041); aturan final masih `PENDING VALIDATION` |
+| 16 | Arsip manual | PASS | `ArchiveTest` | Halaman Arsip menyatakan proses manual dan ID internal bukan nomor arsip resmi |
+| 17 | Form Mustahik | PASS (struktur) | `Outreach/MustahikFormTest`, `OutreachPdfTest` (header dan centang) | Label/opsi yang belum dikonfirmasi pemilik formulir tetap `PENDING VALIDATION` |
+| 18 | Tahun PDF Kifayah | PASS | `OutreachPdfTest::test_the_kifayah_date_follows_the_outreach_date_not_the_print_date` (baru) | |
+| 19 | Identitas Kifayah | PASS | `KifayahFormTest::test_the_kifayah_step_shows_outreach_identity_and_nothing_filled`, `test_answers_are_never_taken_from_outreach_data` | |
+| 20 | Lampiran PDF pada PDF Outreach | PASS | `OutreachPdfTest::test_a_pdf_attachment_prints_as_a_reference_page_and_the_document_still_renders` (baru) | |
+| 21 | Dashboard dan pencarian | PASS | `DashboardTest`, `Outreach/OutreachSearchTest`, `NotificationsAndTimelineTest` | |
+| 22 | Master data dan PDF final | PASS | `MasterDataTest`, `DownloadPdfTest::test_petugas_never_downloads_not_even_their_own` | |
+| 23 | Autentikasi dan infrastruktur | PASS | `Auth/UnavailableAuthFeaturesTest` (baru) | |
+
+Belum dicakup oleh agent dan menjadi bagian walkthrough pemilik proyek: tampilan mobile stepper PETUGAS dan desktop antrean KEPALA/ADMIN pada satu alur utuh, screenshot bukti, serta feedback pihak Kelurahan.
+
 ## Di Luar Cakupan Saat Ini
 
 - Hosting/domain, akses LAN multi-pengguna, dan deployment production.
