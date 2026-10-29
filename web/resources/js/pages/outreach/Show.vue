@@ -53,6 +53,7 @@ const props = defineProps<{
     canReturn: boolean;
     canApprove: boolean;
     canEdit: boolean;
+    downloads: { title: string; url: string }[];
 }>();
 
 const statusLabels: Record<Status, string> = {
@@ -201,6 +202,38 @@ defineOptions({
             <Link :href="edit(outreach.id)" class="underline">
                 Buka pengisian
             </Link>
+        </section>
+
+        <section
+            v-if="downloads.length"
+            class="rounded-md border p-4"
+            data-test="downloads"
+        >
+            <p class="font-medium">PDF final</p>
+            <p class="mt-1 text-sm text-muted-foreground">
+                Dibuat ulang dari versi {{ version?.number }} yang disahkan
+                setiap kali diunduh.
+            </p>
+            <p
+                v-if="errors.pdf"
+                class="mt-2 text-sm text-destructive"
+                role="alert"
+                data-test="pdf-error"
+            >
+                {{ errors.pdf }}
+            </p>
+            <div class="mt-3 flex flex-wrap gap-2">
+                <Button
+                    v-for="download in downloads"
+                    :key="download.url"
+                    variant="outline"
+                    as-child
+                >
+                    <a :href="download.url" data-test="download">{{
+                        download.title
+                    }}</a>
+                </Button>
+            </div>
         </section>
 
         <section class="grid gap-2" data-test="history">

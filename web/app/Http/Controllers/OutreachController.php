@@ -28,6 +28,7 @@ use App\Support\KifayahFormSchema;
 use App\Support\MustahikFormSchema;
 use App\Support\OutreachDocument;
 use App\Support\OutreachFormSchema;
+use App\Support\OutreachPdf;
 use App\Support\OutreachSnapshot;
 use App\Support\OutreachSteps;
 use Illuminate\Http\JsonResponse;
@@ -137,6 +138,13 @@ class OutreachController extends Controller
             'version' => $version === null ? null : $this->versionReview($outreach, $version),
             'canReturn' => $user->can('return', $outreach),
             'canApprove' => $user->can('approve', $outreach),
+            // Final PDFs of the approved version, rendered on demand (R7.5, D-040).
+            'downloads' => $version?->status === OutreachVersion::APPROVED && $user->can('downloadFinalPdf', $outreach)
+                ? collect(app(OutreachPdf::class)->documents($version))->map(fn (string $document) => [
+                    'title' => OutreachPdfController::TITLES[$document],
+                    'url' => route('outreaches.versions.pdf', [$outreach, $version, $document]),
+                ])->all()
+                : [],
             'canEdit' => $user->can('update', $outreach),
         ]);
     }

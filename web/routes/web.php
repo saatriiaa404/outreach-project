@@ -6,6 +6,7 @@ use App\Http\Controllers\KifayahController;
 use App\Http\Controllers\MustahikController;
 use App\Http\Controllers\OutreachAttachmentController;
 use App\Http\Controllers\OutreachController;
+use App\Http\Controllers\OutreachPdfController;
 use App\Http\Controllers\OutreachVersionController;
 use App\Http\Controllers\ReturnOutreachController;
 use App\Http\Controllers\SignatureController;
@@ -55,6 +56,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('outreach/{outreach}/versions/{version}/signatures/{form}', [OutreachVersionController::class, 'signature'])
         ->whereIn('form', ['mustahik', 'kifayah'])
         ->name('outreaches.versions.signatures.show');
+    Route::get('outreach/{outreach}/versions/{version}/pdf/{document}', OutreachPdfController::class)
+        ->whereIn('document', ['outreach', 'mustahik', 'kifayah'])
+        ->name('outreaches.versions.pdf');
     Route::put('outreach/{outreach}/autosave', [OutreachController::class, 'autosave'])
         ->name('outreaches.autosave');
 });
