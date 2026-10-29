@@ -9,6 +9,7 @@ use App\Models\MustahikAnswer;
 use App\Models\Outreach;
 use App\Models\OutreachAttachment;
 use App\Models\OutreachVersion;
+use App\Support\OutreachDocument;
 use App\Support\OutreachPdf;
 use Database\Seeders\MasterDataSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -92,25 +93,41 @@ class OutreachPdfTest extends TestCase
         $this->assertStringStartsWith('%PDF-', $pdf->render($version, 'outreach'));
     }
 
-    public function test_template_v2_prints_the_logos_and_older_versions_keep_their_v1_layout()
+    public function test_template_v3_follows_the_source_forms_and_older_versions_keep_their_layout()
     {
         $version = $this->finalized();
         $pdf = app(OutreachPdf::class);
 
-        $this->assertSame(2, $version->documentTemplate->version_number);
-        $this->assertStringContainsString('<td class="lh-logo"><img src="data:image/png;base64,', $pdf->html($version, 'outreach'));
-        $this->assertStringContainsString('<div class="logo"><img src="data:image/jpeg;base64,', $pdf->html($version, 'mustahik'));
+        $this->assertSame(3, $version->documentTemplate->version_number);
+        $outreach = $pdf->html($version, 'outreach');
+        $this->assertStringContainsString('<div class="kop"><img src="data:image/png;base64,', $outreach);
+        $this->assertStringContainsString('Jenis Outreach : '.OutreachDocument::typeLabel($version->snapshot_data['meta']['type']['name']), $outreach);
+        // Money rows keep the form's order although MySQL reorders the JSON keys.
+        $this->assertLessThan(strpos($outreach, 'Biaya BBM / bensin'), strpos($outreach, 'Biaya sewa/kos/kontrak rumah'));
+        $this->assertLessThan(strpos($outreach, 'Pendapatan lainnya'), strpos($outreach, 'Pendapatan Kepala Keluarga'));
+        $this->assertStringContainsString('size: legal portrait', $pdf->html($version, 'mustahik'));
         $this->assertStringContainsString('<div class="logo"><img src="data:image/jpeg;base64,', $pdf->html($version, 'kifayah'));
 
-        // A version finalized before v2 renders with the template it recorded.
-        $v1 = DocumentTemplateVersion::query()->where('template_key', $version->documentTemplate->template_key)->where('version_number', 1)->sole();
-        $this->assertFalse($v1->is_active);
-        $version->forceFill(['document_template_version_id' => $v1->id])->saveQuietly();
-        $old = $version->refresh();
+        // Versions finalized earlier render with the template they recorded.
+        $template = fn (int $number) => DocumentTemplateVersion::query()->where('template_key', $version->documentTemplate->template_key)->where('version_number', $number)->sole();
+        $this->assertFalse($template(2)->is_active);
+        $version->forceFill(['document_template_version_id' => $template(2)->id])->saveQuietly();
+        $v2 = $version->refresh();
+        $this->assertStringContainsString('<td class="lh-logo"><img src="data:image/png;base64,', $pdf->html($v2, 'outreach'));
+        $this->assertStringNotContainsString('Jenis Outreach :', $pdf->html($v2, 'outreach'));
 
-        $this->assertStringNotContainsString('class="lh-logo"', $pdf->html($old, 'outreach'));
-        $this->assertStringNotContainsString('class="logo"', $pdf->html($old, 'kifayah'));
-        $this->assertStringNotContainsString('☑', $pdf->html($old, 'kifayah'));
+        $version->forceFill(['document_template_version_id' => $template(1)->id])->saveQuietly();
+        $v1 = $version->refresh();
+        $this->assertStringNotContainsString('class="lh-logo"', $pdf->html($v1, 'outreach'));
+        $this->assertStringNotContainsString('class="logo"', $pdf->html($v1, 'kifayah'));
+        $this->assertStringNotContainsString('☑', $pdf->html($v1, 'kifayah'));
+    }
+
+    public function test_bantuan_is_added_to_the_type_only_once()
+    {
+        $this->assertSame('Bantuan Alat Kesehatan', OutreachDocument::typeLabel('Alat Kesehatan'));
+        $this->assertSame('Bantuan Modal Usaha', OutreachDocument::typeLabel('Bantuan Modal Usaha'));
+        $this->assertSame('Bantuan Bantuanku', OutreachDocument::typeLabel('Bantuanku'));
     }
 
     public function test_the_kifayah_date_follows_the_outreach_date_not_the_print_date()
@@ -131,7 +148,7 @@ class OutreachPdfTest extends TestCase
         $html = app(OutreachPdf::class)->html($version, 'mustahik');
 
         $this->assertStringContainsString('FORM SURVEY MUSTAHIK', $html);
-        $this->assertSame(25, substr_count($html, '<td class="q-score">✓</td>'), 'One check per question (D-053).');
+        $this->assertSame(25, substr_count($html, '<span class="check">✓</span>'), 'One check per question (D-053).');
         $this->assertStringContainsString('Surabaya, 27 Oktober 2026', $html, 'Survey date above the Surveyor signature.');
         $this->assertSame(1, substr_count($html, 'src="data:image/png'));
     }
@@ -149,7 +166,7 @@ class OutreachPdfTest extends TestCase
         $this->assertStringContainsString('Pendidikan Tinggi', $html);
         $this->assertSame(2, substr_count($html, '☑'), 'Only amounts above 0 are ticked (VAL-006).');
         $this->assertSame(11, substr_count($html, '☐'), 'Ten 0 expenses and the education box stay empty.');
-        $this->assertSame(7, substr_count($html, '<td class="check" style="border: 1px solid #111">✔</td>'));
+        $this->assertSame(7, substr_count($html, '<td class="b check">✔</td>'));
         $this->assertStringContainsString('Memiliki Hutang', $html);
         $this->assertStringContainsString('Rp. -', $html, 'A 0 amount reads "-" (D-050).');
     }
@@ -165,8 +182,7 @@ class OutreachPdfTest extends TestCase
 
         $this->assertStringContainsString('Warga Demo', $pdf->html($version, 'kifayah'));
         $this->assertStringNotContainsString('Nama Setelah Finalisasi', $pdf->html($version, 'outreach'));
-        $this->assertStringContainsString('sangat Kecil (&lt;4x4)</td>
-                                    <td class="q-score">✓', $pdf->html($version, 'mustahik'));
+        $this->assertMatchesRegularExpression('#sangat Kecil \(&lt;4x4\)</td>\s*<td class="q-score"><span class="check">✓#', $pdf->html($version, 'mustahik'));
     }
 
     public function test_documents_outside_the_template_package_are_rejected()

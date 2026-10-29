@@ -4,7 +4,9 @@ import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import FinalizeOutreachController from '@/actions/App/Http/Controllers/FinalizeOutreachController';
 import SpecialUnlockController from '@/actions/App/Http/Controllers/SpecialUnlockController';
+import FormPreviewController from '@/actions/App/Http/Controllers/FormPreviewController';
 import Heading from '@/components/Heading.vue';
+import FormDocumentFrame from '@/components/outreach/FormDocumentFrame.vue';
 import OutreachDocumentPreview from '@/components/outreach/OutreachDocumentPreview.vue';
 import type { OutreachDocument } from '@/components/outreach/OutreachDocumentPreview.vue';
 import OutreachStepper from '@/components/outreach/OutreachStepper.vue';
@@ -263,25 +265,15 @@ defineOptions({
                 data-test="mustahik-result"
             >
                 <h3 class="font-medium">Hasil Mustahik</h3>
-                <dl
-                    class="grid gap-x-6 gap-y-1 rounded-md border p-3 text-sm sm:grid-cols-2"
-                >
-                    <div
-                        v-for="row in [...mustahik.header, ...mustahik.answers]"
-                        :key="row.label"
-                        class="flex justify-between gap-3 border-b py-1"
-                    >
-                        <dt class="text-muted-foreground">{{ row.label }}</dt>
-                        <dd
-                            class="text-right"
-                            :class="{
-                                'text-destructive italic': row.value === null,
-                            }"
-                        >
-                            {{ row.value ?? 'belum diisi' }}
-                        </dd>
-                    </div>
-                </dl>
+                <FormDocumentFrame
+                    :title="'Hasil Mustahik'"
+                    :src="
+                        FormPreviewController.draft.url({
+                            outreach: outreach.id,
+                            form: 'mustahik',
+                        })
+                    "
+                />
             </section>
 
             <section
@@ -290,25 +282,15 @@ defineOptions({
                 data-test="kifayah-result"
             >
                 <h3 class="font-medium">Hasil Had Kifayah</h3>
-                <dl
-                    class="grid gap-x-6 gap-y-1 rounded-md border p-3 text-sm sm:grid-cols-2"
-                >
-                    <div
-                        v-for="row in [...kifayah.fields, ...kifayah.answers]"
-                        :key="row.label"
-                        class="flex justify-between gap-3 border-b py-1"
-                    >
-                        <dt class="text-muted-foreground">{{ row.label }}</dt>
-                        <dd
-                            class="text-right"
-                            :class="{
-                                'text-destructive italic': row.value === null,
-                            }"
-                        >
-                            {{ row.value ?? 'belum diisi' }}
-                        </dd>
-                    </div>
-                </dl>
+                <FormDocumentFrame
+                    :title="'Hasil Had Kifayah'"
+                    :src="
+                        FormPreviewController.draft.url({
+                            outreach: outreach.id,
+                            form: 'kifayah',
+                        })
+                    "
+                />
             </section>
         </div>
     </div>

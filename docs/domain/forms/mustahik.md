@@ -87,6 +87,8 @@ Bagian header PDF sumber diisi dari sumber berikut. Label PDF sumber tidak diuba
 
 **Aturan wajib header (D-048, VAL-005 selesai).** Seluruh field header yang diisi Petugas wajib sebelum Finalisasi: Tanggal survei (`survey_date`), Nama, NIK/No KK, Alamat (Jalan), RT, dan RW Kepala Keluarga. Draft boleh kosong. Tanggal survei terisi awal dari Tanggal Outreach saat form pertama kali dibuka dan tetap dapat diubah. Tombol eksplisit "Salin dari data Klien" menyalin Nama, NIK, dan Alamat Domisili Klien bila Klien memang Kepala Keluarga; penyalinan tidak pernah terjadi otomatis, dan RT/RW diisi manual.
 
+**Format angka (D-071).** NIK/No KK Kepala Keluarga hanya berisi angka dan harus tepat 16 digit saat Finalisasi; Draft boleh menyimpan isian yang belum lengkap. RT dan RW berisi 1 sampai 3 digit angka dan disimpan persis seperti diketik. PDF Mustahik template versi 3 dicetak pada kertas Legal seperti formulir sumber (D-070).
+
 ## 4. Data Konteks dan Batas Perilaku
 
 Data Outreach boleh ditampilkan sebagai konteks bagi petugas, tetapi tidak boleh otomatis memilih jawaban Mustahik. Jawaban harus dipilih secara eksplisit pada form Mustahik.

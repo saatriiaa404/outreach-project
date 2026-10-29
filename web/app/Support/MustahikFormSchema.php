@@ -17,15 +17,18 @@ class MustahikFormSchema
     /**
      * Header fields filled by the Petugas; all are required for Finalisasi (D-048).
      *
-     * @var array<string, array{label: string, input: string, max?: int}>
+     * `digits` limits a field to numbers (D-071): NIK/No KK exactly 16 at
+     * Finalisasi, RT and RW 1 to 3 digits as typed.
+     *
+     * @var array<string, array{label: string, input: string, max?: int, digits?: int}>
      */
     public const HEADER = [
         'survey_date' => ['label' => 'Tanggal survei', 'input' => 'date'],
         'kepala_keluarga_nama' => ['label' => 'Nama Kepala Keluarga', 'input' => 'text', 'max' => 255],
-        'kepala_keluarga_nik_no_kk' => ['label' => 'NIK/No KK Kepala Keluarga', 'input' => 'text', 'max' => 32],
+        'kepala_keluarga_nik_no_kk' => ['label' => 'NIK/No KK Kepala Keluarga', 'input' => 'text', 'max' => 16, 'digits' => 16],
         'kepala_keluarga_alamat' => ['label' => 'Alamat Kepala Keluarga (Jalan)', 'input' => 'textarea', 'max' => 15_000],
-        'kepala_keluarga_rt' => ['label' => 'RT', 'input' => 'text', 'max' => 5],
-        'kepala_keluarga_rw' => ['label' => 'RW', 'input' => 'text', 'max' => 5],
+        'kepala_keluarga_rt' => ['label' => 'RT', 'input' => 'text', 'max' => 3, 'digits' => 3],
+        'kepala_keluarga_rw' => ['label' => 'RW', 'input' => 'text', 'max' => 3, 'digits' => 3],
     ];
 
     /**
@@ -69,9 +72,12 @@ class MustahikFormSchema
         $rules = [];
 
         foreach (self::HEADER as $name => $field) {
-            $rules[$name] = $field['input'] === 'date'
-                ? ['nullable', 'date_format:Y-m-d']
-                : ['nullable', 'string', 'max:'.$field['max']];
+            $rules[$name] = match (true) {
+                $field['input'] === 'date' => ['nullable', 'date_format:Y-m-d'],
+                // A Draft may hold a NIK still being typed; Finalisasi needs all 16 digits.
+                isset($field['digits']) => ['nullable', 'string', 'regex:/^\d{1,'.$field['digits'].'}$/'],
+                default => ['nullable', 'string', 'max:'.$field['max']],
+            };
         }
 
         foreach (self::QUESTIONS as $code => $question) {
@@ -79,6 +85,22 @@ class MustahikFormSchema
         }
 
         return $rules;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function messages(): array
+    {
+        $messages = [];
+
+        foreach (self::HEADER as $name => $field) {
+            if (isset($field['digits'])) {
+                $messages["{$name}.regex"] = ":attribute hanya berisi angka, maksimal {$field['digits']} digit.";
+            }
+        }
+
+        return $messages;
     }
 
     /**
@@ -107,6 +129,8 @@ class MustahikFormSchema
 
             if ($value === null || $value === '') {
                 $missing[] = $field['label'];
+            } elseif ($name === 'kepala_keluarga_nik_no_kk' && preg_match('/^\d{16}$/', (string) $value) !== 1) {
+                $missing[] = "{$field['label']} (harus 16 digit)";
             }
         }
 

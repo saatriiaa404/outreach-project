@@ -12,7 +12,7 @@
 | Application | Laravel 13 |
 | Amandemen | D-030, D-031, D-041, D-043, D-045, dan D-046 (27 Oktober 2026); D-065 (29 Oktober 2026); lihat `docs/project-management/decisions.md` |
 
-Amandemen D-041 menambah kolom `users.nip`, D-065 menambah kolom `users.pangkat`, dan D-045 menambah kolom
+Amandemen D-041 menambah kolom `users.nip`, D-065 menambah kolom `users.pangkat`, D-067 menambah kolom profil `users.photo_file_id`, `users.phone`, dan `users.address`, dan D-045 menambah kolom
 `outreaches.tempat_lahir` serta `outreaches.tanggal_lahir`, yang menggantikan kolom
 `tempat_tgl_lahir_umur` (dihapus pada D-046); jumlah tabel tetap 22
 dan label versi tetap Database v1.1. D-030 dan D-031 hanya memperjelas tafsir dan teks, tanpa
@@ -140,6 +140,9 @@ email                      UNIQUE
 password_hash
 nip                        NULL; diisi untuk user KEPALA (D-041)
 pangkat                    NULL; diisi untuk user KEPALA (D-065)
+photo_file_id              FK -> files.id NULL; foto profil (D-067)
+phone                      NULL; nomor telepon, maks. 20 karakter (D-067)
+address                    NULL; alamat domisili, maks. 500 karakter (D-067)
 role                       PETUGAS | KEPALA | ADMIN
 status                     ACTIVE | INACTIVE
 last_login_at
@@ -163,6 +166,10 @@ updated_at
   pengesahan. Pangkat yang tercetak dicatat pada metadata history `APPROVED`,
   sehingga perubahan pangkat (mis. kenaikan pangkat) tidak mengubah PDF
   pengesahan lama; perubahannya dicatat pada `audit_logs` (D-065).
+- `photo_file_id`, `phone`, dan `address` adalah profil opsional (D-067),
+  diubah pemilik akun atau Admin dan diaudit sebagai `USER_PROFILE_UPDATED`.
+  Foto disimpan privat, dikompresi seperti foto lampiran, dan berkas lama
+  dihapus saat diganti karena tidak menjadi bagian dokumen mana pun.
 - Kolom `password_hash` dipertahankan; model User Laravel disesuaikan untuk
   memakainya. Kolom bawaan framework seperti `remember_token`,
   `email_verified_at`, dan kolom 2FA tidak ditambahkan (D-030).

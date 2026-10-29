@@ -1258,6 +1258,127 @@ rujuk keputusan pengganti.
                            pemilik lewat menu
                            Pengguna saat
                            dipakai.
+
+  D-066       LOCKED       Visibilitas repository Persetujuan     Tanpa perubahan kode    `setup.md` 8 dan 9; `tasks.md` ENV-003
+                           GitHub: `saatriiaa404/ eksplisit       atau schema. Seluruh
+                           outreach-project`      pemilik proyek, isi repo dapat dibaca
+                           bersifat publik.       30 Oktober 2026 publik, sehingga
+                           Mengamandemen bagian   (status publik  larangan rahasia,
+                           "repo GitHub private"  terverifikasi   password, dan data
+                           pada D-017; bagian     lewat `gh repo  warga asli di repo
+                           lain D-017 tetap       view`).         berlaku tanpa
+                           berlaku. Anggota tim                   pengecualian.
+                           dapat meng-clone dan                   Konfirmasi private pada
+                           menjalankan proyek di                  ENV-003 (25 Oktober
+                           laptopnya sendiri;                     2026) tidak lagi
+                           hanya collaborator                     berlaku.
+                           yang diundang pemilik
+                           proyek yang dapat
+                           mengirim perubahan.
+
+  D-067       LOCKED       Profil akun: kolom     Persetujuan     Perubahan schema:       `database.md` 4.1;
+                           opsional baru          eksplisit       migration add_profile_t `roles-permissions.md`; `design.md`;
+                           users.photo_file_id    pemilik proyek  o_users_table           kode `web/`
+                           (FK files),            atas rencana    (amandemen Database
+                           users.phone, dan       revisi, 30      v1.1, tabel tetap 22,
+                           users.address; nama    Oktober 2026.   preseden D-041/D-065).
+                           lengkap memakai                        Foto dikompresi,
+                           users.name. Pemilik                    disimpan privat, dan
+                           akun mengubah foto,                    dihapus saat diganti;
+                           telepon, dan alamat                    perubahan diaudit
+                           dari Pengaturan >                      sebagai
+                           Profil; Admin dari                     USER_PROFILE_UPDATED.
+                           menu Pengguna. Nama,
+                           email, peran, dan
+                           status tetap dikelola
+                           Admin (D-014, D-044
+                           tetap berlaku untuk
+                           hal itu).
+
+  D-068       LOCKED       Dashboard Admin        Persetujuan     Dependensi baru:        `design.md`; kode `web/`
+                           menampilkan grafik     eksplisit       @unovis/vue dan
+                           batang: Outreach per   pemilik proyek  @unovis/ts 1.7.1
+                           tanggal pada bulan     atas rencana    (komponen Chart
+                           yang dipilih, per      revisi, 30      shadcn-vue). Tanpa
+                           Jenis dan per Source   Oktober 2026.   perubahan schema.
+                           pada bulan itu (batang Library chart
+                           mendatar berlabel),    shadcn-vue
+                           dan tren 12 bulan      dipilih pemilik
+                           dibuat/disahkan.       proyek.
+                           Dihitung dari Tanggal
+                           Outreach; pengesahan
+                           dari waktu Approve
+                           (WIB).
+
+  D-069       LOCKED       Pratinjau Mustahik dan Persetujuan     Tanpa perubahan schema  `design.md`; kode `web/`
+                           Kifayah di halaman     eksplisit       atau workflow; D-040
+                           detail (termasuk       pemilik proyek  (Petugas tidak
+                           antrean Kepala) dan    atas rencana    mengunduh PDF final)
+                           Review ditampilkan     revisi, 30      tetap berlaku.
+                           sebagai dokumen dari   Oktober 2026.
+                           template PDF yang
+                           sama, bukan tabel
+                           label-nilai. Pratinjau
+                           tidak memuat blok
+                           pengesahan sehingga
+                           mengikuti hak lihat
+                           Outreach.
+
+  D-070       LOCKED       Template PDF versi 3:  Persetujuan     Paket template v3       `outreach.md` 8.2; `mustahik.md`;
+                           kop Outreach berupa    eksplisit       aktif; versi yang sudah `kifayah.md` 5; kode `web/`
+                           gambar "Kop Manukan";  pemilik proyek  difinalisasi tetap
+                           baris "Jenis Outreach  atas rencana    dirender dengan
+                           : Bantuan <Jenis>"     revisi, 30      template yang
+                           rata kiri di bawah     Oktober 2026.   dicatatnya (v1/v2).
+                           judul ("Bantuan" tidak Acuan "meniru   Tanpa perubahan schema.
+                           digandakan); geometri  PDF sumber
+                           (kertas, margin, lebar masing-masing"
+                           kolom, posisi) meniru  dipilih pemilik
+                           PDF sumber             proyek.
+                           masing-masing:
+                           Outreach A4, Mustahik
+                           Legal, Kifayah A4;
+                           logo Baznas
+                           diperbesar. Urutan
+                           baris
+                           Pendapatan/Pengeluaran
+                           mengikuti formulir.
+
+  D-071       LOCKED       Kolom angka: NIK/No KK Persetujuan     Aturan validasi baru    `mustahik.md` 3; `design.md`; kode
+                           Kepala Keluarga        eksplisit       tanpa perubahan schema; `web/`
+                           Mustahik hanya angka,  pemilik proyek  data demo memakai
+                           Finalisasi butuh tepat atas rencana    NIK/KK sintetis 16
+                           16 digit (Draft boleh  revisi, 30      digit.
+                           belum lengkap); RT dan Oktober 2026.
+                           RW 1-3 digit disimpan
+                           apa adanya. Semua
+                           kolom angka tidak
+                           berubah oleh scroll
+                           atau tombol panah;
+                           panah atas/bawah dan
+                           Enter pindah ke kolom
+                           sebelumnya/berikutnya.
+
+  D-072       LOCKED       Filter per kolom:      Persetujuan     Filter hanya            `design.md`; kode `web/`
+                           judul kolom Tanggal    eksplisit       mempersempit data yang
+                           (hari ini, 7/30 hari,  pemilik proyek  sudah boleh dilihat
+                           bulan ini, tahun ini), atas rencana    (D-039). Tanpa
+                           Status, Source, dan    revisi, 30      perubahan schema.
+                           Jenis di daftar        Oktober 2026.
+                           Outreach dapat diklik
+                           untuk memfilter;
+                           daftar perhatian di
+                           Dashboard menjadi
+                           tabel dengan filter
+                           Tanggal, Jenis, dan
+                           Status untuk semua
+                           peran. Riwayat
+                           Outreach menampilkan 3
+                           kejadian terbaru dan
+                           dapat dibuka
+                           seluruhnya. Tombol
+                           Kembali tersedia di
+                           kepala halaman.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

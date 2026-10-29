@@ -5,6 +5,7 @@ import { computed, reactive, ref, watch } from 'vue';
 import OutreachController from '@/actions/App/Http/Controllers/OutreachController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
+import NumberInput from '@/components/NumberInput.vue';
 import OutreachStepper from '@/components/outreach/OutreachStepper.vue';
 import ReturnNotice from '@/components/outreach/ReturnNotice.vue';
 import type { Returned } from '@/components/outreach/ReturnNotice.vue';
@@ -338,26 +339,23 @@ const rupiah = (amount: number) =>
                             </label>
                         </div>
 
+                        <NumberInput
+                            v-else-if="
+                                field.input === 'integer' ||
+                                field.input === 'money'
+                            "
+                            :id="field.name"
+                            v-model="values[field.name]"
+                            :name="field.name"
+                            :maxlength="field.input === 'money' ? 12 : 5"
+                        />
+
                         <Input
                             v-else
                             :id="field.name"
                             v-model="values[field.name]"
                             :name="field.name"
-                            :type="
-                                field.input === 'date'
-                                    ? 'date'
-                                    : field.input === 'text'
-                                      ? 'text'
-                                      : 'number'
-                            "
-                            :min="field.input === 'text' ? undefined : 0"
-                            :step="field.input === 'text' ? undefined : 1"
-                            :inputmode="
-                                field.input === 'integer' ||
-                                field.input === 'money'
-                                    ? 'numeric'
-                                    : undefined
-                            "
+                            :type="field.input === 'date' ? 'date' : 'text'"
                         />
 
                         <InputError

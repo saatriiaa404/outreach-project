@@ -219,7 +219,7 @@ Tanggal pada kalimat pembuka berasal dari Tanggal Outreach yang tersimpan. Hari,
 ### 8.2 Judul dan Type
 
 - Judul utama mengikuti template: `LAPORAN HASIL OUTREACH`.
-- Type ditampilkan di bawah judul sesuai keputusan yang telah dibahas.
+- Type ditampilkan di bawah judul sesuai keputusan yang telah dibahas. Sejak template versi 3 (D-070) ditulis rata kiri sebagai `Jenis Outreach : Bantuan <Jenis>`; kata "Bantuan" tidak ditambahkan bila nama Jenis sudah diawali "Bantuan". Kop surat memakai gambar kop Kelurahan (`docs/reference/Kop Manukan.png`), dan margin serta lebar kolom mengikuti `blank_outreach.pdf`.
 - Source tidak ditampilkan pada PDF utama Outreach.
 
 ### 8.3 Layout adaptif

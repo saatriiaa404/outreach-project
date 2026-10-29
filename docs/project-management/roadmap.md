@@ -107,6 +107,12 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 | R11.2 | PERS-001: simpan, tutup, buka kembali — ✅ 30 Oktober 2026: 23 tabel dan 14 berkas identik setelah Laragon ditutup dan dibuka kembali (bukti di `testing.md`) |
 | R11.3 | Prosedur backup dan restore D-038 serta uji restore — ✅ 30 Oktober 2026: perintah `backup:create` dan `backup:restore` (database dan berkas privat, dengan manifest hash), prosedur di `setup.md`, uji restore setelah simulasi kehilangan data cocok penuh (bukti di `testing.md`) |
 
+## Fase 12 — Revisi pemilik proyek
+
+| ID | Task |
+|---|---|
+| R12.1 | Revisi 30 Oktober 2026 — ✅ profil akun (D-067); tombol unggah template dan grafik dashboard Admin (D-068); pratinjau Mustahik/Kifayah sebagai dokumen (D-069); template PDF v3 meniru formulir sumber dan kop gambar (D-070); kolom angka NIK/RT/RW dan navigasi kolom (D-071); filter per kolom, Riwayat dapat dibuka-tutup, tombol Kembali (D-072); halaman awal langsung ke login |
+
 ## Keputusan Terbuka
 
 1. Workflow CI bawaan `web/.github/workflows/tests.yml` sebelum ada push.

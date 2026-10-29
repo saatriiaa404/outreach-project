@@ -4,7 +4,9 @@ namespace App\Support;
 
 use App\Enums\AttachmentCategory;
 use App\Enums\HistoryEventType;
+use App\Models\DocumentTemplateVersion;
 use App\Models\HistoryEvent;
+use App\Models\Outreach;
 use App\Models\OutreachApproval;
 use App\Models\OutreachVersion;
 use App\Models\OutreachVersionAttachment;
@@ -28,9 +30,9 @@ class OutreachPdf
      * available so historical documents keep their layout.
      */
     private const VIEWS = [
-        'outreach' => [1 => 'pdf.v1.outreach', 2 => 'pdf.v2.outreach'],
-        'mustahik' => [1 => 'pdf.v1.mustahik', 2 => 'pdf.v2.mustahik'],
-        'kifayah' => [1 => 'pdf.v1.kifayah', 2 => 'pdf.v2.kifayah'],
+        'outreach' => [1 => 'pdf.v1.outreach', 2 => 'pdf.v2.outreach', 3 => 'pdf.v3.outreach'],
+        'mustahik' => [1 => 'pdf.v1.mustahik', 2 => 'pdf.v2.mustahik', 3 => 'pdf.v3.mustahik'],
+        'kifayah' => [1 => 'pdf.v1.kifayah', 2 => 'pdf.v2.kifayah', 3 => 'pdf.v3.kifayah'],
     ];
 
     /**
@@ -110,17 +112,85 @@ class OutreachPdf
             throw new InvalidArgumentException("The template package of version {$version->id} has no {$document} document.");
         }
 
+        return $this->compose($document, (int) $templateVersion, $version->snapshot_data, [
+            'mustahik' => $version->mustahik_signature_id,
+            'kifayah' => $version->kifayah_signature_id,
+        ], fn () => $this->attachments($version), $approval);
+    }
+
+    /**
+     * The Mustahik or Kifayah form of a version as a page for the browser,
+     * from the same template as the PDF (D-069).
+     */
+    public function preview(OutreachVersion $version, string $document): string
+    {
+        return self::forScreen($this->html($version, $document));
+    }
+
+    /**
+     * The same form for the current Draft data, with the template the
+     * Finalisasi would record and the signatures given so far.
+     */
+    public function draftPreview(Outreach $outreach, string $document): string
+    {
+        $template = DocumentTemplateVersion::query()
+            ->where('template_key', DocumentTemplateVersion::keyFor($outreach->source->code))
+            ->where('is_active', true)
+            ->orderByDesc('version_number')
+            ->first();
+        $templateVersion = $template?->metadata[$document] ?? null;
+
+        if ($templateVersion === null) {
+            throw new InvalidArgumentException("The active template package of {$outreach->source->code} has no {$document} document.");
+        }
+
+        $snapshot = OutreachSnapshot::build($outreach);
+
+        if ($snapshot[$document] === null) {
+            $title = $document === 'mustahik' ? 'Formulir Mustahik' : 'Formulir Had Kifayah';
+
+            return '<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"></head>'
+                .'<body style="font-family: sans-serif; color: #b91c1c; margin: 12mm 10mm;">'.e($title).' belum diisi.</body></html>';
+        }
+
+        return self::forScreen($this->compose($document, (int) $templateVersion, $snapshot, [
+            'mustahik' => FormSignatures::form($outreach, 'mustahik')?->signature_id,
+            'kifayah' => FormSignatures::form($outreach, 'kifayah')?->signature_id,
+        ], fn () => [], null));
+    }
+
+    /**
+     * @param  array<string, mixed>  $snapshot
+     * @param  array{mustahik: int|null, kifayah: int|null}  $signatures
+     * @param  callable(): array<int, array{label: string, name: string, is_image: bool, url: string}>  $attachments
+     * @param  array<string, mixed>|null  $approval
+     */
+    private function compose(string $document, int $templateVersion, array $snapshot, array $signatures, callable $attachments, ?array $approval): string
+    {
         $view = self::VIEWS[$document][$templateVersion] ?? throw new InvalidArgumentException("No view for {$document} template v{$templateVersion}.");
-        $snapshot = $version->snapshot_data;
 
         return view($view, [...match ($document) {
             'outreach' => [
-                'document' => OutreachDocument::fromSnapshot($snapshot, $this->attachments($version)),
+                'document' => OutreachDocument::fromSnapshot($snapshot, $attachments()),
                 'approval' => $approval,
             ],
-            'mustahik' => $this->mustahik($version, $snapshot),
-            default => $this->kifayah($version, $snapshot),
-        }, 'logo' => self::logo(self::LOGOS[$document])])->render();
+            'mustahik' => $this->mustahik($snapshot, $signatures['mustahik']),
+            default => $this->kifayah($snapshot, $signatures['kifayah']),
+        }, 'logo' => self::logo(self::LOGOS[$document]),
+            // The Kelurahan letterhead as one image from template v3 (D-070).
+            'kop' => $document === 'outreach' && $templateVersion >= 3 ? self::logo('kop-manukan.png') : null,
+        ])->render();
+    }
+
+    /**
+     * On screen the page margins of @page do not apply, so the body gets
+     * them instead; the template itself stays as printed.
+     */
+    private static function forScreen(string $html): string
+    {
+        $style = '<style>@media screen { html { background: #fff; } body { margin: 12mm 10mm; } }</style>';
+
+        return str_replace('</head>', $style.'</head>', $html);
     }
 
     /**
@@ -142,7 +212,7 @@ class OutreachPdf
      * @param  array<string, mixed>  $snapshot
      * @return array<string, mixed>
      */
-    private function mustahik(OutreachVersion $version, array $snapshot): array
+    private function mustahik(array $snapshot, ?int $signatureId): array
     {
         $form = $snapshot['mustahik'];
         $survey = $form['survey_date'] === null ? null : Carbon::parse($form['survey_date']);
@@ -173,7 +243,7 @@ class OutreachPdf
             'signature' => [
                 'date' => $survey?->translatedFormat('j F Y') ?? '',
                 'name' => $form['petugas']['name'],
-                'image' => $this->signatureImage($version->mustahik_signature_id),
+                'image' => $this->signatureImage($signatureId),
             ],
         ];
     }
@@ -182,7 +252,7 @@ class OutreachPdf
      * @param  array<string, mixed>  $snapshot
      * @return array<string, mixed>
      */
-    private function kifayah(OutreachVersion $version, array $snapshot): array
+    private function kifayah(array $snapshot, ?int $signatureId): array
     {
         $form = $snapshot['kifayah'];
         $client = $snapshot['client'];
@@ -193,7 +263,7 @@ class OutreachPdf
             'value' => $amount($name),
             'checked' => ($form[$name] ?? 0) > 0,
         ], $names);
-        $signature = $version->kifayah_signature_id ? Signature::query()->find($version->kifayah_signature_id) : null;
+        $signature = $signatureId ? Signature::query()->find($signatureId) : null;
         $sections = [];
 
         foreach (KifayahFormSchema::QUESTIONS as $code => $question) {
@@ -229,7 +299,7 @@ class OutreachPdf
             'signature' => [
                 'date' => Carbon::parse($snapshot['meta']['outreach_date'])->translatedFormat('j F Y'),
                 'name' => $signature->signer_name_snapshot ?? $client['nama'],
-                'image' => $this->signatureImage($version->kifayah_signature_id),
+                'image' => $this->signatureImage($signatureId),
             ],
         ];
     }

@@ -37,10 +37,14 @@ class UserController extends Controller
                 'status' => $user->status->value,
                 'nip' => $user->nip,
                 'pangkat' => $user->pangkat,
+                'phone' => $user->phone,
+                'address' => $user->address,
+                'avatar' => $user->avatar,
                 'nip_used' => $nipUsed->has($user->id),
                 'is_self' => $user->id === $request->user()->id,
                 'last_login_at' => $user->last_login_at?->toIso8601String(),
             ]),
+            'maxPhotoKilobytes' => ProfileController::MAX_PHOTO_KILOBYTES,
         ]);
     }
 

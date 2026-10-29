@@ -201,7 +201,7 @@ class DemoSeeder extends Seeder
             $mustahik = [
                 'survey_date' => $outreach->outreach_date->toDateString(),
                 'kepala_keluarga_nama' => $client['nama'],
-                'kepala_keluarga_nik_no_kk' => 'DUMMY-KK-'.substr($draftCode, -3),
+                'kepala_keluarga_nik_no_kk' => '0000000000000'.substr($draftCode, -3),
                 'kepala_keluarga_alamat' => $client['alamat_domisili'],
                 'kepala_keluarga_rt' => '001',
                 'kepala_keluarga_rw' => '002',

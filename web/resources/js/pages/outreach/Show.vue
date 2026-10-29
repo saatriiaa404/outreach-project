@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { ChevronsUpDown } from '@lucide/vue';
 import { computed, ref } from 'vue';
 import ApproveOutreachController from '@/actions/App/Http/Controllers/ApproveOutreachController';
 import ReturnOutreachController from '@/actions/App/Http/Controllers/ReturnOutreachController';
+import FormPreviewController from '@/actions/App/Http/Controllers/FormPreviewController';
 import Heading from '@/components/Heading.vue';
+import FormDocumentFrame from '@/components/outreach/FormDocumentFrame.vue';
 import SpecialUnlockPanel from '@/components/outreach/SpecialUnlockPanel.vue';
 import type { SpecialUnlock } from '@/components/outreach/SpecialUnlockPanel.vue';
 import OutreachDocumentPreview from '@/components/outreach/OutreachDocumentPreview.vue';
@@ -96,6 +99,13 @@ const shown = (value: unknown) =>
     value === null || value === undefined || value === ''
         ? '(kosong)'
         : String(value);
+
+// The history runs oldest first; collapsed, only the latest events show.
+const HISTORY_SHOWN = 3;
+const historyOpen = ref(false);
+const shownHistory = computed(() =>
+    historyOpen.value ? props.history : props.history.slice(-HISTORY_SHOWN),
+);
 
 const versionLabels = {
     PENDING_APPROVAL: 'menunggu pengesahan',
@@ -278,7 +288,30 @@ defineOptions({
         />
 
         <section class="grid gap-2" data-test="history">
-            <h3 class="font-medium">Riwayat</h3>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <h3 class="font-medium">
+                    Riwayat
+                    <span
+                        v-if="history.length"
+                        class="font-normal text-muted-foreground"
+                        >({{ history.length }} kejadian)</span
+                    >
+                </h3>
+                <Button
+                    v-if="history.length > HISTORY_SHOWN"
+                    variant="ghost"
+                    size="sm"
+                    data-test="history-toggle"
+                    @click="historyOpen = !historyOpen"
+                >
+                    <ChevronsUpDown class="size-4" />
+                    {{
+                        historyOpen
+                            ? 'Tampilkan 3 terbaru saja'
+                            : `Tampilkan semua (${history.length})`
+                    }}
+                </Button>
+            </div>
             <p
                 v-if="history.length === 0"
                 class="text-sm text-muted-foreground"
@@ -286,7 +319,25 @@ defineOptions({
                 Belum ada riwayat.
             </p>
             <ol v-else class="divide-y rounded-md border text-sm">
-                <li v-for="event in history" :key="event.id" class="p-3">
+                <li
+                    v-if="!historyOpen && history.length > HISTORY_SHOWN"
+                    class="p-0"
+                >
+                    <button
+                        type="button"
+                        class="w-full p-2 text-center text-muted-foreground hover:bg-muted/50"
+                        @click="historyOpen = true"
+                    >
+                        {{ history.length - HISTORY_SHOWN }} kejadian sebelumnya
+                        disembunyikan · tampilkan
+                    </button>
+                </li>
+                <li
+                    v-for="event in shownHistory"
+                    :key="event.id"
+                    class="p-3"
+                    data-test="history-event"
+                >
                     <p>
                         <span class="font-medium">{{
                             eventLabels[event.type]
@@ -381,21 +432,16 @@ defineOptions({
                 data-test="mustahik-result"
             >
                 <h3 class="font-medium">Hasil Mustahik</h3>
-                <dl
-                    class="grid gap-x-6 gap-y-1 rounded-md border p-3 text-sm sm:grid-cols-2"
-                >
-                    <div
-                        v-for="row in [
-                            ...version.mustahik.header,
-                            ...version.mustahik.answers,
-                        ]"
-                        :key="row.label"
-                        class="flex justify-between gap-3 border-b py-1"
-                    >
-                        <dt class="text-muted-foreground">{{ row.label }}</dt>
-                        <dd class="text-right">{{ row.value ?? '—' }}</dd>
-                    </div>
-                </dl>
+                <FormDocumentFrame
+                    :title="'Hasil Mustahik'"
+                    :src="
+                        FormPreviewController.version.url({
+                            outreach: outreach.id,
+                            version: version.id,
+                            form: 'mustahik',
+                        })
+                    "
+                />
             </section>
 
             <section
@@ -404,21 +450,16 @@ defineOptions({
                 data-test="kifayah-result"
             >
                 <h3 class="font-medium">Hasil Had Kifayah</h3>
-                <dl
-                    class="grid gap-x-6 gap-y-1 rounded-md border p-3 text-sm sm:grid-cols-2"
-                >
-                    <div
-                        v-for="row in [
-                            ...version.kifayah.fields,
-                            ...version.kifayah.answers,
-                        ]"
-                        :key="row.label"
-                        class="flex justify-between gap-3 border-b py-1"
-                    >
-                        <dt class="text-muted-foreground">{{ row.label }}</dt>
-                        <dd class="text-right">{{ row.value ?? '—' }}</dd>
-                    </div>
-                </dl>
+                <FormDocumentFrame
+                    :title="'Hasil Had Kifayah'"
+                    :src="
+                        FormPreviewController.version.url({
+                            outreach: outreach.id,
+                            version: version.id,
+                            form: 'kifayah',
+                        })
+                    "
+                />
             </section>
         </template>
     </div>
