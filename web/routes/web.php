@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApproveOutreachController;
 use App\Http\Controllers\ArchiveController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FinalizeOutreachController;
 use App\Http\Controllers\KifayahController;
 use App\Http\Controllers\MasterDataController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\MustahikController;
 use App\Http\Controllers\OutreachAttachmentController;
 use App\Http\Controllers\OutreachController;
 use App\Http\Controllers\OutreachPdfController;
+use App\Http\Controllers\OutreachSearchController;
 use App\Http\Controllers\OutreachVersionController;
 use App\Http\Controllers\ReturnOutreachController;
 use App\Http\Controllers\SignatureController;
@@ -21,8 +23,12 @@ use Illuminate\Support\Facades\Route;
 Route::inertia('/', 'Welcome')->name('home');
 
 Route::middleware(['auth'])->group(function () {
-    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
 
+    Route::post('outreach/search', [OutreachSearchController::class, 'store'])
+        ->name('outreaches.search');
+    Route::delete('outreach/search', [OutreachSearchController::class, 'destroy'])
+        ->name('outreaches.search.clear');
     Route::resource('outreach', OutreachController::class)
         ->only(['index', 'create', 'store', 'show', 'edit', 'update'])
         ->names('outreaches');

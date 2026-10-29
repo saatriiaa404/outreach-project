@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Actions\MasterData\ManageArchive;
-use App\Enums\OutreachStatus;
 use App\Models\ArchiveRecord;
 use App\Models\Outreach;
-use App\Models\OutreachApproval;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -24,35 +22,7 @@ class ArchiveController extends Controller
 
         $filter = in_array($request->query('filter'), ['pending', 'archived', 'all'], true) ? $request->query('filter') : 'pending';
 
-        $rows = Outreach::query()
-            ->where('status', OutreachStatus::Selesai)
-            ->with(['latestVersion', 'type:id,name'])
-            ->get()
-            ->map(function (Outreach $outreach) {
-                $version = $outreach->latestVersion;
-                $approval = $version ? OutreachApproval::query()->where('outreach_version_id', $version->id)->where('decision', OutreachApproval::APPROVED)->first() : null;
-                $record = $version ? ArchiveRecord::query()->where('outreach_version_id', $version->id)->first() : null;
-
-                return $approval === null ? null : [
-                    'outreach_id' => $outreach->id,
-                    'code' => $outreach->outreach_number,
-                    'nama' => $outreach->nama,
-                    'type' => $outreach->type->name,
-                    'version_id' => $version->id,
-                    'version_number' => $version->version_number,
-                    'approved_at' => $approval->decided_at->toDateString(),
-                    'deadline' => ManageArchive::deadline($approval->decided_at)->toDateString(),
-                    'overdue' => $record === null && ManageArchive::deadline($approval->decided_at)->isPast(),
-                    'record' => $record === null ? null : [
-                        'id' => $record->id,
-                        'external_system' => $record->external_system,
-                        'archive_reference' => $record->archive_reference,
-                        'archived_at' => $record->archived_at?->toDateString(),
-                        'verified_at' => $record->verified_at?->toIso8601String(),
-                    ],
-                ];
-            })
-            ->filter()
+        $rows = collect(ManageArchive::rows())
             ->filter(fn (array $row) => match ($filter) {
                 'pending' => $row['record'] === null,
                 'archived' => $row['record'] !== null,

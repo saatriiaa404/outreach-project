@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import Heading from '@/components/Heading.vue';
+import OutreachSearchForm from '@/components/outreach/OutreachSearchForm.vue';
+import type { SearchCriteria } from '@/components/outreach/OutreachSearchForm.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { create, edit, index, show } from '@/routes/outreaches';
@@ -25,6 +27,11 @@ type Props = {
     statuses: OutreachRow['status'][];
     status: OutreachRow['status'] | null;
     canCreate: boolean;
+    search: SearchCriteria;
+    searchOptions: {
+        sources: { id: number; name: string }[];
+        types: { id: number; name: string }[];
+    };
 };
 
 defineProps<Props>();
@@ -56,6 +63,8 @@ const statusLabels: Record<OutreachRow['status'], string> = {
                 <Link :href="create()">Buat Outreach</Link>
             </Button>
         </div>
+
+        <OutreachSearchForm :search="search" :options="searchOptions" />
 
         <nav class="flex flex-wrap gap-2" data-test="status-filter">
             <Link

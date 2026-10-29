@@ -1085,6 +1085,31 @@ rujuk keputusan pengganti.
                            sendiri dan minimal
                            satu Admin tetap
                            aktif.
+
+  D-061       —            Implementasi           Keputusan       Tanpa perubahan         `security.md`; `design.md`;
+                           pencarian (R10.1):     implementasi    schema. Kriteria        kode `web/`
+                           kriteria (nama, NIK,   agent dalam     bertahan selama sesi
+                           ID internal, Source,   batas           sampai dihapus.
+                           Jenis, rentang         security.md     Dashboard memakai
+                           Tanggal Outreach)      dan D-039, 29   batas visibilitas yang
+                           dikirim lewat POST     Oktober 2026.   sama dengan daftar.
+                           dan disimpan di sesi,
+                           bukan di path atau
+                           query string. Nama
+                           dan ID internal
+                           dicocokkan sebagian;
+                           NIK harus sama persis
+                           agar tidak dapat
+                           dipakai menelusuri
+                           warga. Untuk Kepala,
+                           kriteria isi (nama,
+                           NIK) hanya
+                           mencocokkan Outreach
+                           MENUNGGU_PENGESAHAN
+                           dan SELESAI sehingga
+                           isi PERLU_PERBAIKAN
+                           tidak bocor lewat
+                           hasil pencarian.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

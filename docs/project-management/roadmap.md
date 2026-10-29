@@ -94,7 +94,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 
 | ID | Task | Persetujuan |
 |---|---|---|
-| R10.1 | Dashboard per peran dan pencarian berbatas scope; NIK tidak masuk URL | — |
+| R10.1 | Dashboard per peran dan pencarian berbatas scope; NIK tidak masuk URL | ✅ Selesai 29 Oktober 2026: dashboard Petugas (jumlah per status miliknya, Perlu Perbaikan dan Draft lebih dulu), Kepala (antrean dan Selesai), Admin (semua status, permintaan Special Unlock terbuka, arsip belum dan lewat batas); pencarian nama, NIK (sama persis), ID internal, Source, Jenis, rentang tanggal melalui POST dan sesi sehingga NIK tidak masuk URL; selalu di atas visibilitas peran (D-061) |
 | R10.2 | Notifikasi in-app dan timeline history | — |
 | R10.3 | Pembersihan notifikasi berumur 30 hari | 🔒 Cara scheduler di Windows lokal |
 

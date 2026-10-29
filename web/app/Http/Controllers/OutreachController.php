@@ -31,6 +31,7 @@ use App\Support\MustahikFormSchema;
 use App\Support\OutreachDocument;
 use App\Support\OutreachFormSchema;
 use App\Support\OutreachPdf;
+use App\Support\OutreachSearch;
 use App\Support\OutreachSnapshot;
 use App\Support\OutreachSteps;
 use App\Support\SpecialUnlock;
@@ -58,8 +59,9 @@ class OutreachController extends Controller
         $status = OutreachStatus::tryFrom($request->string('status')->toString());
         $status ??= $isKepala && ! $request->has('status') ? OutreachStatus::MenungguPengesahan : null;
 
-        $query = Outreach::query()
-            ->visibleTo($user)
+        $search = (array) $request->session()->get(OutreachSearch::SESSION_KEY, []);
+
+        $query = OutreachSearch::apply(Outreach::query()->visibleTo($user), $user, $search)
             ->when($status, fn ($query, OutreachStatus $status) => $query->where('status', $status))
             ->with(['source:id,name', 'type:id,name']);
 
@@ -97,6 +99,12 @@ class OutreachController extends Controller
                 ->values(),
             'status' => $status?->value,
             'canCreate' => $user->can('create', Outreach::class),
+            // Criteria come back from the session to fill the form (D-061).
+            'search' => (object) $search,
+            'searchOptions' => [
+                'sources' => OutreachSource::query()->orderBy('name')->get(['id', 'name']),
+                'types' => OutreachType::query()->orderBy('name')->get(['id', 'name']),
+            ],
         ]);
     }
 
