@@ -160,6 +160,38 @@ Backup dilakukan manual oleh Admin setiap minggu ke media terpisah, yaitu hard d
 
 Restore mengganti seluruh isi database yang dipakai `.env` saat itu. Jangan menjalankannya ke database lain tanpa memeriksa `DB_DATABASE`.
 
+### Menyiapkan proyek di laptop lain
+
+Untuk anggota tim yang ikut menjalankan atau mengembangkan prototype di laptopnya sendiri. Kode diambil dari GitHub; database, berkas privat, dan `.env` tidak ikut dan disiapkan sendiri di laptop tersebut.
+
+1. Untuk mengirim perubahan, pemilik proyek mengundang anggota tim sebagai collaborator repository di GitHub (Settings, Collaborators).
+2. Pasang alat sesuai bagian 2, lalu periksa dengan perintah bagian 3. Laragon dalam keadaan Start All.
+3. Clone repository, lalu masuk ke folder aplikasi:
+
+   ```powershell
+   git clone https://github.com/saatriiaa404/outreach-project.git
+   cd outreach-project\web
+   composer install
+   npm install
+   Copy-Item .env.example .env
+   php artisan key:generate
+   ```
+
+4. Buat database `outreach_prototype` dan `outreach_prototype_test` beserta user `outreach_app` seperti bagian 4 dan bagian BOOT-001 di atas.
+5. Isi `DB_PASSWORD` dan `DEMO_USER_PASSWORD` (minimal 12 karakter) di `web/.env` dengan nilai milik laptop tersebut. Jangan mengirim atau menyalin `.env` laptop lain lewat chat, email, atau Git.
+6. Buat tabel, isi data demo, dan build tampilan:
+
+   ```powershell
+   php artisan migrate --seed
+   npm run build
+   ```
+
+7. Jalankan `php artisan serve`, buka `http://localhost:8000`, lalu masuk dengan akun demo pada `docs/prototype/dummy-data.md`. Jalankan `php artisan test` untuk memastikan lingkungan sama dengan laptop utama.
+
+`migrate --seed` hanya membuat data demo DEMO-001 sampai DEMO-004. Bila diperlukan salinan data yang sama persis (termasuk lampiran), buat backup di laptop utama dengan `backup:create`, lalu pulihkan di laptop lain dengan `backup:restore` sesuai prosedur di atas.
+
+Setiap orang bekerja di branch sendiri dan menggabungkan perubahan ke `main` melalui pull request. Sebelum mulai bekerja, perbarui salinan lokal dengan `git pull` di `main`, lalu jalankan `composer install`, `npm install`, `php artisan migrate`, dan `npm run build` bila ada perubahan dependensi, migration, atau tampilan.
+
 ## 10. Perubahan Dokumen Ini
 
 Perubahan versi alat, kebijakan PHP, atau pengaturan upload dicatat pada dokumen ini. Bila memengaruhi keputusan, catat juga di `decisions.md`.
