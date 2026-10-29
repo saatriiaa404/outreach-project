@@ -4,6 +4,7 @@ use App\Http\Controllers\ApproveOutreachController;
 use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FinalizeOutreachController;
+use App\Http\Controllers\FormPreviewController;
 use App\Http\Controllers\KifayahController;
 use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\MustahikController;
@@ -74,6 +75,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('outreach/{outreach}/versions/{version}/signatures/{form}', [OutreachVersionController::class, 'signature'])
         ->whereIn('form', ['mustahik', 'kifayah'])
         ->name('outreaches.versions.signatures.show');
+    Route::get('outreach/{outreach}/versions/{version}/preview/{form}', [FormPreviewController::class, 'version'])
+        ->whereIn('form', ['mustahik', 'kifayah'])
+        ->name('outreaches.versions.preview');
+    Route::get('outreach/{outreach}/preview/{form}', [FormPreviewController::class, 'draft'])
+        ->whereIn('form', ['mustahik', 'kifayah'])
+        ->name('outreaches.preview');
     Route::get('outreach/{outreach}/versions/{version}/pdf/{document}', OutreachPdfController::class)
         ->whereIn('document', ['outreach', 'mustahik', 'kifayah'])
         ->name('outreaches.versions.pdf');
