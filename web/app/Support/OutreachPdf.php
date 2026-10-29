@@ -30,9 +30,9 @@ class OutreachPdf
      * available so historical documents keep their layout.
      */
     private const VIEWS = [
-        'outreach' => [1 => 'pdf.v1.outreach', 2 => 'pdf.v2.outreach'],
-        'mustahik' => [1 => 'pdf.v1.mustahik', 2 => 'pdf.v2.mustahik'],
-        'kifayah' => [1 => 'pdf.v1.kifayah', 2 => 'pdf.v2.kifayah'],
+        'outreach' => [1 => 'pdf.v1.outreach', 2 => 'pdf.v2.outreach', 3 => 'pdf.v3.outreach'],
+        'mustahik' => [1 => 'pdf.v1.mustahik', 2 => 'pdf.v2.mustahik', 3 => 'pdf.v3.mustahik'],
+        'kifayah' => [1 => 'pdf.v1.kifayah', 2 => 'pdf.v2.kifayah', 3 => 'pdf.v3.kifayah'],
     ];
 
     /**
@@ -176,7 +176,10 @@ class OutreachPdf
             ],
             'mustahik' => $this->mustahik($snapshot, $signatures['mustahik']),
             default => $this->kifayah($snapshot, $signatures['kifayah']),
-        }, 'logo' => self::logo(self::LOGOS[$document])])->render();
+        }, 'logo' => self::logo(self::LOGOS[$document]),
+            // The Kelurahan letterhead as one image from template v3 (D-070).
+            'kop' => $document === 'outreach' && $templateVersion >= 3 ? self::logo('kop-manukan.png') : null,
+        ])->render();
     }
 
     /**

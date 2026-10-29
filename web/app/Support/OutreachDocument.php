@@ -51,6 +51,8 @@ class OutreachDocument
             'title' => 'LAPORAN HASIL OUTREACH',
             // Type under the title; the Source is not printed (outreach.md 8.2).
             'type' => $snapshot['meta']['type']['name'],
+            // "Jenis Outreach : Bantuan ..." from template v3 (D-070).
+            'type_label' => self::typeLabel($snapshot['meta']['type']['name']),
             'opening' => "Berdasarkan hasil outreach yang telah dilaksanakan pada hari {$date->translatedFormat('l')} tanggal {$date->translatedFormat('j F Y')} Bersama ini kami laporkan sebagai berikut :",
             'sections' => [
                 self::klien($snapshot),
@@ -67,6 +69,14 @@ class OutreachDocument
             'approval' => ['lines' => ['Mengetahui', 'Lurah Manukan Kulon']],
             'attachments' => $attachments,
         ];
+    }
+
+    /**
+     * The type as an aid: "Bantuan" is added unless the name already starts with it.
+     */
+    public static function typeLabel(string $name): string
+    {
+        return preg_match('/^bantuan\b/i', $name) === 1 ? $name : "Bantuan {$name}";
     }
 
     public static function rupiah(?int $amount): ?string
@@ -144,8 +154,9 @@ class OutreachDocument
         $fields = OutreachFormSchema::steps()['keluarga']['fields'];
         $rows = [];
 
-        foreach ($values as $name => $amount) {
-            $rows[$fields[$name]['label']] = self::rupiah($amount);
+        // The form's order, not the snapshot's: MySQL JSON reorders object keys.
+        foreach (array_intersect_key($fields, $values) as $name => $field) {
+            $rows[$field['label']] = self::rupiah($values[$name]);
         }
 
         $total = in_array(null, $values, true) ? null : array_sum($values);

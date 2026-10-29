@@ -22,7 +22,7 @@ const fit = (event: Event) => {
 
 <template>
     <div class="overflow-x-auto rounded-md bg-muted p-2 sm:p-4">
-        <div class="relative mx-auto w-full max-w-[210mm] min-w-[180mm]">
+        <div class="relative mx-auto w-full max-w-[216mm] min-w-[180mm]">
             <p
                 v-if="loading"
                 class="absolute inset-x-0 top-6 text-center text-sm text-muted-foreground"

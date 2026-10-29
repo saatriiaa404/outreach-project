@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import kop from '../../../views/pdf/logos/kop-manukan.png';
+
 export type DocumentRow = {
     no: number | null;
     label: string;
@@ -10,6 +12,7 @@ export type OutreachDocument = {
     letterhead: string[];
     title: string;
     type: string;
+    type_label: string;
     opening: string;
     sections: { title: string; rows: DocumentRow[] }[];
     narratives: { title: string; value: string | null }[];
@@ -22,7 +25,8 @@ export type OutreachDocument = {
     }[];
 };
 
-// Same logical structure as the PDF (Workflow v2.1 17.3); not pixel-perfect.
+// Same logical structure as the PDF template v3 (Workflow v2.1 17.3, D-070);
+// not pixel-perfect.
 defineProps<{ document: OutreachDocument }>();
 </script>
 
@@ -31,27 +35,19 @@ defineProps<{ document: OutreachDocument }>();
         <article
             class="mx-auto w-full max-w-[210mm] rounded-sm border bg-white p-6 text-[13px] leading-snug text-neutral-900 shadow-sm sm:p-10"
         >
-            <header class="border-b-2 border-neutral-900 pb-3 text-center">
-                <p
-                    v-for="(line, i) in document.letterhead"
-                    :key="line"
-                    :class="
-                        i === 0
-                            ? 'text-sm'
-                            : i < 3
-                              ? 'text-base font-bold'
-                              : 'text-xs'
-                    "
-                >
-                    {{ line }}
-                </p>
+            <header>
+                <img
+                    :src="kop"
+                    :alt="document.letterhead.join(', ')"
+                    class="w-full"
+                />
             </header>
 
-            <h2 class="mt-5 text-center text-base font-bold underline">
+            <h2 class="mt-3 text-center text-base font-bold underline">
                 {{ document.title }}
             </h2>
-            <p class="text-center font-semibold" data-test="document-type">
-                {{ document.type }}
+            <p class="mt-4" data-test="document-type">
+                Jenis Outreach : {{ document.type_label }}
             </p>
 
             <p class="mt-5">{{ document.opening }}</p>

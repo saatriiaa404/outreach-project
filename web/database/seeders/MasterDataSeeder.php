@@ -31,6 +31,8 @@ class MasterDataSeeder extends Seeder
      * Documents in each template package (Workflow v2.1: three PDFs for
      * Baznas/CSR, only the Outreach PDF for Bangga Surabaya).
      */
+    public const CURRENT_TEMPLATE = 3;
+
     public const TEMPLATE_PACKAGES = [
         'PACKAGE_BAZNAS_CSR' => ['outreach', 'mustahik', 'kifayah'],
         'PACKAGE_BANGGA_SURABAYA' => ['outreach'],
@@ -47,10 +49,11 @@ class MasterDataSeeder extends Seeder
         }
 
         // One template package per Source (Q-09). Version 2 adds the logos, the
-        // rank, the stamp and the ticked Kifayah boxes (D-064, D-065); versions
-        // already finalized keep rendering with version 1.
+        // rank, the stamp and the ticked Kifayah boxes (D-064, D-065); version 3
+        // the letterhead image and the geometry of the source forms (D-070).
+        // Versions already finalized keep rendering with the one they recorded.
         foreach (self::TEMPLATE_PACKAGES as $key => $documents) {
-            foreach ([1, 2] as $number) {
+            foreach ([1, 2, self::CURRENT_TEMPLATE] as $number) {
                 $template = DocumentTemplateVersion::query()->firstOrNew(['template_key' => $key, 'version_number' => $number]);
 
                 if (! $template->exists) {
@@ -61,7 +64,7 @@ class MasterDataSeeder extends Seeder
                     ]);
                 }
 
-                $template->forceFill(['is_active' => $number === 2])->save();
+                $template->forceFill(['is_active' => $number === self::CURRENT_TEMPLATE])->save();
             }
         }
     }
