@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
@@ -30,6 +32,11 @@ class InAppNotification extends Model
 
     public const OUTREACH_COMPLETED = 'OUTREACH_COMPLETED';
 
+    /**
+     * Operational lifetime from created_at (Workflow v2.1 30.4).
+     */
+    public const RETENTION_DAYS = 30;
+
     protected $table = 'notifications';
 
     /**
@@ -42,5 +49,17 @@ class InAppNotification extends Model
         return [
             'read_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Notifications still within their lifetime; expired ones are hidden
+     * even before notifications:prune removes them (D-063).
+     *
+     * @param  Builder<self>  $query
+     */
+    #[Scope]
+    protected function current(Builder $query): void
+    {
+        $query->where('created_at', '>=', now()->subDays(self::RETENTION_DAYS));
     }
 }

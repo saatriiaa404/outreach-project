@@ -1141,6 +1141,35 @@ rujuk keputusan pengganti.
                            pengajuan dan
                            keputusan beserta
                            catatannya (D-039).
+
+  D-063       LOCKED       Pembersihan            Persetujuan     Tanpa perubahan schema  `workflow.md` 30.4;
+                           notifikasi (R10.3):    eksplisit       dan tanpa mengubah      `setup.md`; kode `web/`
+                           perintah               pemilik         pengaturan Windows
+                           `notifications:prune`  proyek, 29      oleh agent.
+                           menghapus notifikasi   Oktober 2026.   Pembersihan hanya
+                           yang berumur lebih                     menghapus baris
+                           dari 30 hari sejak                     notifications;
+                           created_at dan                         Outreach, History,
+                           didaftarkan pada                       Audit, approval,
+                           scheduler Laravel                      versi, dan file tidak
+                           setiap hari. Di                        tersentuh (Workflow
+                           Windows lokal                          30.4).
+                           scheduler dijalankan
+                           dengan `php artisan
+                           schedule:work` selama
+                           aplikasi dipakai,
+                           atau pemilik sendiri
+                           membuat entri Task
+                           Scheduler untuk `php
+                           artisan
+                           schedule:run`.
+                           Notifikasi
+                           kedaluwarsa
+                           disembunyikan dari
+                           tampilan dan jumlah
+                           belum dibaca walaupun
+                           pembersihan belum
+                           berjalan.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

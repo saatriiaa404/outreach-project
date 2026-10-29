@@ -44,7 +44,7 @@ class HandleInertiaRequests extends Middleware
             ],
             // Unread in-app notifications for the sidebar (Workflow v2.1 30).
             'unreadNotifications' => fn () => $request->user()
-                ? InAppNotification::query()->where('user_id', $request->user()->id)->whereNull('read_at')->count()
+                ? InAppNotification::query()->current()->where('user_id', $request->user()->id)->whereNull('read_at')->count()
                 : 0,
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];

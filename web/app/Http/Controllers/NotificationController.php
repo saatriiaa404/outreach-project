@@ -19,6 +19,7 @@ class NotificationController extends Controller
     public function index(Request $request): Response
     {
         $notifications = InAppNotification::query()
+            ->current()
             ->where('user_id', $request->user()->id)
             ->latest('id')
             ->paginate(20)
@@ -36,8 +37,9 @@ class NotificationController extends Controller
 
     public function open(Request $request, InAppNotification $notification): RedirectResponse
     {
-        // Another user's notification does not exist for this user.
+        // Another user's or an expired notification does not exist for this user.
         abort_unless($notification->user_id === $request->user()->id, 404);
+        abort_unless(InAppNotification::query()->current()->whereKey($notification->id)->exists(), 404);
 
         if ($notification->read_at === null) {
             $notification->forceFill(['read_at' => now()])->save();
