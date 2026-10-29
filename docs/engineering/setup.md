@@ -137,6 +137,29 @@ Pembersihan juga dapat dijalankan manual kapan saja dengan `php artisan notifica
 
 Catatan: `web/.env.example` terkena pola `.env.*` pada `.gitignore` akar repository sehingga perlu `git add -f` agar template (tanpa secret) ikut ter-commit. Dompdf belum dipasang; pemasangannya dilakukan pada task fitur PDF.
 
+### Backup dan restore (R11.3, D-038)
+
+Backup dilakukan manual oleh Admin setiap minggu ke media terpisah, yaitu hard disk atau flashdisk eksternal. Isinya database MySQL dan seluruh berkas privat (`web/storage/app/private`: lampiran, tanda tangan, template tanda tangan dan stempel). Perintah dijalankan dari `project/web/` di laptop aplikasi, dengan Laragon dalam keadaan Start All. `mysqldump` dan `mysql` dari Laragon harus ada di PATH (`mysql --version` di terminal menampilkan versinya).
+
+**Backup mingguan**
+
+1. Colokkan media eksternal dan buat folder tujuan, misalnya `E:\backup-outreach`.
+2. Jalankan `php artisan backup:create E:\backup-outreach`.
+3. Perintah membuat folder baru `outreach-backup-<tanggal>-<jam>` berisi `database.sql`, folder `files`, dan `manifest.json` (jumlah baris per tabel serta hash SHA-256 setiap berkas). Salinan langsung dicocokkan dengan sumbernya. Backup hanya sah bila pesan akhirnya "Backup selesai" beserta jumlah tabel, baris, dan berkas.
+4. Lepas media dengan aman dan simpan terpisah dari laptop. Simpan beberapa backup terakhir; hapus yang lama secara manual.
+
+`web/.env` tidak ikut di-backup karena berisi rahasia. Simpan salinannya sendiri di tempat aman yang terpisah; tanpa `.env` aplikasi tidak dapat dijalankan setelah laptop diganti.
+
+**Restore**
+
+1. Hentikan pemakaian aplikasi; Laragon tetap Start All.
+2. Jalankan `php artisan backup:restore E:\backup-outreach\outreach-backup-<tanggal>-<jam>`.
+3. Perintah lebih dulu memeriksa seluruh isi backup terhadap `manifest.json`. Bila ada berkas yang hilang atau berubah, pemulihan dibatalkan tanpa mengubah data.
+4. Setelah konfirmasi, folder berkas yang sekarang dipindahkan ke `storage/app/private-sebelum-restore-<tanggal>-<jam>` (tidak dihapus), database diimpor dari `database.sql`, berkas disalin kembali, lalu jumlah baris dan hash berkas dicocokkan dengan backup.
+5. Buka aplikasi dan periksa beberapa Outreach serta lampirannya. Setelah yakin, hapus folder `private-sebelum-restore-...` secara manual.
+
+Restore mengganti seluruh isi database yang dipakai `.env` saat itu. Jangan menjalankannya ke database lain tanpa memeriksa `DB_DATABASE`.
+
 ## 10. Perubahan Dokumen Ini
 
 Perubahan versi alat, kebijakan PHP, atau pengaturan upload dicatat pada dokumen ini. Bila memengaruhi keputusan, catat juga di `decisions.md`.

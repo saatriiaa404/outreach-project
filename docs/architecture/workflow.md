@@ -2195,6 +2195,8 @@ Restore test dilakukan sebelum handover.
 
 Pada prototype, backup dilakukan manual oleh Admin setiap minggu, mencakup
 database dan seluruh lampiran, dan disimpan pada media terpisah (D-038).
+Perintahnya `php artisan backup:create` dan `php artisan backup:restore`;
+prosedur rinci ada di `docs/engineering/setup.md`.
 
 Hosting target dan kebijakan backup operasional setelah serah terima mengikuti
 hasil validasi Kelurahan dan dokumentasi deployment.

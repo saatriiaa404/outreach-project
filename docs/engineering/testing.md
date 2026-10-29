@@ -86,6 +86,18 @@ Database uji `outreach_prototype_test`, data dummy saja, satu komputer (Laragon,
 
 Keterbatasan: perubahan disimpan melalui action aplikasi, bukan klik di browser, dan login setelah restart tidak diuji di browser karena agent tidak membaca kata sandi akun uji. Restart Windows penuh tidak dilakukan.
 
+### Bukti uji backup dan restore (R11.3) — 30 Oktober 2026
+
+Database uji `outreach_prototype_test`, data dummy saja.
+
+1. Database uji diisi seperti pada PERS-001 (DEMO-001 sampai DEMO-004, ditambah perubahan Draft dan lampiran DEMO-001), lalu sidiknya dicatat: 23 tabel, 168 baris, 14 berkas tercatat, dan tiga PDF DEMO-004 terbentuk.
+2. `php artisan backup:create <folder>` ke folder yang berperan sebagai media eksternal: 23 tabel, 168 baris, 143 berkas di folder privat (termasuk berkas milik database demo, karena satu folder dipakai bersama).
+3. Simulasi kehilangan data: database uji dikosongkan (`migrate:fresh` tanpa seed; 0 Outreach) dan seluruh folder `storage/app/private` dipindahkan keluar.
+4. `php artisan backup:restore <folder backup> --force`: backup lolos pemeriksaan manifest, database diimpor, berkas disalin kembali, dan pemeriksaan akhir cocok.
+5. Sidik setelah restore: seluruh 23 tabel dan 14 berkas tercatat identik dengan sebelum backup, perubahan Draft tetap ada, tiga PDF DEMO-004 terbentuk, dan seluruh isi folder privat identik dengan salinan pengaman yang dibuat sebelum uji.
+
+Uji otomatis `BackupTest` mencakup isi backup dan manifest, folder tujuan yang tidak ada, restore yang menyisihkan berkas lama, backup rusak yang ditolak sebelum mengubah data, dan konfirmasi sebelum restore. Keterbatasan: media eksternal disimulasikan dengan folder lokal, dan restore ke laptop lain belum diuji.
+
 ## Di Luar Cakupan Saat Ini
 
 - Hosting/domain, akses LAN multi-pengguna, dan deployment production.
