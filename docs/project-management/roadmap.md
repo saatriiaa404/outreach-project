@@ -87,7 +87,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 |---|---|---|
 | R9.1 | Manajemen user: aktif/nonaktif, satu Kepala aktif, NIP dengan audit; fitur bawaan ubah profil dan hapus akun sendiri sudah dihapus, ganti password sendiri tetap ada | ✅ Keputusan D-044 (bagian halaman pengaturan selesai) |
 | R9.2 | Master Source/Type dengan `code` tidak dapat diubah | ✅ Selesai 29 Oktober 2026: menu Master Source/Jenis khusus Admin; ganti nama dan aktif/nonaktif untuk tiga Source baseline (tidak dapat ditambah) dan Jenis, tambah Jenis baru dengan kode unik yang tidak dapat diubah, jumlah pemakaian per item, minimal satu Source dan satu Jenis aktif, semua perubahan di `audit_logs` (D-057) |
-| R9.3 | Template tanda tangan Kepala dan template stempel berversi | — |
+| R9.3 | Template tanda tangan Kepala dan template stempel berversi | ✅ Selesai 29 Oktober 2026: menu Template TTD/Stempel khusus Admin; unggah PNG/JPG per akun Kepala menjadi versi baru yang langsung aktif (versi lama dinonaktifkan, tidak dihapus), nonaktifkan tanpa pengganti, riwayat versi dengan pratinjau; stempel dikelola dengan maksimal satu aktif tetapi belum dicetak (PENDING VALIDATION); audit untuk setiap perubahan (D-058) |
 | R9.4 | Penandaan arsip manual (D-038) | — |
 
 ## Fase 10 — Dashboard, pencarian, notifikasi, dan riwayat

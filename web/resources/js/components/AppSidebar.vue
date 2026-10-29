@@ -7,6 +7,7 @@ import {
     FolderGit2,
     LayoutGrid,
     LockOpen,
+    Signature,
 } from '@lucide/vue';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
@@ -26,6 +27,7 @@ import { dashboard } from '@/routes';
 import { index as masterDataIndex } from '@/routes/master-data';
 import { index as outreachIndex } from '@/routes/outreaches';
 import { index as specialUnlockIndex } from '@/routes/special-unlock-requests';
+import { index as templatesIndex } from '@/routes/templates';
 import type { NavItem } from '@/types';
 
 const page = usePage();
@@ -53,6 +55,11 @@ const mainNavItems = computed<NavItem[]>(() => [
                   title: 'Master Source/Jenis',
                   href: masterDataIndex(),
                   icon: Database,
+              },
+              {
+                  title: 'Template TTD/Stempel',
+                  href: templatesIndex(),
+                  icon: Signature,
               },
           ]
         : []),

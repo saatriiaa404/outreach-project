@@ -1002,6 +1002,31 @@ rujuk keputusan pengganti.
                            (D-040). Minimal satu
                            Source dan satu Type
                            tetap aktif.
+
+  D-058       LOCKED       Template tanda tangan  Persetujuan     Tanpa perubahan         `database.md` 10.2, 10.3;
+                           Kepala dan stempel     eksplisit       schema. Pengesahan      `design.md`; kode `web/`
+                           (R9.3): Admin          pemilik         tetap merujuk versi
+                           mengunggah gambar PNG  proyek, 29      yang dipakai saat itu.
+                           atau JPG (maksimal 2   Oktober 2026.   Tanpa template aktif,
+                           MB, isi divalidasi);                   Approve ditolak
+                           setiap unggahan                        (D-054). Semua
+                           menjadi versi baru                     aktivasi dan
+                           yang langsung aktif                    penonaktifan tercatat
+                           dan menonaktifkan                      di audit_logs.
+                           versi aktif
+                           sebelumnya
+                           (valid_until diisi);
+                           tidak ada edit atau
+                           hapus; Admin dapat
+                           menonaktifkan versi
+                           aktif tanpa
+                           pengganti. Stempel
+                           dapat dikelola dengan
+                           maksimal satu aktif,
+                           tetapi belum dicetak
+                           pada PDF selama
+                           kebijakannya PENDING
+                           VALIDATION.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

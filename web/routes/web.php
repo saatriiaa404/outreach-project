@@ -13,6 +13,7 @@ use App\Http\Controllers\ReturnOutreachController;
 use App\Http\Controllers\SignatureController;
 use App\Http\Controllers\SpecialUnlockController;
 use App\Http\Controllers\SpecialUnlockRequestController;
+use App\Http\Controllers\TemplateController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'Welcome')->name('home');
@@ -78,6 +79,20 @@ Route::middleware(['auth'])->group(function () {
         ->name('master-data.sources.update');
     Route::put('master-data/types/{type}', [MasterDataController::class, 'updateType'])
         ->name('master-data.types.update');
+    Route::get('templates', [TemplateController::class, 'index'])
+        ->name('templates.index');
+    Route::post('templates/signatures/{kepala}', [TemplateController::class, 'storeSignature'])
+        ->name('templates.signatures.store');
+    Route::post('templates/signatures/{template}/deactivate', [TemplateController::class, 'deactivateSignature'])
+        ->name('templates.signatures.deactivate');
+    Route::get('templates/signatures/{template}/image', [TemplateController::class, 'signatureImage'])
+        ->name('templates.signatures.image');
+    Route::post('templates/stamps', [TemplateController::class, 'storeStamp'])
+        ->name('templates.stamps.store');
+    Route::post('templates/stamps/{stamp}/deactivate', [TemplateController::class, 'deactivateStamp'])
+        ->name('templates.stamps.deactivate');
+    Route::get('templates/stamps/{stamp}/image', [TemplateController::class, 'stampImage'])
+        ->name('templates.stamps.image');
     Route::get('special-unlock-requests', [SpecialUnlockRequestController::class, 'index'])
         ->name('special-unlock-requests.index');
     Route::post('special-unlock-requests/{specialUnlockRequest}/cancel', [SpecialUnlockRequestController::class, 'cancel'])
