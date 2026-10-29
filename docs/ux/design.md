@@ -17,7 +17,7 @@ Pustaka UI: Tailwind CSS + shadcn-vue melalui starter kit resmi Laravel untuk Vu
 | Create/Stepper | PETUGAS | Source, Type, Date, lalu form kondisional. |
 | Review/Finalisasi | PETUGAS | Ringkasan, blocker, status kelengkapan, preview, dan konfirmasi finalisasi. |
 | Approval Queue | KEPALA | Review read-only, Return, Approve, dan status proses PDF. |
-| Special Unlock Queue | ADMIN | Request, Direct Unlock, Lock, dan Lock & Ajukan sesuai workflow. |
+| Special Unlock Queue | ADMIN | Request, Direct Unlock, Lock, dan Lock & Ajukan sesuai workflow. Prototype (R8.1): antrean menampilkan permintaan terbuka (terlama di atas) dengan filter status; Admin memulai proses lalu menolak dengan alasan wajib, sedangkan permintaan yang diproses selesai otomatis saat Lock atau Lock & Ajukan (D-055). Petugas dan Kepala meminta serta membatalkan dari halaman Outreach. |
 | Arsip | ADMIN | Penandaan status arsip manual dan catatan referensi, tanpa integrasi E-Surat/E-Arsip (D-038). |
 | Master Source/Type | ADMIN | Menambah dan menonaktifkan Source/Type; `code` tampil read-only setelah dibuat (D-040). |
 | Manajemen user dan template | ADMIN | Akun dummy, status aktif, NIP Kepala (D-041), template tanda tangan Kepala, dan template stempel. Tidak ada registrasi publik (D-014). |

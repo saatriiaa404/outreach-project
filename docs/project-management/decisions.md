@@ -917,6 +917,30 @@ rujuk keputusan pengganti.
                            NULL) karena
                            kebijakannya masih
                            PENDING VALIDATION.
+
+  D-055       LOCKED       Lifecycle request      Persetujuan     Status permintaan       `workflow.md` 25, 31.4, 35.5;
+                           Special Unlock         eksplisit       selalu mencerminkan     `database.md` 13.2;
+                           (R8.1): satu Outreach  pemilik         tindakan unlock yang    `design.md`; kode `web/`
+                           hanya boleh memiliki   proyek, 29      sebenarnya. Tidak ada
+                           satu permintaan        Oktober 2026.   perubahan schema;
+                           terbuka (PENDING atau                  permintaan tidak
+                           PROCESSING) dari                       mengubah status
+                           siapa pun; Admin                       Outreach dan tidak
+                           hanya dapat menolak                    mengirim notifikasi
+                           permintaan yang                        (Workflow 25.9).
+                           sedang PROCESSING,
+                           dengan alasan wajib
+                           yang terlihat oleh
+                           pengaju; permintaan
+                           PROCESSING menjadi
+                           COMPLETED secara
+                           otomatis saat Admin
+                           melakukan Lock atau
+                           Lock & Ajukan pada
+                           Outreach itu setelah
+                           Special Unlock
+                           (R8.2), bukan
+                           ditandai manual.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

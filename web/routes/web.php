@@ -10,6 +10,7 @@ use App\Http\Controllers\OutreachPdfController;
 use App\Http\Controllers\OutreachVersionController;
 use App\Http\Controllers\ReturnOutreachController;
 use App\Http\Controllers\SignatureController;
+use App\Http\Controllers\SpecialUnlockRequestController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'Welcome')->name('home');
@@ -59,6 +60,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('outreach/{outreach}/versions/{version}/pdf/{document}', OutreachPdfController::class)
         ->whereIn('document', ['outreach', 'mustahik', 'kifayah'])
         ->name('outreaches.versions.pdf');
+    Route::post('outreach/{outreach}/special-unlock-requests', [SpecialUnlockRequestController::class, 'store'])
+        ->name('outreaches.special-unlock-requests.store');
+    Route::get('special-unlock-requests', [SpecialUnlockRequestController::class, 'index'])
+        ->name('special-unlock-requests.index');
+    Route::post('special-unlock-requests/{specialUnlockRequest}/cancel', [SpecialUnlockRequestController::class, 'cancel'])
+        ->name('special-unlock-requests.cancel');
+    Route::post('special-unlock-requests/{specialUnlockRequest}/process', [SpecialUnlockRequestController::class, 'process'])
+        ->name('special-unlock-requests.process');
+    Route::post('special-unlock-requests/{specialUnlockRequest}/reject', [SpecialUnlockRequestController::class, 'reject'])
+        ->name('special-unlock-requests.reject');
     Route::put('outreach/{outreach}/autosave', [OutreachController::class, 'autosave'])
         ->name('outreaches.autosave');
 });

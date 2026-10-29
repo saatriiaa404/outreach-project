@@ -4,6 +4,8 @@ import { computed, ref } from 'vue';
 import ApproveOutreachController from '@/actions/App/Http/Controllers/ApproveOutreachController';
 import ReturnOutreachController from '@/actions/App/Http/Controllers/ReturnOutreachController';
 import Heading from '@/components/Heading.vue';
+import SpecialUnlockPanel from '@/components/outreach/SpecialUnlockPanel.vue';
+import type { SpecialUnlock } from '@/components/outreach/SpecialUnlockPanel.vue';
 import OutreachDocumentPreview from '@/components/outreach/OutreachDocumentPreview.vue';
 import type { OutreachDocument } from '@/components/outreach/OutreachDocumentPreview.vue';
 import { Badge } from '@/components/ui/badge';
@@ -54,6 +56,7 @@ const props = defineProps<{
     canApprove: boolean;
     canEdit: boolean;
     downloads: { title: string; url: string }[];
+    specialUnlock: SpecialUnlock;
 }>();
 
 const statusLabels: Record<Status, string> = {
@@ -235,6 +238,11 @@ defineOptions({
                 </Button>
             </div>
         </section>
+
+        <SpecialUnlockPanel
+            :outreach-id="outreach.id"
+            :special-unlock="specialUnlock"
+        />
 
         <section class="grid gap-2" data-test="history">
             <h3 class="font-medium">Riwayat pengajuan</h3>

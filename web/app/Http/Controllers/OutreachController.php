@@ -8,6 +8,7 @@ use App\Actions\Outreach\SaveOutreachStep;
 use App\Enums\AttachmentCategory;
 use App\Enums\HistoryEventType;
 use App\Enums\OutreachStatus;
+use App\Enums\SpecialUnlockRequestStatus;
 use App\Enums\UserRole;
 use App\Http\Requests\Outreach\ChangeSourceTypeRequest;
 use App\Http\Requests\Outreach\SaveOutreachStepRequest;
@@ -22,6 +23,8 @@ use App\Models\OutreachType;
 use App\Models\OutreachVersion;
 use App\Models\OutreachVersionAttachment;
 use App\Models\Signature;
+use App\Models\SpecialUnlockRequest;
+use App\Models\User;
 use App\Support\FormResults;
 use App\Support\FormSignatures;
 use App\Support\KifayahFormSchema;
@@ -146,6 +149,7 @@ class OutreachController extends Controller
                 ])->all()
                 : [],
             'canEdit' => $user->can('update', $outreach),
+            'specialUnlock' => $this->specialUnlock($outreach, $user),
         ]);
     }
 
@@ -455,6 +459,36 @@ class OutreachController extends Controller
                     ? null
                     : route('outreaches.versions.signatures.show', [$outreach, $version, $form]),
             ])->values()->all() : [],
+        ];
+    }
+
+    /**
+     * Special Unlock requests on this Outreach as the user may see them: the
+     * Admin sees all, a requester their own; others only learn that an open
+     * request already exists, since only one may be open (D-055).
+     *
+     * @return array<string, mixed>
+     */
+    private function specialUnlock(Outreach $outreach, User $user): array
+    {
+        $requests = SpecialUnlockRequest::query()
+            ->where('outreach_id', $outreach->id)
+            ->with(['requester:id,name', 'admin:id,name'])
+            ->latest('id')
+            ->get();
+        $open = $requests->first(fn (SpecialUnlockRequest $request) => in_array($request->status, SpecialUnlockRequestStatus::open(), true));
+
+        return [
+            'canRequest' => $open === null && $user->can('requestSpecialUnlock', $outreach),
+            'openBy' => $open === null || $open->requester_id === $user->id ? null : $open->requester->name,
+            'requests' => $requests
+                ->filter(fn (SpecialUnlockRequest $request) => $user->role === UserRole::Admin || $request->requester_id === $user->id)
+                ->map(fn (SpecialUnlockRequest $request) => [
+                    ...SpecialUnlockRequestController::row($request),
+                    'can_cancel' => $request->status === SpecialUnlockRequestStatus::Pending && $user->can('cancel', $request),
+                ])
+                ->values()
+                ->all(),
         ];
     }
 
