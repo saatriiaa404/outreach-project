@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
 import {
+    Archive,
     BookOpen,
     ClipboardList,
     Database,
@@ -24,6 +25,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import { index as archiveIndex } from '@/routes/archive';
 import { index as masterDataIndex } from '@/routes/master-data';
 import { index as outreachIndex } from '@/routes/outreaches';
 import { index as specialUnlockIndex } from '@/routes/special-unlock-requests';
@@ -60,6 +62,11 @@ const mainNavItems = computed<NavItem[]>(() => [
                   title: 'Template TTD/Stempel',
                   href: templatesIndex(),
                   icon: Signature,
+              },
+              {
+                  title: 'Arsip',
+                  href: archiveIndex(),
+                  icon: Archive,
               },
           ]
         : []),

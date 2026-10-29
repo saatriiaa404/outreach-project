@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApproveOutreachController;
+use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\FinalizeOutreachController;
 use App\Http\Controllers\KifayahController;
 use App\Http\Controllers\MasterDataController;
@@ -79,6 +80,14 @@ Route::middleware(['auth'])->group(function () {
         ->name('master-data.sources.update');
     Route::put('master-data/types/{type}', [MasterDataController::class, 'updateType'])
         ->name('master-data.types.update');
+    Route::get('archive', [ArchiveController::class, 'index'])
+        ->name('archive.index');
+    Route::post('archive/outreach/{outreach}', [ArchiveController::class, 'store'])
+        ->name('archive.store');
+    Route::put('archive/{record}', [ArchiveController::class, 'update'])
+        ->name('archive.update');
+    Route::post('archive/{record}/verify', [ArchiveController::class, 'verify'])
+        ->name('archive.verify');
     Route::get('templates', [TemplateController::class, 'index'])
         ->name('templates.index');
     Route::post('templates/signatures/{kepala}', [TemplateController::class, 'storeSignature'])

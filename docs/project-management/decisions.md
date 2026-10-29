@@ -1027,6 +1027,32 @@ rujuk keputusan pengganti.
                            pada PDF selama
                            kebijakannya PENDING
                            VALIDATION.
+
+  D-059       LOCKED       Penandaan arsip        Persetujuan     Tanpa perubahan         `database.md` 13.1;
+                           (R9.4): Admin          eksplisit       schema. Tanda arsip,    `workflow.md` 27; `design.md`;
+                           menandai versi         pemilik         koreksi, dan            kode `web/`
+                           terbaru yang disahkan  proyek, 29      verifikasi tercatat di
+                           dari Outreach SELESAI  Oktober 2026.   audit_logs. Setelah
+                           dengan sistem arsip                    Special Unlock dan
+                           (teks bebas, wajib),                   pengesahan ulang,
+                           nomor referensi                        versi baru muncul lagi
+                           (opsional), dan                        sebagai belum
+                           tanggal diarsipkan                     diarsipkan. Cara
+                           (wajib, tidak di masa                  verifikasi resmi tetap
+                           depan); satu tanda                     menunggu prosedur
+                           per versi; batas                       Kelurahan.
+                           waktu satu bulan
+                           sejak pengesahan
+                           ditampilkan dan yang
+                           terlewat ditandai.
+                           Data arsip dapat
+                           dikoreksi Admin dan
+                           diaudit. Admin dapat
+                           menandai arsip
+                           terverifikasi
+                           (verified_at) tanpa
+                           aturan verifikasi
+                           tambahan.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru
