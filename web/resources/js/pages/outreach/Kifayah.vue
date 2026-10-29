@@ -5,6 +5,7 @@ import { computed, reactive, ref, watch } from 'vue';
 import KifayahController from '@/actions/App/Http/Controllers/KifayahController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
+import NumberInput from '@/components/NumberInput.vue';
 import OutreachStepper from '@/components/outreach/OutreachStepper.vue';
 import type { Step } from '@/components/outreach/OutreachStepper.vue';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -264,14 +265,11 @@ const saveStatus = computed(() => {
                                 class="text-sm text-muted-foreground"
                                 >Rp</span
                             >
-                            <Input
+                            <NumberInput
                                 :id="field.name"
                                 v-model="values[field.name]"
                                 :name="field.name"
-                                type="number"
-                                min="0"
-                                step="1"
-                                inputmode="numeric"
+                                :maxlength="12"
                                 placeholder="Belum diisi"
                             />
                         </div>

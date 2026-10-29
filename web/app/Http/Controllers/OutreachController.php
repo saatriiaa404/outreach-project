@@ -29,6 +29,7 @@ use App\Support\FormResults;
 use App\Support\FormSignatures;
 use App\Support\KifayahFormSchema;
 use App\Support\MustahikFormSchema;
+use App\Support\OutreachColumnFilters;
 use App\Support\OutreachDocument;
 use App\Support\OutreachFormSchema;
 use App\Support\OutreachPdf;
@@ -61,8 +62,9 @@ class OutreachController extends Controller
         $status ??= $isKepala && ! $request->has('status') ? OutreachStatus::MenungguPengesahan : null;
 
         $search = (array) $request->session()->get(OutreachSearch::SESSION_KEY, []);
+        $filters = OutreachColumnFilters::from($request);
 
-        $query = OutreachSearch::apply(Outreach::query()->visibleTo($user), $user, $search)
+        $query = OutreachColumnFilters::apply(OutreachSearch::apply(Outreach::query()->visibleTo($user), $user, $search), $filters)
             ->when($status, fn ($query, OutreachStatus $status) => $query->where('status', $status))
             ->with(['source:id,name', 'type:id,name']);
 
@@ -99,6 +101,9 @@ class OutreachController extends Controller
                 ->map(fn (OutreachStatus $item) => $item->value)
                 ->values(),
             'status' => $status?->value,
+            // Filters picked from the column headers (D-072).
+            'filters' => $filters,
+            'dateRanges' => OutreachColumnFilters::DATE_RANGES,
             'canCreate' => $user->can('create', Outreach::class),
             // Criteria come back from the session to fill the form (D-061).
             'search' => (object) $search,

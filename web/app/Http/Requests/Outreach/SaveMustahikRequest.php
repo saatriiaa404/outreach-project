@@ -36,6 +36,14 @@ class SaveMustahikRequest extends FormRequest
     }
 
     /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return MustahikFormSchema::messages();
+    }
+
+    /**
      * Get custom attributes for validator errors.
      *
      * @return array<string, string>

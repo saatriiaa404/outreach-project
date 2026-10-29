@@ -88,7 +88,7 @@ trait BuildsReadyOutreach
             $mustahik = new MustahikForm;
             $mustahik->forceFill([
                 'outreach_id' => $outreach->id, 'petugas_id' => $outreach->petugas_id, 'survey_date' => $date,
-                'kepala_keluarga_nama' => 'Kepala Demo', 'kepala_keluarga_nik_no_kk' => 'DUMMY-KK', 'kepala_keluarga_alamat' => 'Jl. Demo',
+                'kepala_keluarga_nama' => 'Kepala Demo', 'kepala_keluarga_nik_no_kk' => '0000000000000001', 'kepala_keluarga_alamat' => 'Jl. Demo',
                 'kepala_keluarga_rt' => '001', 'kepala_keluarga_rw' => '002',
                 'signature_id' => $this->signature(SignerType::Petugas, $outreach->petugas->name),
             ])->save();

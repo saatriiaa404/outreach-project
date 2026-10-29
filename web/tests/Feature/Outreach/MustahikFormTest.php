@@ -42,7 +42,7 @@ class MustahikFormTest extends TestCase
         return [
             'survey_date' => '2026-10-28',
             'kepala_keluarga_nama' => 'Kepala Demo',
-            'kepala_keluarga_nik_no_kk' => 'DUMMY-KK-001',
+            'kepala_keluarga_nik_no_kk' => '0000000000000001',
             'kepala_keluarga_alamat' => 'Jl. Demo 1',
             'kepala_keluarga_rt' => '001',
             'kepala_keluarga_rw' => '002',
@@ -127,6 +127,24 @@ class MustahikFormTest extends TestCase
 
         $this->get(route('outreaches.edit', ['outreach' => $outreach, 'step' => 'narasi']))
             ->assertInertia(fn (Assert $page) => $page->where('steps.5.state', 'complete'));
+    }
+
+    public function test_nik_rt_and_rw_accept_digits_only_and_finalisasi_needs_16_nik_digits()
+    {
+        $outreach = $this->draft();
+
+        $this->save($outreach, [...$this->completeForm(), 'kepala_keluarga_nik_no_kk' => '35780A0000000001'])
+            ->assertSessionHasErrors(['kepala_keluarga_nik_no_kk' => 'NIK/No KK Kepala Keluarga hanya berisi angka, maksimal 16 digit.']);
+        $this->save($outreach, [...$this->completeForm(), 'kepala_keluarga_nik_no_kk' => '00000000000000012'])
+            ->assertSessionHasErrors('kepala_keluarga_nik_no_kk');
+        $this->save($outreach, [...$this->completeForm(), 'kepala_keluarga_rt' => '1a'])->assertSessionHasErrors('kepala_keluarga_rt');
+        $this->save($outreach, [...$this->completeForm(), 'kepala_keluarga_rw' => '0002'])->assertSessionHasErrors('kepala_keluarga_rw');
+
+        // A NIK still being typed is kept in the Draft but blocks Finalisasi.
+        $this->save($outreach, [...$this->completeForm(), 'kepala_keluarga_nik_no_kk' => '00000001', 'kepala_keluarga_rt' => '5'])
+            ->assertSessionHasNoErrors();
+        $this->assertSame(['NIK/No KK Kepala Keluarga (harus 16 digit)'], OutreachFormSchema::missingForFinalization($outreach->refresh())['mustahik']);
+        $this->assertSame('5', $outreach->mustahikForm->kepala_keluarga_rt);
     }
 
     public function test_autosave_stores_without_history_and_reports_conflicts()

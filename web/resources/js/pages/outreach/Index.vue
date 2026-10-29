@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import ColumnFilter from '@/components/ColumnFilter.vue';
 import Heading from '@/components/Heading.vue';
 import OutreachSearchForm from '@/components/outreach/OutreachSearchForm.vue';
 import type { SearchCriteria } from '@/components/outreach/OutreachSearchForm.vue';
@@ -26,6 +28,12 @@ type Props = {
     };
     statuses: OutreachRow['status'][];
     status: OutreachRow['status'] | null;
+    filters: {
+        tanggal: string | null;
+        source: number | null;
+        type: number | null;
+    };
+    dateRanges: Record<string, string>;
     canCreate: boolean;
     search: SearchCriteria;
     searchOptions: {
@@ -34,7 +42,31 @@ type Props = {
     };
 };
 
-defineProps<Props>();
+const props = defineProps<Props>();
+
+const options = computed(() => ({
+    tanggal: Object.entries(props.dateRanges).map(([value, label]) => ({
+        value,
+        label,
+    })),
+    source: props.searchOptions.sources.map((item) => ({
+        value: item.id,
+        label: item.name,
+    })),
+    type: props.searchOptions.types.map((item) => ({
+        value: item.id,
+        label: item.name,
+    })),
+    status: props.statuses.map((item) => ({
+        value: item,
+        label: statusLabels[item],
+    })),
+}));
+const filtered = computed(
+    () =>
+        props.status !== null ||
+        Object.values(props.filters).some((value) => value !== null),
+);
 
 defineOptions({
     layout: {
@@ -81,30 +113,61 @@ const statusLabels: Record<OutreachRow['status'], string> = {
             >
         </nav>
 
-        <p
-            v-if="outreaches.data.length === 0"
-            class="text-sm text-muted-foreground"
-        >
-            {{
-                status
-                    ? `Tidak ada Outreach berstatus ${statusLabels[status]}.`
-                    : 'Belum ada Outreach.'
-            }}
-        </p>
-
-        <div v-else class="overflow-x-auto rounded-xl border">
+        <div class="overflow-x-auto rounded-xl border">
             <table class="w-full text-sm">
                 <thead class="bg-muted/50 text-left">
                     <tr>
                         <th class="px-4 py-2 font-medium">Kode</th>
                         <th class="px-4 py-2 font-medium">Nama</th>
-                        <th class="px-4 py-2 font-medium">Source</th>
-                        <th class="px-4 py-2 font-medium">Jenis</th>
-                        <th class="px-4 py-2 font-medium">Tanggal</th>
-                        <th class="px-4 py-2 font-medium">Status</th>
+                        <th class="px-4 py-2">
+                            <ColumnFilter
+                                label="Source"
+                                param="source"
+                                :options="options.source"
+                                :selected="filters.source"
+                            />
+                        </th>
+                        <th class="px-4 py-2">
+                            <ColumnFilter
+                                label="Jenis"
+                                param="type"
+                                :options="options.type"
+                                :selected="filters.type"
+                            />
+                        </th>
+                        <th class="px-4 py-2">
+                            <ColumnFilter
+                                label="Tanggal"
+                                param="tanggal"
+                                :options="options.tanggal"
+                                :selected="filters.tanggal"
+                            />
+                        </th>
+                        <th class="px-4 py-2">
+                            <ColumnFilter
+                                label="Status"
+                                param="status"
+                                all-value=""
+                                :options="options.status"
+                                :selected="status"
+                            />
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
+                    <tr v-if="outreaches.data.length === 0">
+                        <td
+                            colspan="6"
+                            class="px-4 py-6 text-center text-muted-foreground"
+                            data-test="empty"
+                        >
+                            {{
+                                filtered
+                                    ? 'Tidak ada Outreach yang cocok dengan filter ini.'
+                                    : 'Belum ada Outreach.'
+                            }}
+                        </td>
+                    </tr>
                     <tr
                         v-for="outreach in outreaches.data"
                         :key="outreach.id"

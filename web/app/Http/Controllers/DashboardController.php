@@ -13,6 +13,7 @@ use App\Models\OutreachType;
 use App\Models\OutreachVersion;
 use App\Models\SpecialUnlockRequest;
 use App\Models\User;
+use App\Support\OutreachColumnFilters;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -53,36 +54,65 @@ class DashboardController extends Controller
         return Inertia::render('Dashboard', [
             'role' => $user->role->value,
             'statuses' => $statuses,
-            'focus' => $this->focus($user),
+            'focus' => $this->focus($user, $filters = OutreachColumnFilters::from($request), $focusStatus = $this->focusStatus($request, $user)),
+            // Column filters of the focus table (D-072).
+            'filters' => [...$filters, 'status' => $focusStatus?->value],
+            'filterOptions' => [
+                'tanggal' => OutreachColumnFilters::DATE_RANGES,
+                'types' => OutreachType::query()->orderBy('name')->get(['id', 'name']),
+                'statuses' => array_map(fn (OutreachStatus $status) => $status->value, $this->focusStatuses($user)),
+            ],
             'admin' => $user->role === UserRole::Admin ? $this->adminSummary() : null,
             'charts' => $user->role === UserRole::Admin ? $this->adminCharts($this->month($request)) : null,
         ]);
     }
 
     /**
-     * What needs this user's attention first.
+     * Statuses the focus table holds for this role.
      *
+     * @return list<OutreachStatus>
+     */
+    private function focusStatuses(User $user): array
+    {
+        return $user->role === UserRole::Petugas
+            ? [OutreachStatus::PerluPerbaikan, OutreachStatus::Draft]
+            : [OutreachStatus::MenungguPengesahan];
+    }
+
+    private function focusStatus(Request $request, User $user): ?OutreachStatus
+    {
+        $status = OutreachStatus::tryFrom($request->string('status')->toString());
+
+        return in_array($status, $this->focusStatuses($user), true) ? $status : null;
+    }
+
+    /**
+     * What needs this user's attention first, narrowed by the column filters.
+     *
+     * @param  array{tanggal: string|null, source: int|null, type: int|null}  $filters
      * @return list<array<string, mixed>>
      */
-    private function focus(User $user): array
+    private function focus(User $user, array $filters, ?OutreachStatus $status): array
     {
-        $query = Outreach::query()->visibleTo($user)->with('type:id,name');
+        $query = OutreachColumnFilters::apply(Outreach::query()->visibleTo($user), $filters)
+            ->whereIn('status', $status ? [$status] : $this->focusStatuses($user))
+            ->with('type:id,name');
 
         $query = match ($user->role) {
             // Work in progress, revisions first.
-            UserRole::Petugas => $query->whereIn('status', [OutreachStatus::PerluPerbaikan, OutreachStatus::Draft])
-                ->orderByRaw('status = ? desc', [OutreachStatus::PerluPerbaikan->value])
+            UserRole::Petugas => $query->orderByRaw('status = ? desc', [OutreachStatus::PerluPerbaikan->value])
                 ->latest('updated_at'),
             // The approval queue, oldest submission first.
-            UserRole::Kepala, UserRole::Admin => $query->where('status', OutreachStatus::MenungguPengesahan)
+            UserRole::Kepala, UserRole::Admin => $query
                 ->orderBy(OutreachVersion::query()->select('finalized_at')->whereColumn('outreach_id', 'outreaches.id')->orderByDesc('version_number')->limit(1)),
         };
 
-        return array_values($query->limit(5)->get()->map(fn (Outreach $outreach) => [
+        return array_values($query->limit(10)->get()->map(fn (Outreach $outreach) => [
             'id' => $outreach->id,
             'code' => $outreach->outreach_number ?? $outreach->draft_code,
             'nama' => $outreach->nama,
             'type' => $outreach->type->name,
+            'outreach_date' => $outreach->outreach_date->toDateString(),
             'status' => $outreach->status->value,
             'can_edit' => $user->can('update', $outreach),
         ])->all());

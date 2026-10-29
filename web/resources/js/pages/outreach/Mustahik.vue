@@ -5,6 +5,7 @@ import { computed, reactive, ref, watch } from 'vue';
 import MustahikController from '@/actions/App/Http/Controllers/MustahikController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
+import NumberInput from '@/components/NumberInput.vue';
 import OutreachStepper from '@/components/outreach/OutreachStepper.vue';
 import type { Step } from '@/components/outreach/OutreachStepper.vue';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -19,6 +20,7 @@ type HeaderField = {
     label: string;
     input: 'date' | 'text' | 'textarea';
     max?: number;
+    digits?: number;
     value: string | null;
 };
 
@@ -290,6 +292,13 @@ const saveStatus = computed(() => {
                                 :name="field.name"
                                 rows="2"
                                 class="min-h-16 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none md:text-sm"
+                            />
+                            <NumberInput
+                                v-else-if="field.digits"
+                                :id="field.name"
+                                v-model="values[field.name]"
+                                :name="field.name"
+                                :maxlength="field.digits"
                             />
                             <Input
                                 v-else
