@@ -1053,6 +1053,38 @@ rujuk keputusan pengganti.
                            (verified_at) tanpa
                            aturan verifikasi
                            tambahan.
+
+  D-060       LOCKED       Manajemen user         Persetujuan     Tanpa perubahan         `database.md` 4.1; `roles-
+                           (R9.1): Admin membuat  eksplisit       schema. Semua           permissions.md`; `design.md`;
+                           akun dengan password   pemilik         perubahan akun          kode `web/`
+                           awal dan dapat         proyek, 29      tercatat di audit_logs
+                           mereset password;      Oktober 2026.   tanpa password;
+                           pengguna menggantinya                  koreksi NIP tercatat
+                           sendiri (D-044). Role                  terpisah beserta
+                           tidak dapat diubah                     alasannya. PDF lama
+                           setelah akun dibuat;                   ikut menampilkan NIP
+                           akun tidak dihapus,                    hasil koreksi karena
+                           hanya dinonaktifkan.                   NIP dibaca saat render
+                           Mengaktifkan atau                      (D-041). Format resmi
+                           membuat Kepala                         NIP tetap PENDING
+                           ditolak selama masih                   VALIDATION.
+                           ada Kepala aktif
+                           lain; Admin
+                           menonaktifkan Kepala
+                           lama lebih dulu. NIP
+                           hanya untuk Kepala
+                           (angka, maksimal 18);
+                           NIP yang sudah
+                           dipakai pada
+                           pengesahan hanya
+                           dapat diubah sebagai
+                           koreksi administratif
+                           dengan alasan wajib.
+                           Admin tidak dapat
+                           menonaktifkan akunnya
+                           sendiri dan minimal
+                           satu Admin tetap
+                           aktif.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

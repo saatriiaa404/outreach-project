@@ -15,6 +15,7 @@ use App\Http\Controllers\SignatureController;
 use App\Http\Controllers\SpecialUnlockController;
 use App\Http\Controllers\SpecialUnlockRequestController;
 use App\Http\Controllers\TemplateController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'Welcome')->name('home');
@@ -80,6 +81,14 @@ Route::middleware(['auth'])->group(function () {
         ->name('master-data.sources.update');
     Route::put('master-data/types/{type}', [MasterDataController::class, 'updateType'])
         ->name('master-data.types.update');
+    Route::get('users', [UserController::class, 'index'])
+        ->name('users.index');
+    Route::post('users', [UserController::class, 'store'])
+        ->name('users.store');
+    Route::put('users/{user}', [UserController::class, 'update'])
+        ->name('users.update');
+    Route::put('users/{user}/password', [UserController::class, 'resetPassword'])
+        ->name('users.password');
     Route::get('archive', [ArchiveController::class, 'index'])
         ->name('archive.index');
     Route::post('archive/outreach/{outreach}', [ArchiveController::class, 'store'])

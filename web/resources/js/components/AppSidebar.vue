@@ -9,6 +9,7 @@ import {
     LayoutGrid,
     LockOpen,
     Signature,
+    Users,
 } from '@lucide/vue';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
@@ -30,6 +31,7 @@ import { index as masterDataIndex } from '@/routes/master-data';
 import { index as outreachIndex } from '@/routes/outreaches';
 import { index as specialUnlockIndex } from '@/routes/special-unlock-requests';
 import { index as templatesIndex } from '@/routes/templates';
+import { index as usersIndex } from '@/routes/users';
 import type { NavItem } from '@/types';
 
 const page = usePage();
@@ -52,6 +54,11 @@ const mainNavItems = computed<NavItem[]>(() => [
                   title: 'Special Unlock',
                   href: specialUnlockIndex(),
                   icon: LockOpen,
+              },
+              {
+                  title: 'Pengguna',
+                  href: usersIndex(),
+                  icon: Users,
               },
               {
                   title: 'Master Source/Jenis',
