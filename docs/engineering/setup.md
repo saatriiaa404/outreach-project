@@ -87,7 +87,7 @@ Batas ukuran lampiran belum diputuskan (`database.md` bagian 25 butir 3), sehing
 
 - File `.env`, kunci, dan password tidak boleh di-commit; pastikan masuk `.gitignore`.
 - Gunakan data dummy. Jangan memasukkan data warga asli ke repository, database prototype, atau lampiran demo.
-- Repository GitHub bersifat private. `git push`, force-push, dan perubahan riwayat Git hanya atas persetujuan eksplisit pemilik proyek (lihat `AGENTS.md`).
+- Repository GitHub (`saatriiaa404/outreach-project`) bersifat publik: siapa pun dapat membaca dan meng-clone isinya, sehingga larangan memasukkan rahasia dan data asli di atas berlaku tanpa pengecualian. Hanya collaborator yang diundang pemilik proyek yang dapat mengirim perubahan. `git push`, force-push, dan perubahan riwayat Git hanya atas persetujuan eksplisit pemilik proyek (lihat `AGENTS.md`).
 
 ## 9. Lokasi Kode dan Konfigurasi Aplikasi (setelah gate dibuka)
 
