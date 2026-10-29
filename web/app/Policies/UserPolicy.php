@@ -7,7 +7,8 @@ use App\Models\User;
 
 /**
  * Accounts are created and managed by the ADMIN; there is no public
- * registration and no self-service profile change (D-014, D-044).
+ * registration. The owner changes only their own optional profile (D-067);
+ * name, email, role and status stay with the ADMIN (D-014, D-044).
  */
 class UserPolicy
 {
@@ -29,5 +30,18 @@ class UserPolicy
     public function update(User $user, User $account): bool
     {
         return $user->role === UserRole::Admin;
+    }
+
+    /**
+     * Photo, phone and address: the owner or the ADMIN (D-067).
+     */
+    public function updateProfile(User $user, User $account): bool
+    {
+        return $user->id === $account->id || $user->role === UserRole::Admin;
+    }
+
+    public function viewProfile(User $user, User $account): bool
+    {
+        return $this->updateProfile($user, $account);
     }
 }

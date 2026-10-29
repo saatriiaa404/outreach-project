@@ -4,6 +4,8 @@ import { computed, reactive, ref } from 'vue';
 import UserController from '@/actions/App/Http/Controllers/UserController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
+import ProfileForm from '@/components/ProfileForm.vue';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,6 +18,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { getInitials } from '@/composables/useInitials';
 import { index } from '@/routes/users';
 
 type Role = 'PETUGAS' | 'KEPALA' | 'ADMIN';
@@ -27,12 +30,15 @@ type Account = {
     status: 'ACTIVE' | 'INACTIVE';
     nip: string | null;
     pangkat: string | null;
+    phone: string | null;
+    address: string | null;
+    avatar: string | null;
     nip_used: boolean;
     is_self: boolean;
     last_login_at: string | null;
 };
 
-defineProps<{ users: Account[] }>();
+defineProps<{ users: Account[]; maxPhotoKilobytes: number }>();
 
 defineOptions({
     layout: {
@@ -76,6 +82,8 @@ const nipCorrection = computed(
         editing.value.nip_used &&
         (editForm.nip || null) !== editing.value.nip,
 );
+
+const profiling = ref<Account | null>(null);
 
 const resetting = ref<Account | null>(null);
 const resetForm = reactive({ password: '', password_confirmation: '' });
@@ -175,12 +183,33 @@ const reset = () => {
                         data-test="user-row"
                     >
                         <td class="px-3 py-2">
-                            {{ account.name }}
-                            <span
-                                v-if="account.is_self"
-                                class="text-muted-foreground"
-                                >(Anda)</span
-                            >
+                            <div class="flex items-center gap-2">
+                                <Avatar
+                                    class="size-8 overflow-hidden rounded-full"
+                                >
+                                    <AvatarImage
+                                        v-if="account.avatar"
+                                        :src="account.avatar"
+                                        :alt="account.name"
+                                    />
+                                    <AvatarFallback class="text-xs">
+                                        {{ getInitials(account.name) }}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    {{ account.name }}
+                                    <span
+                                        v-if="account.is_self"
+                                        class="text-muted-foreground"
+                                        >(Anda)</span
+                                    >
+                                    <span
+                                        v-if="account.phone"
+                                        class="block text-xs text-muted-foreground"
+                                        >{{ account.phone }}</span
+                                    >
+                                </div>
+                            </div>
                         </td>
                         <td class="px-3 py-2">{{ account.email }}</td>
                         <td class="px-3 py-2">
@@ -222,6 +251,13 @@ const reset = () => {
                                 data-test="user-edit"
                                 @click="openEdit(account)"
                                 >Ubah</Button
+                            >
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                data-test="user-profile"
+                                @click="profiling = account"
+                                >Profil</Button
                             >
                             <Button
                                 size="sm"
@@ -424,6 +460,27 @@ const reset = () => {
                     >Simpan</Button
                 >
             </DialogFooter>
+        </DialogContent>
+    </Dialog>
+
+    <Dialog
+        :open="profiling !== null"
+        @update:open="(value) => !value && (profiling = null)"
+    >
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Profil {{ profiling?.name }}</DialogTitle>
+                <DialogDescription>
+                    Foto, nomor telepon, dan alamat domisili. Pengguna juga
+                    dapat mengubahnya sendiri dari pengaturan.
+                </DialogDescription>
+            </DialogHeader>
+            <ProfileForm
+                v-if="profiling"
+                :profile="profiling"
+                :max-photo-kilobytes="maxPhotoKilobytes"
+                @saved="profiling = null"
+            />
         </DialogContent>
     </Dialog>
 

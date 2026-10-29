@@ -23,22 +23,13 @@ class SecurityTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page->component('settings/Security'));
     }
 
-    public function test_settings_redirects_to_security_page()
+    public function test_name_editing_and_account_deletion_are_not_available()
     {
         $user = User::factory()->create();
 
-        $this->actingAs($user)
-            ->get('/settings')
-            ->assertRedirect('/settings/security');
-    }
-
-    public function test_profile_editing_and_account_deletion_are_not_available()
-    {
-        $user = User::factory()->create();
-
-        $this->actingAs($user)->get('/settings/profile')->assertNotFound();
-        $this->actingAs($user)->patch('/settings/profile', ['name' => 'Changed'])->assertNotFound();
-        $this->actingAs($user)->delete('/settings/profile', ['password' => 'password'])->assertNotFound();
+        // Only the optional profile is self-service (D-067, ProfileTest).
+        $this->actingAs($user)->patch('/settings/profile', ['name' => 'Changed'])->assertMethodNotAllowed();
+        $this->actingAs($user)->delete('/settings/profile', ['password' => 'password'])->assertMethodNotAllowed();
 
         $this->assertNotNull($user->fresh());
         $this->assertNotSame('Changed', $user->fresh()->name);
