@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { ChevronsUpDown } from '@lucide/vue';
 import { computed, ref } from 'vue';
 import ApproveOutreachController from '@/actions/App/Http/Controllers/ApproveOutreachController';
 import ReturnOutreachController from '@/actions/App/Http/Controllers/ReturnOutreachController';
@@ -98,6 +99,13 @@ const shown = (value: unknown) =>
     value === null || value === undefined || value === ''
         ? '(kosong)'
         : String(value);
+
+// The history runs oldest first; collapsed, only the latest events show.
+const HISTORY_SHOWN = 3;
+const historyOpen = ref(false);
+const shownHistory = computed(() =>
+    historyOpen.value ? props.history : props.history.slice(-HISTORY_SHOWN),
+);
 
 const versionLabels = {
     PENDING_APPROVAL: 'menunggu pengesahan',
@@ -280,7 +288,30 @@ defineOptions({
         />
 
         <section class="grid gap-2" data-test="history">
-            <h3 class="font-medium">Riwayat</h3>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <h3 class="font-medium">
+                    Riwayat
+                    <span
+                        v-if="history.length"
+                        class="font-normal text-muted-foreground"
+                        >({{ history.length }} kejadian)</span
+                    >
+                </h3>
+                <Button
+                    v-if="history.length > HISTORY_SHOWN"
+                    variant="ghost"
+                    size="sm"
+                    data-test="history-toggle"
+                    @click="historyOpen = !historyOpen"
+                >
+                    <ChevronsUpDown class="size-4" />
+                    {{
+                        historyOpen
+                            ? 'Tampilkan 3 terbaru saja'
+                            : `Tampilkan semua (${history.length})`
+                    }}
+                </Button>
+            </div>
             <p
                 v-if="history.length === 0"
                 class="text-sm text-muted-foreground"
@@ -288,7 +319,25 @@ defineOptions({
                 Belum ada riwayat.
             </p>
             <ol v-else class="divide-y rounded-md border text-sm">
-                <li v-for="event in history" :key="event.id" class="p-3">
+                <li
+                    v-if="!historyOpen && history.length > HISTORY_SHOWN"
+                    class="p-0"
+                >
+                    <button
+                        type="button"
+                        class="w-full p-2 text-center text-muted-foreground hover:bg-muted/50"
+                        @click="historyOpen = true"
+                    >
+                        {{ history.length - HISTORY_SHOWN }} kejadian sebelumnya
+                        disembunyikan · tampilkan
+                    </button>
+                </li>
+                <li
+                    v-for="event in shownHistory"
+                    :key="event.id"
+                    class="p-3"
+                    data-test="history-event"
+                >
                     <p>
                         <span class="font-medium">{{
                             eventLabels[event.type]
