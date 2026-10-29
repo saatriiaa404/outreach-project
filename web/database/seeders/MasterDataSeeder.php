@@ -46,16 +46,22 @@ class MasterDataSeeder extends Seeder
             OutreachType::query()->firstOrCreate(['code' => $code], ['name' => $name, 'active' => true]);
         }
 
-        // One template package per Source (Q-09); version 1 of every document.
+        // One template package per Source (Q-09). Version 2 adds the logos, the
+        // rank, the stamp and the ticked Kifayah boxes (D-064, D-065); versions
+        // already finalized keep rendering with version 1.
         foreach (self::TEMPLATE_PACKAGES as $key => $documents) {
-            $template = DocumentTemplateVersion::query()->firstOrNew(['template_key' => $key, 'version_number' => 1]);
+            foreach ([1, 2] as $number) {
+                $template = DocumentTemplateVersion::query()->firstOrNew(['template_key' => $key, 'version_number' => $number]);
 
-            if (! $template->exists) {
-                $template->forceFill([
-                    'renderer_key' => 'outreach-package-v1',
-                    'metadata' => array_fill_keys($documents, 1),
-                    'is_active' => true,
-                ])->save();
+                if (! $template->exists) {
+                    $template->forceFill([
+                        'renderer_key' => "outreach-package-v{$number}",
+                        'metadata' => array_fill_keys($documents, $number),
+                        'is_active' => true,
+                    ]);
+                }
+
+                $template->forceFill(['is_active' => $number === 2])->save();
             }
         }
     }

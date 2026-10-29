@@ -19,19 +19,20 @@ use InvalidArgumentException;
 class OutreachFormSchema
 {
     /**
-     * Status Kesejahteraan labels per desil (D-019).
+     * Status Kesejahteraan labels per desil from the official DTST division
+     * used by the Kelurahan (D-019, D-064).
      */
     public const DESIL_LABELS = [
         1 => 'Sangat Miskin',
         2 => 'Miskin',
-        3 => 'Hampir Miskin',
-        4 => 'Rentan Miskin',
-        5 => 'Transisi Menengah',
-        6 => 'Menengah',
-        7 => 'Menengah',
-        8 => 'Menengah Atas',
-        9 => 'Sejahtera',
-        10 => 'Sangat Sejahtera',
+        3 => 'Kelompok Hampir Miskin / Rentan',
+        4 => 'Kelompok Rentan Miskin / Menengah Bawah',
+        5 => 'Kelompok Pas-pasan / Menengah Bawah Stabil',
+        6 => 'Kelompok Menengah',
+        7 => 'Kelompok Menengah Atas',
+        8 => 'Kelompok Mapan / Menengah Atas',
+        9 => 'Kelompok Sangat Mapan',
+        10 => 'Kelompok Paling Sejahtera / Kaya',
     ];
 
     /**

@@ -36,6 +36,7 @@ class UserController extends Controller
                 'role' => $user->role->value,
                 'status' => $user->status->value,
                 'nip' => $user->nip,
+                'pangkat' => $user->pangkat,
                 'nip_used' => $nipUsed->has($user->id),
                 'is_self' => $user->id === $request->user()->id,
                 'last_login_at' => $user->last_login_at?->toIso8601String(),
@@ -52,6 +53,7 @@ class UserController extends Controller
             'role' => ['required', Rule::enum(UserRole::class)],
             'password' => $this->passwordRules(),
             'nip' => $this->nipRules(),
+            'pangkat' => ['nullable', 'string', 'max:100'],
         ], [], $this->attributes());
 
         $user = $users->create($request->user(), [
@@ -60,6 +62,7 @@ class UserController extends Controller
             'role' => UserRole::from($request->string('role')->toString()),
             'password' => $request->string('password')->toString(),
             'nip' => $request->filled('nip') ? $request->string('nip')->toString() : null,
+            'pangkat' => $request->filled('pangkat') ? $request->string('pangkat')->toString() : null,
         ]);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => "Akun {$user->name} dibuat."]);
@@ -76,6 +79,7 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'status' => ['required', Rule::enum(UserStatus::class)],
             'nip' => $this->nipRules(),
+            'pangkat' => ['nullable', 'string', 'max:100'],
             'nip_correction_reason' => ['nullable', 'string', 'max:15000'],
         ], [], $this->attributes());
 
@@ -84,6 +88,7 @@ class UserController extends Controller
             'email' => $request->string('email')->toString(),
             'status' => UserStatus::from($request->string('status')->toString()),
             'nip' => $request->filled('nip') ? $request->string('nip')->toString() : null,
+            'pangkat' => $request->filled('pangkat') ? $request->string('pangkat')->toString() : null,
             'nip_correction_reason' => $request->filled('nip_correction_reason') ? $request->string('nip_correction_reason')->toString() : null,
         ]);
 
@@ -120,6 +125,6 @@ class UserController extends Controller
      */
     private function attributes(): array
     {
-        return ['name' => 'nama', 'role' => 'peran', 'nip' => 'NIP', 'nip_correction_reason' => 'alasan koreksi'];
+        return ['name' => 'nama', 'role' => 'peran', 'nip' => 'NIP', 'pangkat' => 'pangkat', 'nip_correction_reason' => 'alasan koreksi'];
     }
 }

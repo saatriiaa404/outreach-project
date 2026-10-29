@@ -20,32 +20,18 @@ enum AttachmentCategory: string
             self::Kk => 'Kartu Keluarga (KK)',
             self::FotoKlien => 'Foto Klien',
             self::FotoRumah => 'Foto Rumah',
-            self::Tambahan => 'Lampiran tambahan',
+            self::Tambahan => 'Lampiran lain',
         };
     }
 
     /**
      * The four baseline attachments are required and must be images (D-034).
+     * Anything else goes to "Lampiran lain"; there is no official list per
+     * Jenis Outreach (D-064).
      */
     public function isBaseline(): bool
     {
         return $this !== self::Tambahan;
-    }
-
-    /**
-     * Suggested additional attachment per Jenis Outreach (outreach.md 7.2).
-     * Never required: PENDING VALIDATION until Kelurahan confirms (D-033).
-     */
-    public static function additionalFor(string $typeCode): ?string
-    {
-        return match ($typeCode) {
-            'RUTILAHU' => 'Foto tambahan rumah; dapat lebih dari satu',
-            'ALAT_KESEHATAN' => 'Foto orang yang membutuhkan alat kesehatan',
-            'BEASISWA' => 'Foto penerima beasiswa',
-            'PENDIDIKAN_KEJAR_PAKET' => 'Foto orang yang membutuhkan bantuan pendidikan',
-            'BANTUAN_MODAL_USAHA' => 'Foto penerima bantuan',
-            default => null,
-        };
     }
 
     /**

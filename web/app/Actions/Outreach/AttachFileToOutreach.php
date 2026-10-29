@@ -29,6 +29,11 @@ class AttachFileToOutreach
 {
     public const DISK = 'local';
 
+    /**
+     * Active attachments per Outreach, the four baseline ones included (D-064).
+     */
+    public const MAX_ATTACHMENTS = 10;
+
     private const EXTENSIONS = [
         'image/jpeg' => 'jpg',
         'image/png' => 'png',
@@ -60,6 +65,12 @@ class AttachFileToOutreach
                 Outreach::query()->whereKey($outreach->id)->lockForUpdate()->first();
 
                 $replaced = $replaces === null ? null : $outreach->attachments()->findOrFail($replaces);
+
+                if (! $replaced && $outreach->attachments()->count() >= self::MAX_ATTACHMENTS) {
+                    throw ValidationException::withMessages([
+                        'file' => 'Maksimal '.self::MAX_ATTACHMENTS.' lampiran per Outreach. Hapus atau ganti lampiran yang ada.',
+                    ]);
+                }
                 $existing = OutreachAttachment::withTrashed()
                     ->where('outreach_id', $outreach->id)
                     ->whereHas('file', fn ($query) => $query->where('sha256_hash', $hash)->whereNull('purged_at'))
@@ -142,7 +153,7 @@ class AttachFileToOutreach
             throw ValidationException::withMessages([
                 'file' => $category->isBaseline()
                     ? "{$category->label()} harus berupa gambar JPG, PNG, atau WEBP."
-                    : 'Lampiran tambahan harus berupa gambar JPG, PNG, WEBP, atau PDF.',
+                    : 'Lampiran lain harus berupa gambar JPG, PNG, WEBP, atau PDF.',
             ]);
         }
 

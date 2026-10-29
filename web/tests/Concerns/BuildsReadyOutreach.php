@@ -75,7 +75,7 @@ trait BuildsReadyOutreach
 
         $outreach = Outreach::factory()
             ->for(OutreachSource::query()->where('code', $sourceCode)->firstOrFail(), 'source')
-            ->create([...$data, 'outreach_date' => $date, 'nama' => 'Warga Demo', 'desil_1_10' => 9, 'status_kesejahteraan' => 'Sejahtera'])
+            ->create([...$data, 'outreach_date' => $date, 'nama' => 'Warga Demo', 'desil_1_10' => 9, 'status_kesejahteraan' => 'Kelompok Sangat Mapan'])
             ->refresh();
 
         foreach (AttachmentCategory::cases() as $category) {

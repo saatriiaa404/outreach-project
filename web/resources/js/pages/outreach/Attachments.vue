@@ -49,8 +49,8 @@ const props = defineProps<{
     categories: Category[];
     attachments: Attachment[];
     maxKilobytes: number;
+    maxAttachments: number;
     missingForFinalization: string[];
-    additionalHint: string | null;
 }>();
 
 defineOptions({
@@ -97,7 +97,17 @@ const upload = (category: Category, event: Event) => {
     if (!category.accept.split(',').includes(file.type)) {
         errors[category.value] = category.baseline
             ? `${category.label} harus berupa gambar JPG, PNG, atau WEBP.`
-            : 'Lampiran tambahan harus berupa gambar JPG, PNG, WEBP, atau PDF.';
+            : 'Lampiran lain harus berupa gambar JPG, PNG, WEBP, atau PDF.';
+
+        return;
+    }
+
+    if (
+        props.attachments.length >= props.maxAttachments &&
+        replacing.value?.category !== category.value
+    ) {
+        errors[category.value] =
+            `Maksimal ${props.maxAttachments} lampiran per Outreach. Hapus atau ganti lampiran yang ada.`;
 
         return;
     }
@@ -179,7 +189,9 @@ const remove = () => {
             <p class="text-sm text-muted-foreground">
                 Empat lampiran dasar wajib berupa gambar (JPG, PNG, atau WEBP)
                 sebelum Finalisasi. Draft tetap dapat disimpan walaupun lampiran
-                belum lengkap. Ukuran maksimal 10 MB per berkas.
+                belum lengkap. Ukuran maksimal 10 MB per berkas, paling banyak
+                {{ maxAttachments }} lampiran per Outreach (saat ini
+                {{ attachments.length }}).
             </p>
 
             <div
@@ -229,19 +241,6 @@ const remove = () => {
                     </span>
                 </div>
 
-                <p
-                    v-if="!category.baseline && additionalHint"
-                    class="text-sm"
-                    data-test="additional-hint"
-                >
-                    Disarankan untuk Jenis {{ outreach.type }}:
-                    {{ additionalHint }}.
-                    <span
-                        class="ml-1 rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground"
-                        title="Persyaratan lampiran tambahan per Jenis belum dikonfirmasi Kelurahan"
-                        >PENDING VALIDATION</span
-                    >
-                </p>
                 <p
                     v-if="!category.baseline"
                     class="text-xs text-muted-foreground"
@@ -325,7 +324,7 @@ const remove = () => {
                 <Input
                     v-if="!category.baseline"
                     v-model="titles[category.value]"
-                    placeholder="Keterangan (opsional), mis. Foto tambahan rumah"
+                    placeholder="Keterangan (opsional), mis. Surat keterangan"
                     maxlength="255"
                 />
 

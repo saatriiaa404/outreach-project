@@ -3,11 +3,14 @@
 namespace App\Support;
 
 use App\Enums\AttachmentCategory;
+use App\Enums\HistoryEventType;
+use App\Models\HistoryEvent;
 use App\Models\OutreachApproval;
 use App\Models\OutreachVersion;
 use App\Models\OutreachVersionAttachment;
 use App\Models\Signature;
 use App\Models\SignatureTemplate;
+use App\Models\StampTemplate;
 use Illuminate\Support\Carbon;
 use InvalidArgumentException;
 
@@ -25,9 +28,19 @@ class OutreachPdf
      * available so historical documents keep their layout.
      */
     private const VIEWS = [
-        'outreach' => [1 => 'pdf.v1.outreach'],
-        'mustahik' => [1 => 'pdf.v1.mustahik'],
-        'kifayah' => [1 => 'pdf.v1.kifayah'],
+        'outreach' => [1 => 'pdf.v1.outreach', 2 => 'pdf.v2.outreach'],
+        'mustahik' => [1 => 'pdf.v1.mustahik', 2 => 'pdf.v2.mustahik'],
+        'kifayah' => [1 => 'pdf.v1.kifayah', 2 => 'pdf.v2.kifayah'],
+    ];
+
+    /**
+     * Logos of template v2 (D-064): Pemkot on the Outreach letterhead, Baznas
+     * on the Mustahik and Kifayah forms whatever the Source.
+     */
+    private const LOGOS = [
+        'outreach' => 'pemkot-surabaya.png',
+        'mustahik' => 'baznas-surabaya.jpg',
+        'kifayah' => 'baznas-surabaya.jpg',
     ];
 
     public function __construct(private PdfRenderer $renderer) {}
@@ -57,18 +70,27 @@ class OutreachPdf
         $template = $approval->head_signature_template_id === null
             ? null
             : SignatureTemplate::query()->with('file')->find($approval->head_signature_template_id);
+        $stamp = $approval->stamp_template_id === null
+            ? null
+            : StampTemplate::query()->with('file')->find($approval->stamp_template_id);
+        $event = HistoryEvent::query()
+            ->where('approval_id', $approval->id)
+            ->where('event_type', HistoryEventType::Approved)
+            ->first();
 
         return [
             'date' => $approval->decided_at->translatedFormat('j F Y'),
             'name' => $approval->kepala->name,
+            'pangkat' => $event?->metadata['kepala_pangkat'] ?? null,
             'nip' => $approval->kepala->nip,
             'signature' => $template ? PdfRenderer::dataUri($template->file) : null,
+            'stamp' => $stamp ? PdfRenderer::dataUri($stamp->file) : null,
         ];
     }
 
     /**
-     * @param  array{date: string, name: string, nip: string|null, signature: string|null}|null  $approval
-     *                                                                                                      Approval block values (outreach.md 8.4); empty until the Kepala approves.
+     * @param  array{date: string, name: string, pangkat?: string|null, nip: string|null, signature: string|null, stamp?: string|null}|null  $approval
+     *                                                                                                                                                  Approval block values (outreach.md 8.4); empty until the Kepala approves.
      */
     public function render(OutreachVersion $version, string $document, ?array $approval = null): string
     {
@@ -78,7 +100,7 @@ class OutreachPdf
     /**
      * The HTML handed to Dompdf, from the template version the document recorded.
      *
-     * @param  array{date: string, name: string, nip: string|null, signature: string|null}|null  $approval
+     * @param  array{date: string, name: string, pangkat?: string|null, nip: string|null, signature: string|null, stamp?: string|null}|null  $approval
      */
     public function html(OutreachVersion $version, string $document, ?array $approval = null): string
     {
@@ -91,14 +113,14 @@ class OutreachPdf
         $view = self::VIEWS[$document][$templateVersion] ?? throw new InvalidArgumentException("No view for {$document} template v{$templateVersion}.");
         $snapshot = $version->snapshot_data;
 
-        return view($view, match ($document) {
+        return view($view, [...match ($document) {
             'outreach' => [
                 'document' => OutreachDocument::fromSnapshot($snapshot, $this->attachments($version)),
                 'approval' => $approval,
             ],
             'mustahik' => $this->mustahik($version, $snapshot),
             default => $this->kifayah($version, $snapshot),
-        })->render();
+        }, 'logo' => self::logo(self::LOGOS[$document])])->render();
     }
 
     /**
@@ -165,7 +187,12 @@ class OutreachPdf
         $form = $snapshot['kifayah'];
         $client = $snapshot['client'];
         $amount = fn (string $name) => self::amount($form[$name]);
-        $rows = fn (array $names) => array_map(fn (string $name) => ['label' => KifayahFormSchema::FIELDS[$name]['label'], 'value' => $amount($name)], $names);
+        // The box beside an amount is ticked when there is an expense, i.e. not 0 (VAL-006, D-064).
+        $rows = fn (array $names) => array_map(fn (string $name) => [
+            'label' => KifayahFormSchema::FIELDS[$name]['label'],
+            'value' => $amount($name),
+            'checked' => ($form[$name] ?? 0) > 0,
+        ], $names);
         $signature = $version->kifayah_signature_id ? Signature::query()->find($version->kifayah_signature_id) : null;
         $sections = [];
 
@@ -253,6 +280,17 @@ class OutreachPdf
     /**
      * Rupiah amount printed after "Rp." on the Kifayah form; 0 reads "-" (D-050).
      */
+    /**
+     * A logo bundled with the templates, embedded like every other image.
+     */
+    private static function logo(string $name): string
+    {
+        $path = resource_path('views/pdf/logos/'.$name);
+        $mime = str_ends_with($name, '.png') ? 'image/png' : 'image/jpeg';
+
+        return "data:{$mime};base64,".base64_encode((string) file_get_contents($path));
+    }
+
     private static function amount(?int $value): string
     {
         return match (true) {

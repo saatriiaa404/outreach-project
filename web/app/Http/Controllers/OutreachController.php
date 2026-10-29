@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Outreach\AttachFileToOutreach;
 use App\Actions\Outreach\ChangeOutreachSourceType;
 use App\Actions\Outreach\CreateOutreach;
 use App\Actions\Outreach\SaveOutreachStep;
@@ -342,9 +343,8 @@ class OutreachController extends Controller
                         'url' => route('outreaches.attachments.show', [$outreach, $attachment]),
                     ]),
                 'maxKilobytes' => StoreAttachmentRequest::MAX_KILOBYTES,
+                'maxAttachments' => AttachFileToOutreach::MAX_ATTACHMENTS,
                 'missingForFinalization' => OutreachFormSchema::missingAttachments($outreach),
-                // Suggestion only; PENDING VALIDATION until Kelurahan confirms (D-033).
-                'additionalHint' => AttachmentCategory::additionalFor($outreach->type->code),
             ]);
         }
 

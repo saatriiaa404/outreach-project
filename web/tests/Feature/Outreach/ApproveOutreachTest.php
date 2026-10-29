@@ -11,6 +11,7 @@ use App\Models\Outreach;
 use App\Models\OutreachApproval;
 use App\Models\OutreachVersion;
 use App\Models\SignatureTemplate;
+use App\Models\StampTemplate;
 use App\Models\User;
 use App\Support\OutreachPdf;
 use Database\Seeders\DemoSeeder;
@@ -84,7 +85,7 @@ class ApproveOutreachTest extends TestCase
         $this->assertSame($kepala->id, $approval->kepala_id);
         $this->assertNull($approval->note);
         $this->assertSame(SignatureTemplate::activeFor($kepala)?->id, $approval->head_signature_template_id);
-        $this->assertNull($approval->stamp_template_id, 'Digital stamp use is pending validation.');
+        $this->assertNull($approval->stamp_template_id, 'No active stamp, so none is recorded.');
         $this->assertSame('2026-10-29', $approval->decided_at->toDateString());
 
         $event = HistoryEvent::query()->where('event_type', HistoryEventType::Approved)->sole();
@@ -108,9 +109,31 @@ class ApproveOutreachTest extends TestCase
         $html = $pdf->html(OutreachVersion::query()->sole(), 'outreach', $pdf->approvalBlock(OutreachApproval::query()->sole()));
 
         $this->assertStringContainsString('Surabaya, 29 Oktober 2026', $html, 'The approval date, not the render date.');
-        $this->assertStringContainsString('KEPALA SINTETIS, S.Sos.', $html);
+        $this->assertStringContainsString('KEPALA SINTETIS, S.SOS.', $html, 'The name prints in capitals (D-065).');
         $this->assertStringContainsString('NIP. 000000000000000001', $html);
-        $this->assertSame(5, substr_count($html, 'src="data:image/'), 'Four attachments and the Kepala signature.');
+        $this->assertSame(6, substr_count($html, 'src="data:image/'), 'The logo, four attachments and the Kepala signature.');
+    }
+
+    public function test_the_block_prints_the_rank_held_at_approval_and_the_active_stamp()
+    {
+        $this->travelTo('2026-10-29 09:30');
+        $kepala = $this->kepala();
+        $kepala->forceFill(['name' => 'Kepala Sintetis, ST', 'pangkat' => 'Penata Tk. I'])->save();
+        $stamp = new StampTemplate;
+        $stamp->forceFill(['file_id' => $this->file('image/png')->id, 'version_number' => 1, 'valid_from' => now(), 'is_active' => true])->save();
+        $outreach = $this->submitted();
+        $this->approveAs($kepala, $outreach)->assertSessionHasNoErrors();
+
+        // A later promotion does not rewrite what this approval printed.
+        $kepala->forceFill(['pangkat' => 'Pembina'])->save();
+        $approval = OutreachApproval::query()->sole();
+        $pdf = app(OutreachPdf::class);
+        $html = $pdf->html(OutreachVersion::query()->sole(), 'outreach', $pdf->approvalBlock($approval));
+
+        $this->assertSame($stamp->id, $approval->stamp_template_id);
+        $this->assertMatchesRegularExpression('/KEPALA SINTETIS, ST<\/p>\s*<p>Penata Tk\. I<\/p>\s*<p>NIP\. 000000000000000001/', $html);
+        $this->assertStringNotContainsString('Pembina', $html);
+        $this->assertSame(1, substr_count($html, 'class="stamp"'));
     }
 
     public function test_a_failed_pdf_fails_the_whole_approval()

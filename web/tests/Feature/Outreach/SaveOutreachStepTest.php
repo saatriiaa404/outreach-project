@@ -86,7 +86,7 @@ class SaveOutreachStepTest extends TestCase
         $outreach->refresh();
         $this->assertSame('Warga Demo Satu', $outreach->nama);
         $this->assertSame(9, $outreach->desil_1_10);
-        $this->assertSame('Sejahtera', $outreach->getAttribute('status_kesejahteraan'));
+        $this->assertSame('Kelompok Sangat Mapan', $outreach->getAttribute('status_kesejahteraan'));
         $this->assertFalse($outreach->getAttribute('merokok'));
         $this->assertSame('Bantuan demo', $outreach->getAttribute('bantuan_detail'));
         $this->assertNull($outreach->getAttribute('besar_hutang'), 'Debt amount does not apply when there is no debt.');

@@ -10,9 +10,9 @@
 | Status | ACTIVE — Technical Baseline |
 | Database Engine | MySQL |
 | Application | Laravel 13 |
-| Amandemen | D-030, D-031, D-041, D-043, D-045, dan D-046 (27 Oktober 2026); lihat `docs/project-management/decisions.md` |
+| Amandemen | D-030, D-031, D-041, D-043, D-045, dan D-046 (27 Oktober 2026); D-065 (29 Oktober 2026); lihat `docs/project-management/decisions.md` |
 
-Amandemen D-041 menambah kolom `users.nip` dan D-045 menambah kolom
+Amandemen D-041 menambah kolom `users.nip`, D-065 menambah kolom `users.pangkat`, dan D-045 menambah kolom
 `outreaches.tempat_lahir` serta `outreaches.tanggal_lahir`, yang menggantikan kolom
 `tempat_tgl_lahir_umur` (dihapus pada D-046); jumlah tabel tetap 22
 dan label versi tetap Database v1.1. D-030 dan D-031 hanya memperjelas tafsir dan teks, tanpa
@@ -139,6 +139,7 @@ name
 email                      UNIQUE
 password_hash
 nip                        NULL; diisi untuk user KEPALA (D-041)
+pangkat                    NULL; diisi untuk user KEPALA (D-065)
 role                       PETUGAS | KEPALA | ADMIN
 status                     ACTIVE | INACTIVE
 last_login_at
@@ -158,6 +159,10 @@ updated_at
 - PDF historis membaca `nip` saat render. Perubahan `nip` dicatat pada
   `audit_logs` dan tidak dilakukan setelah NIP dipakai pada approval, kecuali
   melalui koreksi administratif (D-041).
+- `pangkat` diisi untuk user KEPALA dan dicetak di bawah nama pada blok
+  pengesahan. Pangkat yang tercetak dicatat pada metadata history `APPROVED`,
+  sehingga perubahan pangkat (mis. kenaikan pangkat) tidak mengubah PDF
+  pengesahan lama; perubahannya dicatat pada `audit_logs` (D-065).
 - Kolom `password_hash` dipertahankan; model User Laravel disesuaikan untuk
   memakainya. Kolom bawaan framework seperti `remember_token`,
   `email_verified_at`, dan kolom 2FA tidak ditambahkan (D-030).
@@ -346,10 +351,9 @@ updated_at
 - Finalisasi melakukan validasi penuh.
 - Field conditional mengikuti business rules form.
 - `desil_1_10` menyimpan pilihan desil 1–10 dan `status_kesejahteraan` diisi
-  otomatis dengan label pasangannya sesuai D-019 (pemetaan label ada di
-  `docs/domain/forms/outreach.md`). Yang masih **PENDING VALIDASI** hanya
-  evidence dokumen sumber resmi label tersebut (VAL-002); jangan mengubah atau
-  menambah label di luar D-019.
+  otomatis dengan label pasangannya sesuai pembagian resmi DTST (D-019,
+  D-064; pemetaan label ada di `docs/domain/forms/outreach.md`); jangan
+  mengubah atau menambah label di luar keputusan tersebut.
 - Total pendapatan dan total pengeluaran dihitung dari source fields.
 - `besar_hutang` relevan bila `punya_hutang` bernilai Ya sesuai aturan form.
 - Source dan Type dapat diubah sebelum Finalisasi dengan konfirmasi dan
@@ -815,8 +819,8 @@ created_at
 - `head_signature_template_id` wajib terisi untuk `APPROVED` dan boleh `NULL`
   untuk `RETURNED`, yang tidak memerlukan tanda tangan Kepala pada keputusan
   pengembalian.
-- `stamp_template_id` nullable karena penggunaan stempel digital masih pending
-  kebijakan Kelurahan.
+- `stamp_template_id` mencatat stempel aktif saat pengesahan dan boleh `NULL`
+  bila Admin belum mengaktifkan stempel (D-065).
 - Approval tidak mengubah isi version.
 - Approval hanya dilakukan oleh user dengan role Kepala sesuai authorization.
 
@@ -897,8 +901,8 @@ UNIQUE(version_number)
 - Maksimal satu stamp template aktif pada satu waktu.
 - Template lama tidak diubah.
 - Historical approval menyimpan reference yang digunakan bila stamp diterapkan.
-- Penggunaan stamp digital pada PDF masih **PENDING VALIDASI** kebijakan
-  Kelurahan.
+- Stempel digital boleh dicetak pada PDF (D-065): stempel aktif dicetak menimpa
+  sisi kiri tanda tangan Lurah.
 
 ---
 
@@ -1644,12 +1648,13 @@ identik.
 Bagian berikut belum boleh dianggap final sebelum validasi Kelurahan atau
 penetapan teknis yang memang belum tersedia:
 
-1. Evidence dokumen sumber resmi label desil; label dan pemetaannya sudah
-   ditetapkan pada D-019 (VAL-002).
-2. Lampiran tambahan wajib berdasarkan Jenis Outreach (tidak memblokir
-   Finalisasi pada prototype, D-033).
-3. Batas ukuran dan jumlah file lampiran, serta tipe gambar yang diterima.
-   Empat lampiran wajib harus berupa gambar (D-034).
+1. ~~Evidence sumber resmi label desil~~: label mengikuti pembagian resmi
+   DTST (D-064).
+2. ~~Lampiran tambahan wajib berdasarkan Jenis Outreach~~: tidak ada daftar
+   resmi; lampiran di luar empat wajib masuk "Lampiran lain" (D-064).
+3. ~~Batas ukuran dan jumlah file lampiran~~: 10 MB per berkas dan paling
+   banyak 10 lampiran per Outreach termasuk empat wajib (D-064). Empat
+   lampiran wajib harus berupa gambar (D-034).
 4. Field Outreach tambahan bila ada.
 5. Perilaku antrean saat pergantian Kepala Kelurahan.
 6. Penggunaan stempel digital pada PDF.
@@ -1772,7 +1777,7 @@ Sebelum implementasi dianggap sesuai baseline, pastikan:
       Bangga Surabaya menghasilkan Outreach beserta halaman lampiran.
 - [ ] Kegagalan render PDF pada approval membuat approval gagal; status tetap
       `MENUNGGU_PENGESAHAN` dan `OUTREACH_COMPLETED` tidak dikirim.
-- [ ] Label desil mengikuti D-019; evidence sumber resmi tetap pending (VAL-002).
+- [ ] Label desil mengikuti pembagian resmi DTST (D-019, D-064).
 - [ ] Pending validation tidak di-hard-code sebagai keputusan final.
 
 ---

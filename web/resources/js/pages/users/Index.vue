@@ -26,6 +26,7 @@ type Account = {
     role: Role;
     status: 'ACTIVE' | 'INACTIVE';
     nip: string | null;
+    pangkat: string | null;
     nip_used: boolean;
     is_self: boolean;
     last_login_at: string | null;
@@ -55,6 +56,7 @@ const createForm = reactive({
     email: '',
     role: 'PETUGAS' as Role,
     nip: '',
+    pangkat: '',
     password: '',
     password_confirmation: '',
 });
@@ -65,6 +67,7 @@ const editForm = reactive({
     email: '',
     status: 'ACTIVE' as Account['status'],
     nip: '',
+    pangkat: '',
     nip_correction_reason: '',
 });
 const nipCorrection = computed(
@@ -95,6 +98,7 @@ const create = () => {
                 email: '',
                 role: 'PETUGAS',
                 nip: '',
+                pangkat: '',
                 password: '',
                 password_confirmation: '',
             });
@@ -109,6 +113,7 @@ const openEdit = (account: Account) => {
         email: account.email,
         status: account.status,
         nip: account.nip ?? '',
+        pangkat: account.pangkat ?? '',
         nip_correction_reason: '',
     });
 };
@@ -187,6 +192,13 @@ const reset = () => {
                                     ? (account.nip ?? '—')
                                     : ''
                             }}
+                            <span
+                                v-if="
+                                    account.role === 'KEPALA' && account.pangkat
+                                "
+                                class="block font-sans text-muted-foreground"
+                                >{{ account.pangkat }}</span
+                            >
                         </td>
                         <td class="px-3 py-2">
                             <Badge
@@ -276,6 +288,16 @@ const reset = () => {
                     />
                     <InputError :message="errors.nip" />
                 </div>
+                <div v-if="createForm.role === 'KEPALA'" class="grid gap-1">
+                    <Label for="create-pangkat">Pangkat</Label>
+                    <Input
+                        id="create-pangkat"
+                        v-model="createForm.pangkat"
+                        maxlength="100"
+                        placeholder="Dicetak di bawah nama, mis. Penata Tk. I"
+                    />
+                    <InputError :message="errors.pangkat" />
+                </div>
                 <div class="grid gap-1">
                     <Label for="create-password">Password awal</Label>
                     <Input
@@ -361,6 +383,19 @@ const reset = () => {
                         maxlength="18"
                     />
                     <InputError :message="errors.nip" />
+                </div>
+                <div v-if="editing?.role === 'KEPALA'" class="grid gap-1">
+                    <Label for="edit-pangkat">Pangkat</Label>
+                    <Input
+                        id="edit-pangkat"
+                        v-model="editForm.pangkat"
+                        maxlength="100"
+                    />
+                    <p class="text-xs text-muted-foreground">
+                        Pengesahan yang sudah ada tetap mencetak pangkat saat
+                        disahkan.
+                    </p>
+                    <InputError :message="errors.pangkat" />
                 </div>
                 <div v-if="nipCorrection" class="grid gap-1">
                     <Label for="edit-nip-reason"

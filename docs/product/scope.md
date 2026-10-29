@@ -19,7 +19,7 @@ Prototype mencakup:
 - Form Mustahik dan Kifayah untuk Baznas/CSR; Bangga Surabaya menggunakan Outreach tanpa form Mustahik/Kifayah.
 - Penyimpanan draft, autosave, persistence setelah aplikasi ditutup dan dibuka kembali, serta perlindungan optimistic concurrency.
 - Empat lampiran dasar wajib untuk finalisasi: KTP, KK, foto klien, dan foto rumah, berupa gambar (D-034). Draft tetap boleh disimpan sebelum lampiran lengkap.
-- Lampiran tambahan per jenis bantuan sebagai kemampuan prototype apabila dibutuhkan; lampiran tambahan tidak memblokir Finalisasi (D-033) dan daftar resminya masih `PENDING VALIDATION`. Lampiran berformat PDF ditampilkan pada PDF Outreach sebagai halaman rujukan (D-034).
+- Lampiran di luar empat wajib diunggah sebagai "Lampiran lain"; Kelurahan tidak menetapkan daftar per jenis bantuan, lampiran ini tidak memblokir Finalisasi, dan satu Outreach memuat paling banyak 10 lampiran termasuk empat wajib (D-033, D-064).
 - Signature dummy, preview, submission version, historical version, history/audit, dan notifikasi in-app.
 - Workflow Return/Revision/Approval dan pemeriksaan keberhasilan pembuatan semua PDF wajib sebelum approval berhasil.
 - Pembuatan PDF sesuai jenis bantuan: Outreach, Mustahik, dan Kifayah untuk Baznas/CSR; Outreach untuk Bangga Surabaya. Halaman lampiran yang diwajibkan disertakan setelah halaman utama PDF Outreach.
@@ -50,7 +50,6 @@ Hal-hal berikut tidak dibangun sebagai kemampuan operasional dalam prototype awa
 Hal-hal berikut harus tetap ditandai `PENDING VALIDATION` sampai ada bukti atau konfirmasi yang memadai:
 
 - Sumber resmi label/status kesejahteraan atau desil.
-- Daftar lampiran tambahan yang diwajibkan untuk setiap Type di luar empat lampiran dasar.
 - Format PDF final yang belum dapat dipastikan dari template sumber.
 - Batas ukuran unggahan, tipe file yang diterima, dan parameter kompresi final; nilai awal untuk pengujian harus didokumentasikan sebagai konfigurasi prototype, bukan aturan operasional final. Empat lampiran wajib sudah ditetapkan berupa gambar (D-034).
 - Kebijakan retensi dan prosedur koreksi resmi. Prosedur arsip manual untuk prototype sudah ditetapkan pada D-038.

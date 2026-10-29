@@ -44,7 +44,7 @@ Desktop memakai vertical stepper; mobile memakai `Langkah X dari N`. Status step
 - Draft boleh disimpan meskipun lampiran dasar belum lengkap. Finalisasi diblokir jika satu atau lebih lampiran dasar belum tersedia.
 - Tampilkan blocker finalisasi secara spesifik dan arahkan Petugas ke bagian yang perlu diperbaiki.
 - Jika unggah atau pemrosesan lampiran gagal, tampilkan pesan kesalahan yang jelas; jangan menampilkan lampiran sebagai berhasil tersimpan jika proses gagal.
-- Persyaratan lampiran tambahan berdasarkan jenis bantuan ditandai `PENDING VALIDATION` sampai dikonfirmasi Kelurahan. Lampiran tambahan tidak memblokir Finalisasi dan tidak ditampilkan sebagai blocker (D-033).
+- Lampiran di luar empat wajib diunggah sebagai "Lampiran lain" dengan keterangan bebas; tidak ada daftar per jenis bantuan dan tidak memblokir Finalisasi. Halaman Lampiran menampilkan batas 10 MB per berkas dan 10 lampiran per Outreach (D-033, D-064).
 - Lampiran berformat PDF ditandai bahwa pada PDF Outreach ia muncul sebagai halaman rujukan berisi nama berkas, bukan halaman yang dicetak ulang (D-034).
 
 ## Field Formulir

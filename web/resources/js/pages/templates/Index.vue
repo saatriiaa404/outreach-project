@@ -108,7 +108,7 @@ const sections = computed(() => [
     {
         key: 'stamp',
         title: 'Stempel Kelurahan',
-        note: 'PENDING VALIDATION: stempel belum dicetak pada PDF sampai kebijakan Kelurahan diputuskan.',
+        note: 'Stempel aktif dicetak menimpa sisi kiri tanda tangan Lurah pada PDF Outreach yang disahkan sesudahnya. Pengesahan tanpa stempel aktif tetap berjalan.',
         versions: props.stamps,
         uploadUrl: TemplateController.storeStamp.url(),
         deactivateUrl: (id: number) =>

@@ -41,7 +41,7 @@ class ReviewTest extends TestCase
             'tempat_lahir' => 'Surabaya',
             'tanggal_lahir' => '2006-06-15',
             'desil_1_10' => 9,
-            'status_kesejahteraan' => 'Sejahtera',
+            'status_kesejahteraan' => 'Kelompok Sangat Mapan',
             'merokok' => false,
             'bantuan_pernah_diterima' => false,
             'punya_hutang' => false,
@@ -70,7 +70,7 @@ class ReviewTest extends TestCase
         $klien = $this->values($document, 'DATA KLIEN');
         $this->assertCount(23, $klien);
         $this->assertSame('Surabaya, 15 Juni 2006 / 20 tahun', $klien['Tempat dan Tanggal Lahir / Umur']);
-        $this->assertSame('Sejahtera (Desil 9)', $klien['Status Kesejahteraan']);
+        $this->assertSame('Kelompok Sangat Mapan (Desil 9)', $klien['Status Kesejahteraan']);
         $this->assertSame('Tidak', $klien['Apakah Klien merokok']);
         $this->assertSame('Tidak ada', $klien['Bantuan yang pernah diterima']);
         $this->assertSame('-', $klien['Berapa besar pinjaman / hutang'], 'Not applicable without a debt.');

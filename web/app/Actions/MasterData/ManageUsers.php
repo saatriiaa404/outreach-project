@@ -20,7 +20,7 @@ use Illuminate\Validation\ValidationException;
 class ManageUsers
 {
     /**
-     * @param  array{name: string, email: string, role: UserRole, password: string, nip: string|null}  $data
+     * @param  array{name: string, email: string, role: UserRole, password: string, nip: string|null, pangkat: string|null}  $data
      */
     public function create(User $admin, array $data): User
     {
@@ -37,6 +37,7 @@ class ManageUsers
                 'role' => $data['role'],
                 'status' => UserStatus::Active,
                 'nip' => $data['role'] === UserRole::Kepala ? $data['nip'] : null,
+                'pangkat' => $data['role'] === UserRole::Kepala ? $data['pangkat'] : null,
             ])->save();
 
             AuditLog::record($admin, 'USER_CREATED', $user, ['after_data' => $this->values($user)]);
@@ -46,7 +47,7 @@ class ManageUsers
     }
 
     /**
-     * @param  array{name: string, email: string, status: UserStatus, nip: string|null, nip_correction_reason: string|null}  $data
+     * @param  array{name: string, email: string, status: UserStatus, nip: string|null, pangkat: string|null, nip_correction_reason: string|null}  $data
      */
     public function update(User $admin, User $user, array $data): void
     {
@@ -83,6 +84,8 @@ class ManageUsers
                 'email' => $data['email'],
                 'status' => $data['status'],
                 'nip' => $nip,
+                // A promotion changes it freely; each approval keeps the rank it printed (D-065).
+                'pangkat' => $locked->role === UserRole::Kepala ? $data['pangkat'] : null,
             ])->save();
 
             if ($locked->wasChanged()) {
@@ -137,6 +140,7 @@ class ManageUsers
             'role' => $user->role->value,
             'status' => $user->status->value,
             'nip' => $user->nip,
+            'pangkat' => $user->pangkat,
         ];
     }
 }

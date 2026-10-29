@@ -67,7 +67,7 @@ class FinalizeOutreachTest extends TestCase
         $this->assertEqualsCanonicalizing(['schema_version', 'meta', 'client', 'family_income', 'expenses', 'house', 'assets', 'narrative', 'mustahik', 'kifayah'], array_keys($snapshot));
         $this->assertSame('OUT-2026-00001', $snapshot['meta']['outreach_number']);
         $this->assertSame(1, $snapshot['meta']['version_number']);
-        $this->assertEquals(['desil' => 9, 'label' => 'Sejahtera'], $snapshot['client']['status_kesejahteraan']);
+        $this->assertEquals(['desil' => 9, 'label' => 'Kelompok Sangat Mapan'], $snapshot['client']['status_kesejahteraan']);
         $this->assertSame(0, $snapshot['expenses']['pengeluaran_pdam'], '0 stays 0.');
         $this->assertEquals(['option' => '1', 'label' => 'sangat Kecil (<4x4)'], $snapshot['mustahik']['answers']['HOUSE_BUILDING_AREA']);
         $this->assertEquals(['option' => '2', 'label' => 'Memiliki Hutang'], $snapshot['kifayah']['answers']['DEBT']);

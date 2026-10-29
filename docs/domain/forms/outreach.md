@@ -86,22 +86,22 @@ Template memiliki 23 field Data Klien.
 | 22 | Apakah klien punya pinjaman / hutang | Wajib; menentukan apakah field besar hutang berlaku |
 | 23 | Berapa besar pinjaman / hutang | Wajib jika field 22 menunjukkan klien memiliki hutang; tidak berlaku jika klien tidak memiliki hutang |
 
-**Pemetaan Status Kesejahteraan (D-019).** Petugas memilih desil 1–10. Angka disimpan pada `desil_1_10`, dan label diturunkan otomatis ke `status_kesejahteraan` sehingga keduanya tidak dapat saling bertentangan. Tidak ada perubahan schema. Label berikut berasal dari sumber yang diberikan pemilik proyek; dokumen sumber resminya belum dilampirkan sebagai evidence, dan butir 1 pada bagian Pending Validation di `database.md` tetap menunggu evidence tersebut.
+**Pemetaan Status Kesejahteraan (D-019).** Petugas memilih desil 1–10. Angka disimpan pada `desil_1_10`, dan label diturunkan otomatis ke `status_kesejahteraan` sehingga keduanya tidak dapat saling bertentangan. Tidak ada perubahan schema. Label berikut mengikuti pembagian resmi desil kesejahteraan DTST yang dipakai Kelurahan, sesuai keterangan pemilik proyek pada 29 Oktober 2026 (D-064, menggantikan label awal D-019).
 
 | Desil | Label |
 |---:|---|
 | 1 | Sangat Miskin |
 | 2 | Miskin |
-| 3 | Hampir Miskin |
-| 4 | Rentan Miskin |
-| 5 | Transisi Menengah |
-| 6 | Menengah |
-| 7 | Menengah |
-| 8 | Menengah Atas |
-| 9 | Sejahtera |
-| 10 | Sangat Sejahtera |
+| 3 | Kelompok Hampir Miskin / Rentan |
+| 4 | Kelompok Rentan Miskin / Menengah Bawah |
+| 5 | Kelompok Pas-pasan / Menengah Bawah Stabil |
+| 6 | Kelompok Menengah |
+| 7 | Kelompok Menengah Atas |
+| 8 | Kelompok Mapan / Menengah Atas |
+| 9 | Kelompok Sangat Mapan |
+| 10 | Kelompok Paling Sejahtera / Kaya |
 
-Desil 6 dan 7 sama-sama berlabel `Menengah` sesuai sumber. Catatan historis dari review contoh terisi yang mencatat nilai `Sejahtera` sesuai dengan label Desil 9; PDF historis itu telah dikeluarkan dari repository sehingga tidak dapat diperiksa ulang. Jangan menyatukan representasi desil dan label menjadi satu field input.
+Label yang sudah tersimpan sebelum D-064 tidak diubah; label baru berlaku saat Status Kesejahteraan disimpan berikutnya. Jangan menyatukan representasi desil dan label menjadi satu field input.
 
 ### 4.2 Pendapatan Keluarga dalam Sebulan
 
@@ -198,21 +198,13 @@ Mengikuti baseline Workflow v2.1 dan Database v1.1, lampiran wajib untuk setiap 
 
 Empat kategori tersebut merupakan persyaratan baseline, bukan daftar final seluruh kemungkinan lampiran. Keempatnya harus berupa gambar (D-034).
 
-### 7.2 Lampiran tambahan per Type
+### 7.2 Lampiran lain
 
-Berdasarkan keputusan kebutuhan proyek terbaru, empat lampiran baseline di atas tetap wajib untuk semua Outreach. Selain itu, lampiran tambahan berikut disediakan sesuai Type. Pada prototype, lampiran tambahan **tidak memblokir Finalisasi** (D-033); persyaratan wajibnya menunggu validasi resmi Kelurahan:
+Empat lampiran baseline di atas tetap wajib untuk semua Outreach. Kelurahan tidak menetapkan daftar resmi lampiran tambahan per Type (D-064): lampiran apa pun di luar empat wajib diunggah sebagai **Lampiran lain** dengan keterangan bebas, dan **tidak memblokir Finalisasi** (D-033). Satu Outreach memuat paling banyak 10 lampiran termasuk empat wajib, masing-masing paling besar 10 MB (D-064). Daftar saran per Type yang sebelumnya dipakai prototype dihapus.
 
-| Type | Lampiran tambahan |
-|---|---|
-| Rutilahu | Foto tambahan rumah; dapat lebih dari satu |
-| Alat Kesehatan | Foto orang yang membutuhkan alat kesehatan |
-| Beasiswa | Foto penerima beasiswa |
-| Pendidikan (Kejar Paket) | Foto orang yang membutuhkan bantuan pendidikan |
-| Bantuan Modal Usaha | Foto penerima bantuan |
+Ketentuan lampiran tambahan ini merupakan keputusan kebutuhan proyek untuk prototype. Jangan menganggapnya sebagai perubahan schema Database v1.1. Lampiran dokumen lain, termasuk PDF, juga diperbolehkan sesuai kebutuhan proses; pada PDF Outreach, lampiran PDF ditampilkan sebagai halaman rujukan (lihat bagian 8.5, D-034). Kelurahan menetapkan batas 10 MB per berkas dan 10 lampiran per Outreach (D-064); tidak ada persyaratan kualitas khusus.
 
-Ketentuan lampiran tambahan ini merupakan keputusan kebutuhan proyek untuk prototype. Jangan menganggapnya sebagai perubahan schema Database v1.1. Lampiran dokumen lain, termasuk PDF, juga diperbolehkan sesuai kebutuhan proses; pada PDF Outreach, lampiran PDF ditampilkan sebagai halaman rujukan (lihat bagian 8.5, D-034). Tidak ada batas ukuran atau kualitas khusus yang ditetapkan Kelurahan; batas teknis aplikasi, jika diperlukan, harus diperlakukan sebagai batas teknis dan bukan persyaratan Kelurahan.
-
-Source tetap menentukan workflow dan form terkait; Type menentukan intervensi serta lampiran tambahan yang relevan. Semua kombinasi Source × Type yang diizinkan baseline workflow tetap berlaku.
+Source tetap menentukan workflow dan form terkait; Type menentukan intervensi. Semua kombinasi Source × Type yang diizinkan baseline workflow tetap berlaku.
 
 ### 7.3 Integritas lampiran
 
@@ -243,7 +235,7 @@ Tanggal pada kalimat pembuka berasal dari Tanggal Outreach yang tersimpan. Hari,
 Mengikuti keputusan yang telah dibahas sebelumnya:
 
 - Identitas pejabat mengikuti Kepala Kelurahan yang aktif, bukan nama/NIP yang dikunci dari contoh PDF.
-- Nama diambil dari akun Kepala yang mengesahkan dan NIP dari kolom `users.nip` (D-041).
+- Nama diambil dari akun Kepala yang mengesahkan dan dicetak huruf kapital, pangkat dari kolom `users.pangkat` sebagaimana tercatat saat pengesahan, dan NIP dari kolom `users.nip` (D-041, D-065).
 - Tata letak blok pengesahan (dikonfirmasi pemilik proyek, 27 Oktober 2026; VAL-004) berupa blok rata tengah dengan urutan baris:
 
   ```text
@@ -251,9 +243,12 @@ Mengikuti keputusan yang telah dibahas sebelumnya:
   Mengetahui,
   Lurah Manukan Kulon
   <ruang tanda tangan Kepala>
-  <nama Kepala>
+  <NAMA KEPALA>
+  <pangkat Kepala>
   NIP. <nip Kepala>
   ```
+
+  Stempel aktif, bila ada, dicetak menimpa sisi kiri tanda tangan (D-065). Kop PDF Outreach memuat logo Pemkot Surabaya di sebelah kiri teks kop; PDF Mustahik dan Kifayah memuat logo Baznas Kota Surabaya di tengah atas (D-064, template PDF versi 2).
 
   Nama dicetak sesuai data akun Kepala, termasuk gelar (contoh tata letak memakai huruf kapital). Letak tanda tangan di antara jabatan dan nama mengikuti kelaziman blok pengesahan dan perlu dicek pada hasil render. `<tanggal>` adalah tanggal Kepala mengesahkan (`outreach_approvals.decided_at`), bukan Tanggal Outreach dan bukan tanggal PDF diunduh; regenerasi PDF historis memakai tanggal pengesahan yang tersimpan (keputusan pemilik proyek, 27 Oktober 2026). Tanggal pada kalimat pembuka tetap mengikuti Tanggal Outreach (bagian 8.1). Nama dan NIP pejabat nyata tidak dicantumkan pada dokumen, kode, atau data prototype; data demo memakai nilai sintetis.
 - Tanda tangan Kepala Kelurahan menggunakan template tanda tangan tersimpan sesuai aturan workflow dan user management.
@@ -291,7 +286,7 @@ Lampiran harus disertakan sebagai halaman setelah halaman utama PDF Outreach. Pa
 | OUT-VAL-01 | Pemetaan Status Kesejahteraan terhadap `status_kesejahteraan`, `desil_1_10`, dan label `Sejahtera` pada contoh | **CLOSED** — D-019. Desil 1–10 pada `desil_1_10`, label otomatis pada `status_kesejahteraan`; `Sejahtera` adalah label Desil 9. Evidence sumber resmi label belum dilampirkan |
 | OUT-VAL-02 | Daftar opsi dropdown untuk field berkategori | **Kebijakan diputuskan (D-025)** — dropdown hanya bila opsi tertulis pada PDF atau ketentuan yang disetujui, selain itu teks bebas (lihat bagian 5). Daftar opsi untuk field lain tetap menunggu ketentuan yang disetujui |
 | OUT-VAL-03 | Apakah Pekerjaan dan Bantuan yang pernah diterima menggunakan dropdown, teks bebas, atau kombinasi | **CLOSED** — D-025 dan D-027. Pekerjaan teks bebas; Bantuan mengisi dua kolom Database v1.1 dari pilihan Ya/Tidak dan uraian teks bebas. Tanpa perubahan schema |
-| OUT-VAL-04 | Lampiran tambahan berdasarkan Type | Empat lampiran wajib baseline serta lampiran tambahan per Type telah ditetapkan untuk kebutuhan prototype; lampiran tambahan tidak memblokir Finalisasi (D-033). Validasi/persetujuan formal pemilik formulir tetap harus dicatat dengan evidence yang dapat ditelusuri |
+| OUT-VAL-04 | Lampiran tambahan berdasarkan Type | **CLOSED** — D-064. Tidak ada daftar resmi per Type; lampiran di luar empat wajib masuk "Lampiran lain", maksimal 10 lampiran per Outreach |
 | OUT-VAL-05 | Evidence persetujuan posisi Type dan layout adaptif | Pengguna mengonfirmasi keduanya sudah disetujui Kelurahan; tautkan bukti/artefak persetujuan di catatan evidence gate jika belum tersimpan |
 | OUT-VAL-06 | Pemetaan field kendaraan | **CLOSED** — D-020. Input angka per jenis pada kolom Database v1.1; PDF merangkai satu baris dari jenis bernilai lebih dari 0, atau `Tidak ada`. Tanpa perubahan schema |
 | OUT-VAL-07 | Pemetaan `Fasilitas MCK` | **CLOSED** — D-021. Empat nilai (Layak, Kurang layak, Tidak layak, Tidak ada) pada kolom `mck_layak`; nama kolom tetap, bukan boolean |

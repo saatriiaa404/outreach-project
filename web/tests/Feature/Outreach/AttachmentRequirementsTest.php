@@ -67,7 +67,7 @@ class AttachmentRequirementsTest extends TestCase
         $this->assertContains('KTP', OutreachFormSchema::missingAttachments($outreach));
     }
 
-    public function test_the_lampiran_step_shows_blockers_and_the_type_suggestion()
+    public function test_the_lampiran_step_shows_blockers_the_limit_and_no_suggestion_per_type()
     {
         $outreach = $this->draft();
         $this->upload($outreach, 'KK', UploadedFile::fake()->image('kk.jpg'));
@@ -75,15 +75,26 @@ class AttachmentRequirementsTest extends TestCase
         $this->get(route('outreaches.edit', ['outreach' => $outreach, 'step' => 'lampiran']))
             ->assertInertia(fn (Assert $page) => $page
                 ->where('missingForFinalization', ['KTP', 'Foto Klien', 'Foto Rumah'])
-                ->where('additionalHint', 'Foto tambahan rumah; dapat lebih dari satu'));
+                ->where('maxAttachments', 10)
+                ->where('categories.4.label', 'Lampiran lain')
+                ->missing('additionalHint'));
     }
 
-    public function test_a_type_without_a_known_suggestion_shows_none()
+    public function test_an_outreach_holds_at_most_ten_attachments_but_one_can_still_be_replaced()
     {
-        $outreach = $this->draft('JENIS_LAIN');
+        $outreach = $this->draft();
+        foreach (range(1, 10) as $i) {
+            $this->upload($outreach, 'TAMBAHAN', UploadedFile::fake()->image("lain-{$i}.jpg", 10 + $i, 10));
+        }
 
-        $this->actingAs($outreach->petugas)
-            ->get(route('outreaches.edit', ['outreach' => $outreach, 'step' => 'lampiran']))
-            ->assertInertia(fn (Assert $page) => $page->where('additionalHint', null));
+        $this->post(route('outreaches.attachments.store', $outreach), ['category' => 'KTP', 'file' => UploadedFile::fake()->image('ktp.jpg')])
+            ->assertSessionHasErrors(['file' => 'Maksimal 10 lampiran per Outreach. Hapus atau ganti lampiran yang ada.']);
+        $this->assertSame(10, $outreach->attachments()->count());
+
+        $first = $outreach->attachments()->oldest('id')->firstOrFail();
+        $this->post(route('outreaches.attachments.store', $outreach), [
+            'category' => 'TAMBAHAN', 'file' => UploadedFile::fake()->image('pengganti.jpg', 50, 50), 'replaces' => $first->id,
+        ])->assertSessionHasNoErrors();
+        $this->assertSame(10, $outreach->attachments()->count());
     }
 }

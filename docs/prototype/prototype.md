@@ -34,7 +34,7 @@ Prototype menunjukkan alur lengkap `PETUGAS → KEPALA → ADMIN`:
 
 - Empat lampiran wajib Outreach: **KTP, KK, foto klien, dan foto rumah**, berupa gambar (D-034).
 - Draft boleh disimpan walaupun lampiran belum lengkap; Finalisasi harus ditolak sampai keempat lampiran wajib tersedia.
-- Lampiran tambahan berdasarkan jenis bantuan dapat didukung untuk kebutuhan prototype dan tidak memblokir Finalisasi (D-033), tetapi persyaratan formalnya tetap `PENDING VALIDATION` sampai dikonfirmasi Kelurahan.
+- Lampiran di luar empat wajib diunggah sebagai "Lampiran lain"; Kelurahan tidak menetapkan daftar per jenis bantuan, lampiran ini tidak memblokir Finalisasi, dan satu Outreach memuat paling banyak 10 lampiran termasuk empat wajib (D-033, D-064).
 - PDF Outreach hanya mencetak lampiran gambar; lampiran berformat PDF ditampilkan sebagai halaman rujukan berisi nama berkas, tanpa pustaka penggabung PDF (D-034).
 - Kegagalan upload atau pemrosesan/kompresi harus menampilkan error yang jelas; lampiran tidak boleh dihilangkan secara diam-diam.
 - Batas ukuran dan jumlah lampiran final harus ditentukan dari pengujian prototype, bukan diasumsikan tanpa bukti.

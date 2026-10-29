@@ -4,6 +4,7 @@ namespace Tests\Feature\Outreach;
 
 use App\Actions\Outreach\FinalizeOutreach;
 use App\Enums\AttachmentCategory;
+use App\Models\DocumentTemplateVersion;
 use App\Models\MustahikAnswer;
 use App\Models\Outreach;
 use App\Models\OutreachAttachment;
@@ -68,7 +69,7 @@ class OutreachPdfTest extends TestCase
         $this->assertStringContainsString('Surabaya, 28 Oktober 2026', $html);
         $this->assertStringContainsString('NIP. 000000000000000001', $html);
         $this->assertSame(4, substr_count($html, 'class="attachment"'));
-        $this->assertSame(4, substr_count($html, 'src="data:image/'), 'Attachments are embedded, never linked.');
+        $this->assertSame(5, substr_count($html, 'src="data:image/'), 'The logo and the attachments are embedded, never linked.');
         $this->assertLessThan(strpos($html, 'Lampiran: Kartu Keluarga'), strpos($html, 'Lampiran: KTP'), 'Attachments follow the category order.');
     }
 
@@ -87,8 +88,29 @@ class OutreachPdfTest extends TestCase
 
         $this->assertSame(5, substr_count($html, 'class="attachment"'));
         $this->assertStringContainsString('Lampiran berupa berkas PDF dengan nama <strong>surat-keterangan.pdf</strong>', $html);
-        $this->assertSame(4, substr_count($html, 'src="data:image/'), 'The PDF is referenced, not embedded.');
+        $this->assertSame(5, substr_count($html, 'src="data:image/'), 'The PDF is referenced, not embedded.');
         $this->assertStringStartsWith('%PDF-', $pdf->render($version, 'outreach'));
+    }
+
+    public function test_template_v2_prints_the_logos_and_older_versions_keep_their_v1_layout()
+    {
+        $version = $this->finalized();
+        $pdf = app(OutreachPdf::class);
+
+        $this->assertSame(2, $version->documentTemplate->version_number);
+        $this->assertStringContainsString('<td class="lh-logo"><img src="data:image/png;base64,', $pdf->html($version, 'outreach'));
+        $this->assertStringContainsString('<div class="logo"><img src="data:image/jpeg;base64,', $pdf->html($version, 'mustahik'));
+        $this->assertStringContainsString('<div class="logo"><img src="data:image/jpeg;base64,', $pdf->html($version, 'kifayah'));
+
+        // A version finalized before v2 renders with the template it recorded.
+        $v1 = DocumentTemplateVersion::query()->where('template_key', $version->documentTemplate->template_key)->where('version_number', 1)->sole();
+        $this->assertFalse($v1->is_active);
+        $version->forceFill(['document_template_version_id' => $v1->id])->saveQuietly();
+        $old = $version->refresh();
+
+        $this->assertStringNotContainsString('class="lh-logo"', $pdf->html($old, 'outreach'));
+        $this->assertStringNotContainsString('class="logo"', $pdf->html($old, 'kifayah'));
+        $this->assertStringNotContainsString('☑', $pdf->html($old, 'kifayah'));
     }
 
     public function test_the_kifayah_date_follows_the_outreach_date_not_the_print_date()
@@ -114,16 +136,19 @@ class OutreachPdfTest extends TestCase
         $this->assertSame(1, substr_count($html, 'src="data:image/png'));
     }
 
-    public function test_the_kifayah_pdf_uses_corrected_labels_empty_expense_boxes_and_literal_options()
+    public function test_the_kifayah_pdf_uses_corrected_labels_ticks_expenses_and_keeps_literal_options()
     {
-        $version = $this->finalized();
+        $outreach = $this->ready();
+        $outreach->kifayahForm->forceFill(['expense_head_household' => 750000, 'expense_school_sd' => 150000])->save();
+        $version = app(FinalizeOutreach::class)->handle($outreach, $outreach->petugas, $outreach->refresh()->edit_version);
 
         $html = app(OutreachPdf::class)->html($version, 'kifayah');
 
         $this->assertStringContainsString('Ibu Menyusui', $html);
         $this->assertStringContainsString('PENGELUARAN TAMBAHAN PER BULAN', $html);
         $this->assertStringContainsString('Pendidikan Tinggi', $html);
-        $this->assertSame(13, substr_count($html, '☐'), 'Twelve expense boxes and the education box stay empty.');
+        $this->assertSame(2, substr_count($html, '☑'), 'Only amounts above 0 are ticked (VAL-006).');
+        $this->assertSame(11, substr_count($html, '☐'), 'Ten 0 expenses and the education box stay empty.');
         $this->assertSame(7, substr_count($html, '<td class="check" style="border: 1px solid #111">✔</td>'));
         $this->assertStringContainsString('Memiliki Hutang', $html);
         $this->assertStringContainsString('Rp. -', $html, 'A 0 amount reads "-" (D-050).');

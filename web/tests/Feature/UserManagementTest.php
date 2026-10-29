@@ -130,6 +130,22 @@ class UserManagementTest extends TestCase
         $this->edit($kepala, ['nip' => '1234567890123456789'])->assertSessionHasErrors('nip');
     }
 
+    public function test_the_pangkat_is_kept_for_kepala_only_and_audited()
+    {
+        $petugas = User::factory()->create();
+        $kepala = User::factory()->kepala()->create(['nip' => '000000000000000001']);
+
+        $this->edit($petugas, ['pangkat' => 'Penata'])->assertSessionHasNoErrors();
+        $this->edit($kepala, ['nip' => '000000000000000001', 'pangkat' => 'Penata Tk. I'])->assertSessionHasNoErrors();
+
+        $this->assertNull($petugas->refresh()->pangkat);
+        $this->assertSame('Penata Tk. I', $kepala->refresh()->pangkat);
+        $audit = AuditLog::query()->latest('id')->firstOrFail();
+        $this->assertSame('USER_UPDATED', $audit->action);
+        $this->assertSame(['nip' => '000000000000000001', 'pangkat' => 'Penata Tk. I'], array_intersect_key($audit->after_data, ['nip' => 1, 'pangkat' => 1]));
+        $this->edit($kepala, ['nip' => '000000000000000001', 'pangkat' => str_repeat('a', 101)])->assertSessionHasErrors('pangkat');
+    }
+
     public function test_a_nip_used_on_approvals_changes_only_as_an_administrative_correction()
     {
         $kepala = User::factory()->kepala()->create(['nip' => '000000000000000001']);

@@ -364,10 +364,10 @@ bukan dari data Outreach terkini.
 
 ## 7. Hal yang Masih Perlu Validasi
 
--   Makna kotak centang di samping setiap nominal pengeluaran pada PDF
-    sumber; jangan menafsirkannya sebagai pengganti aturan `0`/`NULL`
-    sebelum dikonfirmasi. Sampai diputuskan, PDF mencetak kotak kosong
-    seperti sumber (D-053).
+-   ~~Makna kotak centang di samping setiap nominal pengeluaran.~~ Diputuskan
+    (VAL-006, D-064): kotak dicentang bila nominal pengeluaran bukan 0. Aturan
+    `0`/`NULL` pada isian tetap berlaku; PDF dengan template versi 1 tetap
+    mencetak kotak kosong (D-053).
 -   Format dan posisi tanda tangan pada PDF keluaran.
 -   Validasi formal oleh Kelurahan bahwa spesifikasi ini sesuai dengan
     formulir Had Kifayah yang digunakan.

@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
  * @property string $email
  * @property string $password_hash
  * @property string|null $nip
+ * @property string|null $pangkat
  * @property UserRole $role
  * @property UserStatus $status
  * @property Carbon|null $last_login_at

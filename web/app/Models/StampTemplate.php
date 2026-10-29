@@ -9,8 +9,8 @@ use LogicException;
 
 /**
  * A versioned Kelurahan stamp (Database v1.1 10.3), at most one active.
- * Printing it on PDFs is PENDING VALIDATION, so approvals do not use it yet
- * (D-054, D-058).
+ * The active one is recorded on each approval and printed over the left of
+ * the Lurah's signature (D-065).
  *
  * @property int $id
  * @property int $file_id
@@ -48,6 +48,19 @@ class StampTemplate extends Model
             }
         });
         static::deleting(fn () => throw new LogicException('Stamp templates are immutable.'));
+    }
+
+    /**
+     * The stamp valid now, if the Admin has one active; it is optional.
+     */
+    public static function current(): ?self
+    {
+        return self::query()
+            ->where('is_active', true)
+            ->where('valid_from', '<=', now())
+            ->where(fn ($query) => $query->whereNull('valid_until')->orWhere('valid_until', '>', now()))
+            ->orderByDesc('version_number')
+            ->first();
     }
 
     /**

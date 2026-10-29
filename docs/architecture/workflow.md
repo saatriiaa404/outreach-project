@@ -971,8 +971,9 @@ dapat direkonstruksi dengan template yang tepat.
 
 Template stamp disiapkan secara versioned.
 
-Penggunaan stempel digital pada PDF masih `PENDING VALIDATION` terhadap kebijakan
-Kelurahan.
+Stempel digital boleh dicetak pada PDF (D-065). Stempel aktif dicatat pada
+approval dan dicetak menimpa sisi kiri tanda tangan Lurah; pengesahan tanpa
+stempel aktif tetap berjalan.
 
 # 17. Review Workflow
 
@@ -1837,11 +1838,9 @@ Enforcement dilakukan di service/transaction boundary.
 
 ## 31.3 Head Change with Pending Queue
 
-Penanganan antrean ketika terjadi pergantian Kepala masih:
-
-```text
-PENDING VALIDATION
-```
+Diputuskan Kelurahan (D-064): antrean `MENUNGGU_PENGESAHAN` tetap ada saat
+Kepala berganti dan boleh diputuskan oleh Kepala aktif yang baru. Pengesahan
+yang sudah ada tetap mencatat Kepala yang mengesahkan sebelumnya.
 
 Workflow teknis harus menjaga agar approval tidak dapat dilakukan oleh actor
 yang tidak berwenang.

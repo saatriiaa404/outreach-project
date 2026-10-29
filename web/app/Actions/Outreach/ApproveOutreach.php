@@ -10,6 +10,7 @@ use App\Models\Outreach;
 use App\Models\OutreachApproval;
 use App\Models\OutreachVersion;
 use App\Models\SignatureTemplate;
+use App\Models\StampTemplate;
 use App\Models\User;
 use App\Support\OutreachPdf;
 use Illuminate\Support\Facades\DB;
@@ -55,8 +56,8 @@ class ApproveOutreach
                     'kepala_id' => $kepala->id,
                     'decision' => OutreachApproval::APPROVED,
                     'head_signature_template_id' => $template->id,
-                    // Digital stamp use is PENDING VALIDATION (database.md 10.3).
-                    'stamp_template_id' => null,
+                    // The Kelurahan allows the digital stamp on the PDF (D-065).
+                    'stamp_template_id' => StampTemplate::current()?->id,
                     'decided_at' => now(),
                 ])->save();
 
@@ -71,6 +72,8 @@ class ApproveOutreach
                     'outreach_version_id' => $version->id,
                     'approval_id' => $approval->id,
                     'description' => "Versi {$version->version_number} disahkan.",
+                    // The rank printed with this approval, kept after a promotion (D-065).
+                    'metadata' => ['kepala_pangkat' => $kepala->pangkat],
                 ]);
 
                 $this->renderRequiredPdfs($version, $approval);

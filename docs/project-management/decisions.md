@@ -1170,6 +1170,94 @@ rujuk keputusan pengganti.
                            belum dibaca walaupun
                            pembersihan belum
                            berjalan.
+
+  D-064       LOCKED       Jawaban validasi       Jawaban         Tanpa perubahan         `outreach.md` 3, 7.2, 8;
+                           Kelurahan (29 Oktober  pemilik proyek  schema. Seed            `mustahik.md`; `kifayah.md` 7;
+                           2026): (1) label       atas            MasterDataSeeder        `database.md`; `workflow.md`
+                           desil mengikuti        pertanyaan      menambah template       31.3; `tasks.md`; kode `web/`
+                           pembagian resmi DTST   validasi, 29    package versi 2 dan
+                           yang dipakai           Oktober 2026,   menonaktifkan versi 1.
+                           Kelurahan,             berdasarkan     Label desil baru
+                           menggantikan label     keterangan      berlaku untuk
+                           D-019; (2) opsi        Kelurahan.      penyimpanan
+                           Mustahik yang                          berikutnya; nilai
+                           beririsan dipakai apa                  status_kesejahteraan
+                           adanya (VAL-001                        yang sudah tersimpan
+                           ditutup); (3) kotak                    tidak diubah. Berkas
+                           di samping nominal                     logo disimpan di
+                           pengeluaran Kifayah                    docs/reference dan web
+                           dicentang bila                         /resources/views/pdf/l
+                           nominal bukan 0                        ogos. Bukti tertulis
+                           (VAL-006 ditutup);                     persetujuan OUT-VAL-05
+                           (4) tidak ada daftar                   masih menunggu.
+                           resmi lampiran
+                           tambahan per Type,
+                           lampiran di luar
+                           empat wajib masuk
+                           kategori "Lampiran
+                           lain" dan saran per
+                           Type dihapus; (5)
+                           batas 10 MB per
+                           berkas dan paling
+                           banyak 10 lampiran
+                           per Outreach termasuk
+                           empat wajib; (6)
+                           antrean
+                           MENUNGGU_PENGESAHAN
+                           boleh diputuskan
+                           Kepala aktif yang
+                           baru saat Kepala
+                           berganti (Workflow
+                           31.3); (7) PDF
+                           memakai logo Pemkot
+                           Surabaya di kiri kop
+                           PDF Outreach dan logo
+                           Baznas Kota Surabaya
+                           di tengah atas PDF
+                           Mustahik dan Kifayah
+                           untuk Source Baznas
+                           maupun CSR. Perubahan
+                           tampilan PDF dimuat
+                           dalam template PDF
+                           versi 2; versi yang
+                           sudah difinalisasi
+                           tetap dirender dengan
+                           template yang
+                           dicatatnya.
+
+  D-065       LOCKED       Blok pengesahan PDF    Persetujuan     Perubahan schema:       `outreach.md` 8.4;
+                           Outreach: (1) kolom    eksplisit       migration `add_pangkat  `database.md` 4.1, 10.2, 10.3;
+                           baru `users.pangkat`   pemilik         _to_users_table`        `workflow.md` 16.6; kode
+                           (nullable, hanya       proyek, 29      (amandemen Database     `web/`
+                           untuk KEPALA, diisi    Oktober 2026    v1.1, jumlah tabel
+                           Admin) dicetak di      (termasuk       tetap 22, mengikuti
+                           bawah nama; pangkat    perubahan       preseden D-041). Kolom
+                           yang tercetak          schema kolom    stamp_template_id
+                           disimpan pada          pangkat).       sudah ada. Perubahan
+                           metadata history                       pangkat diaudit
+                           APPROVED sehingga                      sebagai USER_UPDATED.
+                           kenaikan pangkat
+                           tidak mengubah
+                           pengesahan lama; (2)
+                           nama Kepala dicetak
+                           huruf kapital; (3)
+                           stempel digital boleh
+                           dicetak: stempel
+                           aktif dicatat pada `o
+                           utreach_approvals.sta
+                           mp_template_id` dan
+                           dicetak menimpa sisi
+                           kiri tanda tangan
+                           Lurah; pengesahan
+                           tanpa stempel aktif
+                           tetap berjalan. Nama,
+                           pangkat, dan NIP asli
+                           Lurah tidak dicatat
+                           di repo, seed, atau
+                           dokumen; diisi
+                           pemilik lewat menu
+                           Pengguna saat
+                           dipakai.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru
