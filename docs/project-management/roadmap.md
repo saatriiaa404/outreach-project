@@ -79,7 +79,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 | ID | Task |
 |---|---|
 | R8.1 | Lifecycle request Special Unlock. ✅ Selesai 29 Oktober 2026: Petugas pemilik dan Kepala meminta dari halaman Outreach `MENUNGGU_PENGESAHAN`/`SELESAI` dengan alasan wajib; satu permintaan terbuka per Outreach; pengaju membatalkan selama `PENDING`; Admin bekerja dari antrean (menu Special Unlock, terbuka dan terlama di atas): Mulai proses lalu Tolak dengan alasan wajib yang terlihat oleh pengaju. Status Outreach tidak berubah. `COMPLETED` menyusul otomatis di R8.2 (D-055) |
-| R8.2 | Unlock langsung, controlled edit dengan alasan wajib, `Lock` dan `Lock & Ajukan` dengan event D-031 dan audit |
+| R8.2 | Unlock langsung, controlled edit dengan alasan wajib, `Lock` dan `Lock & Ajukan` dengan event D-031 dan audit. ✅ Selesai 29 Oktober 2026: Admin membuka Special Unlock dari halaman Outreach `MENUNGGU_PENGESAHAN`/`SELESAI` dengan alasan wajib; selama sesi aktif Admin mengedit lewat stepper biasa (termasuk Source/Jenis, lampiran, Mustahik, Kifayah) tanpa menandatangani, setiap perubahan tercatat `SPECIAL_UNLOCK_EDITED`; Lock (catatan wajib, `PERLU_PERBAIKAN` tanpa versi baru) atau Lock & Ajukan (validasi seperti Finalisasi, versi baru, `MENUNGGU_PENGESAHAN`, notifikasi Kepala); keduanya menyelesaikan permintaan yang diproses dan tercatat di `audit_logs`; Kepala tidak dapat memutus selama sesi aktif (D-056). Perbaikan ikutan: tanda tangan yang dirujuk versi historis tidak lagi dihapus ketika data diubah setelah Return atau Special Unlock |
 
 ## Fase 9 — Administrasi
 

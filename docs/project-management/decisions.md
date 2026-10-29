@@ -941,6 +941,45 @@ rujuk keputusan pengganti.
                            Special Unlock
                            (R8.2), bukan
                            ditandai manual.
+
+  D-056       LOCKED       Special Unlock         Persetujuan     Tidak ada perubahan     `workflow.md` 9.6, 18.3, 25;
+                           (R8.2): sesi aktif     eksplisit       schema. Unlock, Lock,   `database.md` 11, 13.2, 23.2;
+                           ditentukan dari        pemilik         dan Lock & Ajukan       `roles-permissions.md`; kode
+                           history_events, yaitu  proyek, 29      dicatat di              `web/`
+                           bila event Special     Oktober 2026.   history_events dan
+                           Unlock terakhir                        audit_logs. Perubahan
+                           adalah                                 data yang
+                           SPECIAL_UNLOCKED,                      ditandatangani memaksa
+                           tanpa kolom atau                       Lock karena Lock &
+                           status baru. Alasan                    Ajukan memvalidasi
+                           wajib diisi sekali                     tanda tangan seperti
+                           saat Unlock dan                        Finalisasi.
+                           berlaku untuk sesi;
+                           setiap perubahan data
+                           oleh Admin (termasuk
+                           autosave yang
+                           mengubah data)
+                           dicatat sebagai
+                           SPECIAL_UNLOCK_EDITED
+                           dengan alasan sesi
+                           dan field yang
+                           berubah. Lock wajib
+                           disertai catatan
+                           untuk Petugas yang
+                           tampil di halaman
+                           pengisian. Selama
+                           sesi aktif, Kepala
+                           tidak dapat Approve
+                           atau Return. Unlock
+                           memindahkan
+                           permintaan PENDING ke
+                           PROCESSING. Admin
+                           tidak menandatangani;
+                           tanda tangan yang
+                           dirujuk versi
+                           historis tidak
+                           dihapus saat data
+                           berubah.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { stepStatusLabel } from '@/lib/outreach';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, reactive, ref } from 'vue';
 import OutreachAttachmentController from '@/actions/App/Http/Controllers/OutreachAttachmentController';
@@ -172,7 +173,7 @@ const remove = () => {
         <div class="flex max-w-3xl flex-1 flex-col gap-6">
             <Heading
                 title="Lampiran"
-                :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · ${outreach.status === 'PERLU_PERBAIKAN' ? 'Perlu Perbaikan' : 'Draft'}`"
+                :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · ${stepStatusLabel(outreach.status)}`"
             />
 
             <p class="text-sm text-muted-foreground">

@@ -2,7 +2,7 @@
 
 namespace App\Actions\Outreach;
 
-use App\Enums\HistoryEventType;
+use App\Enums\UserRole;
 use App\Models\HistoryEvent;
 use App\Models\Outreach;
 use App\Models\User;
@@ -55,8 +55,21 @@ class SaveOutreachStep
                 }
             }
 
-            if (! $autosave) {
-                HistoryEvent::record($outreach, $actor, HistoryEventType::SectionSaved, [
+            if ($actor->role === UserRole::Admin) {
+                // Admin changes during Special Unlock are always recorded with their values (25.8).
+                $changes = [];
+
+                foreach ($data as $field => $value) {
+                    if ((string) ($before[$field] ?? '') !== (string) ($value ?? '')) {
+                        $changes[$field] = ['from' => $before[$field] ?? null, 'to' => $value];
+                    }
+                }
+
+                if ($changes !== [] || ! $autosave) {
+                    HistoryEvent::recordEdit($outreach, $actor, ['field_changes' => $changes, 'metadata' => ['step' => $step]]);
+                }
+            } elseif (! $autosave) {
+                HistoryEvent::recordEdit($outreach, $actor, [
                     'metadata' => ['step' => $step],
                 ]);
             }

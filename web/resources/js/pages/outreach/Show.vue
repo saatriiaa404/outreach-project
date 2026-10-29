@@ -36,7 +36,14 @@ const props = defineProps<{
     };
     history: {
         id: number;
-        type: 'FINALIZED' | 'REFINALIZED' | 'RETURNED' | 'APPROVED';
+        type:
+            | 'FINALIZED'
+            | 'REFINALIZED'
+            | 'RETURNED'
+            | 'APPROVED'
+            | 'SPECIAL_UNLOCKED'
+            | 'SPECIAL_UNLOCK_LOCKED'
+            | 'SPECIAL_UNLOCK_SUBMITTED';
         actor: string;
         at: string | null;
         description: string | null;
@@ -71,6 +78,9 @@ const eventLabels: Record<(typeof props.history)[number]['type'], string> = {
     REFINALIZED: 'Finalisasi Ulang',
     RETURNED: 'Dikembalikan',
     APPROVED: 'Disetujui',
+    SPECIAL_UNLOCKED: 'Special Unlock dibuka',
+    SPECIAL_UNLOCK_LOCKED: 'Lock setelah Special Unlock',
+    SPECIAL_UNLOCK_SUBMITTED: 'Lock & Ajukan',
 };
 
 const versionLabels = {
@@ -153,7 +163,16 @@ defineOptions({
         </div>
 
         <section
-            v-if="canReturn || canApprove"
+            v-if="(canReturn || canApprove) && specialUnlock.session"
+            class="rounded-md border p-4 text-sm"
+            data-test="decision-blocked"
+        >
+            Admin sedang melakukan Special Unlock pada Outreach ini. Keputusan
+            dapat diambil setelah Admin melakukan Lock atau Lock &amp; Ajukan.
+        </section>
+
+        <section
+            v-else-if="canReturn || canApprove"
             class="rounded-md border p-4"
             data-test="decision"
         >

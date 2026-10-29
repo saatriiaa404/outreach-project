@@ -2,7 +2,7 @@
 
 namespace App\Actions\Outreach;
 
-use App\Enums\HistoryEventType;
+use App\Enums\UserRole;
 use App\Models\HistoryEvent;
 use App\Models\MustahikAnswer;
 use App\Models\MustahikForm;
@@ -66,8 +66,9 @@ class SaveMustahik
                 FormSignatures::invalidate($outreach, 'mustahik');
             }
 
-            if (! $autosave) {
-                HistoryEvent::record($outreach, $actor, HistoryEventType::SectionSaved, [
+            // Admin changes during Special Unlock are always recorded (25.8).
+            if (! $autosave || ($actor->role === UserRole::Admin && $changed)) {
+                HistoryEvent::recordEdit($outreach, $actor, [
                     'metadata' => ['step' => 'mustahik'],
                 ]);
             }

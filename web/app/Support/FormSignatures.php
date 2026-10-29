@@ -82,13 +82,15 @@ class FormSignatures
     }
 
     /**
-     * Deletes a Draft signature that no historical version refers to yet.
+     * Deletes a Draft signature. One that a historical version already
+     * refers to stays as submitted (after Return or Special Unlock); it is
+     * only detached from the form.
      */
     public static function discard(int $signatureId): void
     {
         $signature = Signature::query()->with('file')->find($signatureId);
 
-        if ($signature === null) {
+        if ($signature === null || self::isInVersion($signatureId)) {
             return;
         }
 
@@ -97,5 +99,13 @@ class FormSignatures
         $file->forceFill(['purged_at' => now()])->save();
 
         DB::afterCommit(fn () => Storage::disk($file->storage_disk)->delete($file->storage_key));
+    }
+
+    public static function isInVersion(int $signatureId): bool
+    {
+        return DB::table('outreach_versions')
+            ->where('mustahik_signature_id', $signatureId)
+            ->orWhere('kifayah_signature_id', $signatureId)
+            ->exists();
     }
 }

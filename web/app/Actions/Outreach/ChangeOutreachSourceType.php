@@ -2,12 +2,12 @@
 
 namespace App\Actions\Outreach;
 
-use App\Enums\HistoryEventType;
 use App\Models\HistoryEvent;
 use App\Models\Outreach;
 use App\Models\OutreachSource;
 use App\Models\OutreachType;
 use App\Models\User;
+use App\Support\FormSignatures;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -67,7 +67,7 @@ class ChangeOutreachSourceType
 
             $files = $destructive ? $this->clearSourceForms($outreach) : [];
 
-            HistoryEvent::record($outreach, $actor, HistoryEventType::SectionSaved, [
+            HistoryEvent::recordEdit($outreach, $actor, [
                 'description' => $destructive ? 'Source diubah; form Mustahik dan Kifayah beserta tanda tangannya dihapus.' : 'Source/Jenis diubah.',
                 'field_changes' => $changes,
                 'metadata' => ['step' => 'identitas', 'cleared_forms' => $destructive],
@@ -83,9 +83,9 @@ class ChangeOutreachSourceType
     }
 
     /**
-     * Removes the Mustahik and Kifayah Draft data and invalidates their
-     * signatures. Draft data has no historical version, so nothing else
-     * refers to it.
+     * Removes the current Mustahik and Kifayah data and invalidates their
+     * signatures. Signatures a historical version refers to (a Source change
+     * through Special Unlock) stay as submitted.
      *
      * @return array<int, array{disk: string, key: string}> stored files to remove
      */
@@ -100,6 +100,8 @@ class ChangeOutreachSourceType
             DB::table("{$form}_forms")->whereIn('id', $rows->pluck('id'))->delete();
             $signatureIds = [...$signatureIds, ...$rows->pluck('signature_id')->filter()->all()];
         }
+
+        $signatureIds = array_values(array_filter($signatureIds, fn (int $id) => ! FormSignatures::isInVersion($id)));
 
         if ($signatureIds === []) {
             return [];

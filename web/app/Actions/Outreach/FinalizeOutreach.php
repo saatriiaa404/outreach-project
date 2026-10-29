@@ -19,6 +19,7 @@ use App\Models\User;
 use App\Support\FormSignatures;
 use App\Support\OutreachFormSchema;
 use App\Support\OutreachSnapshot;
+use App\Support\SpecialUnlock;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
@@ -34,12 +35,30 @@ class FinalizeOutreach
 {
     public function handle(Outreach $outreach, User $actor, int $expectedVersion): OutreachVersion
     {
-        return DB::transaction(function () use ($outreach, $actor, $expectedVersion) {
+        return $this->submit($outreach, $actor, $expectedVersion, false);
+    }
+
+    /**
+     * Lock & Ajukan untuk Pengesahan by the Admin (Workflow v2.1 18.3, 25.6):
+     * the same validation and version, from MENUNGGU_PENGESAHAN or SELESAI
+     * while Special Unlock is open, recorded as SPECIAL_UNLOCK_SUBMITTED.
+     */
+    public function submitAfterSpecialUnlock(Outreach $outreach, User $admin, int $expectedVersion): OutreachVersion
+    {
+        return $this->submit($outreach, $admin, $expectedVersion, true);
+    }
+
+    private function submit(Outreach $outreach, User $actor, int $expectedVersion, bool $afterSpecialUnlock): OutreachVersion
+    {
+        return DB::transaction(function () use ($outreach, $actor, $expectedVersion, $afterSpecialUnlock) {
             // The row lock also stops a double submit from creating two versions.
             $locked = Outreach::query()->whereKey($outreach->id)->lockForUpdate()->firstOrFail();
+            $session = $afterSpecialUnlock ? SpecialUnlock::session($locked) : null;
 
-            if (! $locked->status->isEditableByPetugas()) {
-                throw ValidationException::withMessages(['finalize' => 'Outreach ini sudah difinalisasi.']);
+            if ($afterSpecialUnlock ? $session === null : ! $locked->status->isEditableByPetugas()) {
+                throw ValidationException::withMessages(['finalize' => $afterSpecialUnlock
+                    ? 'Special Unlock pada Outreach ini sudah ditutup.'
+                    : 'Outreach ini sudah difinalisasi.']);
             }
 
             if ($locked->edit_version !== $expectedVersion) {
@@ -91,9 +110,18 @@ class FinalizeOutreach
                 ])->save();
             });
 
-            HistoryEvent::record($locked, $actor, $refinalized ? HistoryEventType::Refinalized : HistoryEventType::Finalized, [
+            $event = match (true) {
+                $afterSpecialUnlock => HistoryEventType::SpecialUnlockSubmitted,
+                $refinalized => HistoryEventType::Refinalized,
+                default => HistoryEventType::Finalized,
+            };
+
+            HistoryEvent::record($locked, $actor, $event, [
                 'outreach_version_id' => $version->id,
-                'description' => "Versi {$versionNumber} diajukan untuk pengesahan.",
+                'description' => $afterSpecialUnlock
+                    ? "Versi {$versionNumber} diajukan oleh Admin setelah Special Unlock."
+                    : "Versi {$versionNumber} diajukan untuk pengesahan.",
+                'reason' => $session?->reason,
             ]);
 
             User::query()

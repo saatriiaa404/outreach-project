@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { stepStatusLabel } from '@/lib/outreach';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import FinalizeOutreachController from '@/actions/App/Http/Controllers/FinalizeOutreachController';
+import SpecialUnlockController from '@/actions/App/Http/Controllers/SpecialUnlockController';
 import Heading from '@/components/Heading.vue';
 import OutreachDocumentPreview from '@/components/outreach/OutreachDocumentPreview.vue';
 import type { OutreachDocument } from '@/components/outreach/OutreachDocumentPreview.vue';
@@ -18,6 +20,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { edit, index } from '@/routes/outreaches';
 
 type Row = { label: string; value: string | null };
@@ -36,6 +39,8 @@ const props = defineProps<{
     returned: Returned | null;
     checklist: { key: string; title: string; missing: string[] }[];
     ready: boolean;
+    canFinalize: boolean;
+    canLock: boolean;
     document: OutreachDocument;
     mustahik: { header: Row[]; answers: Row[] } | null;
     kifayah: { fields: Row[]; answers: Row[] } | null;
@@ -45,11 +50,46 @@ const props = defineProps<{
 const confirming = ref(false);
 const processing = ref(false);
 const page = usePage();
+const errors = computed(() => page.props.errors as Record<string, string>);
 const serverError = computed(
     () =>
-        (page.props.errors as Record<string, string>).finalize ??
-        (page.props.errors as Record<string, string>).edit_version,
+        errors.value.finalize ??
+        errors.value.edit_version ??
+        errors.value.special_unlock,
 );
+
+const locking = ref(false);
+const submitting = ref(false);
+const lockNote = ref('');
+
+// Lock & Ajukan validates like Finalisasi and creates a new version (25.6).
+const lockAndSubmit = () => {
+    submitting.value = false;
+    processing.value = true;
+    router.post(
+        SpecialUnlockController.submit.url(props.outreach.id),
+        { edit_version: props.outreach.edit_version },
+        { preserveScroll: true, onFinish: () => (processing.value = false) },
+    );
+};
+
+// Lock hands the Outreach back to the Petugas with a note (25.5, D-056).
+const lock = () => {
+    if (lockNote.value.trim() === '') {
+        return;
+    }
+
+    processing.value = true;
+    router.post(
+        SpecialUnlockController.lock.url(props.outreach.id),
+        { edit_version: props.outreach.edit_version, note: lockNote.value },
+        {
+            preserveScroll: true,
+            onSuccess: () => (locking.value = false),
+            onFinish: () => (processing.value = false),
+        },
+    );
+};
 
 // The server checks everything again; the button only reflects this page.
 const finalize = () => {
@@ -83,7 +123,7 @@ defineOptions({
         <div class="flex min-w-0 flex-1 flex-col gap-6">
             <Heading
                 title="Review"
-                :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · ${outreach.status === 'PERLU_PERBAIKAN' ? 'Perlu Perbaikan' : 'Draft'}`"
+                :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · ${stepStatusLabel(outreach.status)}`"
             />
 
             <ReturnNotice v-if="returned" :returned="returned" />
@@ -111,7 +151,25 @@ defineOptions({
                 >
                     {{ serverError }}
                 </p>
+                <div v-if="canLock" class="mt-3 flex flex-wrap gap-2">
+                    <Button
+                        :disabled="!ready || processing"
+                        data-test="lock-submit"
+                        @click="submitting = true"
+                    >
+                        Lock &amp; Ajukan untuk Pengesahan
+                    </Button>
+                    <Button
+                        variant="outline"
+                        :disabled="processing"
+                        data-test="lock"
+                        @click="locking = true"
+                    >
+                        Lock (kembalikan ke Petugas)
+                    </Button>
+                </div>
                 <Button
+                    v-if="canFinalize"
                     class="mt-3"
                     :disabled="!ready || processing"
                     data-test="finalize"
@@ -272,6 +330,65 @@ defineOptions({
                 </Button>
                 <Button data-test="confirm-finalize" @click="finalize">
                     Ya, finalisasi
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+    <Dialog v-model:open="submitting">
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Lock &amp; Ajukan untuk Pengesahan?</DialogTitle>
+                <DialogDescription>
+                    Hasil koreksi dibekukan sebagai versi baru dan diajukan
+                    kepada Kepala. Special Unlock ditutup. Admin tidak melakukan
+                    pengesahan.
+                </DialogDescription>
+            </DialogHeader>
+            <DialogFooter class="gap-2">
+                <Button variant="outline" @click="submitting = false">
+                    Batal
+                </Button>
+                <Button data-test="confirm-lock-submit" @click="lockAndSubmit">
+                    Ya, ajukan
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+
+    <Dialog v-model:open="locking">
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Lock dan kembalikan ke Petugas?</DialogTitle>
+                <DialogDescription>
+                    Status menjadi Perlu Perbaikan tanpa versi baru. Petugas
+                    melanjutkan dan melakukan Finalisasi Ulang.
+                </DialogDescription>
+            </DialogHeader>
+            <div class="grid gap-2">
+                <Label for="lock-note">Catatan untuk Petugas (wajib)</Label>
+                <textarea
+                    id="lock-note"
+                    v-model="lockNote"
+                    rows="4"
+                    maxlength="15000"
+                    class="min-h-24 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none md:text-sm"
+                    placeholder="Apa yang perlu dilengkapi Petugas atau Warga"
+                    data-test="lock-note"
+                />
+                <p v-if="errors.note" class="text-sm text-destructive">
+                    {{ errors.note }}
+                </p>
+            </div>
+            <DialogFooter class="gap-2">
+                <Button variant="outline" @click="locking = false">
+                    Batal
+                </Button>
+                <Button
+                    :disabled="processing || lockNote.trim() === ''"
+                    data-test="confirm-lock"
+                    @click="lock"
+                >
+                    Lock
                 </Button>
             </DialogFooter>
         </DialogContent>

@@ -16,7 +16,6 @@ use App\Http\Requests\Outreach\StoreAttachmentRequest;
 use App\Http\Requests\Outreach\StoreOutreachRequest;
 use App\Models\HistoryEvent;
 use App\Models\Outreach;
-use App\Models\OutreachApproval;
 use App\Models\OutreachAttachment;
 use App\Models\OutreachSource;
 use App\Models\OutreachType;
@@ -34,6 +33,7 @@ use App\Support\OutreachFormSchema;
 use App\Support\OutreachPdf;
 use App\Support\OutreachSnapshot;
 use App\Support\OutreachSteps;
+use App\Support\SpecialUnlock;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -127,7 +127,10 @@ class OutreachController extends Controller
             ],
             'history' => HistoryEvent::query()
                 ->where('outreach_id', $outreach->id)
-                ->whereIn('event_type', [HistoryEventType::Finalized, HistoryEventType::Refinalized, HistoryEventType::Returned, HistoryEventType::Approved])
+                ->whereIn('event_type', [
+                    HistoryEventType::Finalized, HistoryEventType::Refinalized, HistoryEventType::Returned, HistoryEventType::Approved,
+                    HistoryEventType::SpecialUnlocked, HistoryEventType::SpecialUnlockLocked, HistoryEventType::SpecialUnlockSubmitted,
+                ])
                 ->orderBy('id')
                 ->get()
                 ->map(fn (HistoryEvent $event) => [
@@ -209,6 +212,8 @@ class OutreachController extends Controller
             'step' => $step,
             // Why the Kepala returned it, shown while the Petugas revises (21.6).
             'returned' => $outreach->status === OutreachStatus::PerluPerbaikan ? $this->latestReturn($outreach) : null,
+            // The Admin edits inside an open Special Unlock session (D-056).
+            'unlockSession' => $request->user()->role === UserRole::Admin ? $this->unlockSession($outreach) : null,
         ];
 
         if ($step === 'mustahik') {
@@ -288,6 +293,8 @@ class OutreachController extends Controller
                     'missing' => $missing[$item['key']] ?? [],
                 ])->values(),
                 'ready' => $missing === [],
+                'canFinalize' => $request->user()->can('finalize', $outreach),
+                'canLock' => $request->user()->can('lockSpecialUnlock', $outreach),
                 'document' => OutreachDocument::build($outreach),
                 'mustahik' => $usesForms ? FormResults::mustahik($snapshot['mustahik']) : null,
                 'kifayah' => $usesForms ? FormResults::kifayah($snapshot['kifayah']) : null,
@@ -302,7 +309,8 @@ class OutreachController extends Controller
         if ($step === 'tanda_tangan') {
             return Inertia::render('outreach/Signatures', [
                 ...$shared,
-                'parties' => collect(FormSignatures::FORMS)->map(function (array $definition, string $form) use ($outreach, $request) {
+                'canSign' => $request->user()->can('sign', $outreach),
+                'parties' => collect(FormSignatures::FORMS)->map(function (array $definition, string $form) use ($outreach) {
                     $record = FormSignatures::form($outreach, $form);
                     $signature = $record?->signature_id ? Signature::query()->find($record->signature_id) : null;
                     $missing = $form === 'mustahik' ? MustahikFormSchema::missing($outreach->mustahikForm) : KifayahFormSchema::missing($outreach->kifayahForm);
@@ -312,7 +320,7 @@ class OutreachController extends Controller
                         'title' => $definition['title'],
                         'document' => $definition['document'],
                         // Petugas signs as the logged-in user; the Warga is the Klien (16.1).
-                        'signer' => $signature->signer_name_snapshot ?? ($form === 'mustahik' ? $request->user()->name : $outreach->nama),
+                        'signer' => $signature->signer_name_snapshot ?? ($form === 'mustahik' ? $outreach->petugas->name : $outreach->nama),
                         'signed_at' => $signature?->signed_at->toIso8601String(),
                         'url' => $signature ? route('outreaches.signatures.show', [$outreach, $form]).'?v='.$signature->id : null,
                         'formMissing' => count($missing),
@@ -380,7 +388,7 @@ class OutreachController extends Controller
         $next = OutreachSteps::nextAfter($outreach->load('source'), $step);
         $target = $request->boolean('next') && $next ? $next : $step;
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => 'Draft tersimpan.']);
+        Inertia::flash('toast', ['type' => 'success', 'message' => $outreach->status === OutreachStatus::Draft ? 'Draft tersimpan.' : 'Perubahan tersimpan.']);
 
         return to_route('outreaches.edit', ['outreach' => $outreach, 'step' => $target]);
     }
@@ -480,6 +488,9 @@ class OutreachController extends Controller
 
         return [
             'canRequest' => $open === null && $user->can('requestSpecialUnlock', $outreach),
+            'canUnlock' => $user->can('specialUnlock', $outreach),
+            'session' => $this->unlockSession($outreach),
+            'editVersion' => $user->role === UserRole::Admin ? $outreach->edit_version : null,
             'openBy' => $open === null || $open->requester_id === $user->id ? null : $open->requester->name,
             'requests' => $requests
                 ->filter(fn (SpecialUnlockRequest $request) => $user->role === UserRole::Admin || $request->requester_id === $user->id)
@@ -493,21 +504,38 @@ class OutreachController extends Controller
     }
 
     /**
-     * @return array{note: string|null, kepala: string, decided_at: string}|null
+     * Why the Outreach is back with the Petugas: the latest Return note of the
+     * Kepala or Lock note of the Admin after Special Unlock (21.6, D-056).
+     *
+     * @return array{kind: string, note: string|null, by: string, at: string|null}|null
      */
     private function latestReturn(Outreach $outreach): ?array
     {
-        $approval = OutreachApproval::query()
+        $event = HistoryEvent::query()
             ->where('outreach_id', $outreach->id)
-            ->where('decision', OutreachApproval::RETURNED)
-            ->with('kepala:id,name')
+            ->whereIn('event_type', [HistoryEventType::Returned, HistoryEventType::SpecialUnlockLocked])
             ->latest('id')
             ->first();
 
-        return $approval === null ? null : [
-            'note' => $approval->note,
-            'kepala' => $approval->kepala->name,
-            'decided_at' => $approval->decided_at->toIso8601String(),
+        return $event === null ? null : [
+            'kind' => $event->event_type->value,
+            'note' => $event->reason,
+            'by' => $event->actor_name_snapshot,
+            'at' => $event->created_at?->toIso8601String(),
+        ];
+    }
+
+    /**
+     * @return array{admin: string, reason: string|null, at: string|null}|null
+     */
+    private function unlockSession(Outreach $outreach): ?array
+    {
+        $session = SpecialUnlock::session($outreach);
+
+        return $session === null ? null : [
+            'admin' => $session->actor_name_snapshot,
+            'reason' => $session->reason,
+            'at' => $session->created_at?->toIso8601String(),
         ];
     }
 

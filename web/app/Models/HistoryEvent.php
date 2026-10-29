@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\HistoryEventType;
+use App\Enums\UserRole;
+use App\Support\SpecialUnlock;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -61,6 +63,25 @@ class HistoryEvent extends Model
         ])->save();
 
         return $event;
+    }
+
+    /**
+     * A data change: SECTION_SAVED in the normal flow, SPECIAL_UNLOCK_EDITED
+     * with the session reason when the Admin edits during Special Unlock
+     * (Workflow v2.1 25.8, D-056).
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    public static function recordEdit(Outreach $outreach, User $actor, array $attributes = []): self
+    {
+        if ($actor->role !== UserRole::Admin) {
+            return self::record($outreach, $actor, HistoryEventType::SectionSaved, $attributes);
+        }
+
+        return self::record($outreach, $actor, HistoryEventType::SpecialUnlockEdited, [
+            'reason' => SpecialUnlock::session($outreach)?->reason,
+            ...$attributes,
+        ]);
     }
 
     protected static function booted(): void

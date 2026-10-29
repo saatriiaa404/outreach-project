@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { stepStatusLabel } from '@/lib/outreach';
 import { Form, Head } from '@inertiajs/vue3';
 import { computed, reactive, ref, watch } from 'vue';
 import KifayahController from '@/actions/App/Http/Controllers/KifayahController';
@@ -154,7 +155,7 @@ const saveStatus = computed(() => {
         <div class="flex max-w-3xl flex-1 flex-col gap-6">
             <Heading
                 title="Had Kifayah"
-                :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · ${outreach.status === 'PERLU_PERBAIKAN' ? 'Perlu Perbaikan' : 'Draft'}`"
+                :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · ${stepStatusLabel(outreach.status)}`"
             />
 
             <Form
@@ -351,7 +352,12 @@ const saveStatus = computed(() => {
                         "
                         @click="goNext = false"
                     >
-                        Simpan Draft
+                        {{
+                            outreach.status === 'DRAFT' ||
+                            outreach.status === 'PERLU_PERBAIKAN'
+                                ? 'Simpan Draft'
+                                : 'Simpan perubahan'
+                        }}
                     </Button>
                     <Button
                         v-if="hasNext"

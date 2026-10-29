@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { stepStatusLabel } from '@/lib/outreach';
 import { Form, Head } from '@inertiajs/vue3';
 import { computed, reactive, ref, watch } from 'vue';
 import OutreachController from '@/actions/App/Http/Controllers/OutreachController';
@@ -196,7 +197,7 @@ const rupiah = (amount: number) =>
         <div class="flex max-w-3xl flex-1 flex-col gap-6">
             <Heading
                 :title="currentStep.title"
-                :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · ${outreach.status === 'PERLU_PERBAIKAN' ? 'Perlu Perbaikan' : 'Draft'}`"
+                :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · ${stepStatusLabel(outreach.status)}`"
             />
 
             <ReturnNotice v-if="returned" :returned="returned" />
@@ -438,7 +439,12 @@ const rupiah = (amount: number) =>
                         "
                         @click="goNext = false"
                     >
-                        Simpan Draft
+                        {{
+                            outreach.status === 'DRAFT' ||
+                            outreach.status === 'PERLU_PERBAIKAN'
+                                ? 'Simpan Draft'
+                                : 'Simpan perubahan'
+                        }}
                     </Button>
                     <Button
                         v-if="hasNext"

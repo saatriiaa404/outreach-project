@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Actions\Outreach\AttachFileToOutreach;
 use App\Enums\AttachmentCategory;
-use App\Enums\HistoryEventType;
 use App\Http\Requests\Outreach\StoreAttachmentRequest;
 use App\Models\HistoryEvent;
 use App\Models\Outreach;
@@ -47,7 +46,7 @@ class OutreachAttachmentController extends Controller
 
         $attachment->delete();
 
-        HistoryEvent::record($outreach, $request->user(), HistoryEventType::SectionSaved, [
+        HistoryEvent::recordEdit($outreach, $request->user(), [
             'description' => "Lampiran dihapus: {$attachment->category->label()}",
             'metadata' => ['step' => 'lampiran', 'attachment_id' => $attachment->id],
         ]);

@@ -6,6 +6,7 @@ use App\Enums\OutreachStatus;
 use App\Enums\UserRole;
 use App\Models\Outreach;
 use App\Models\User;
+use App\Support\SpecialUnlock;
 
 /**
  * Server-side Outreach authorization following roles-permissions.md and
@@ -58,30 +59,44 @@ class OutreachPolicy
     }
 
     /**
-     * Normal editing by the owning Petugas; ADMIN edits only during Special
-     * Unlock, which is authorized separately (roadmap R8).
+     * Data editing: the owning Petugas in the normal flow, or the ADMIN
+     * while Special Unlock is open (Workflow v2.1 25.4, D-016).
      */
     public function update(User $user, Outreach $outreach): bool
     {
-        return $user->role === UserRole::Petugas
-            && $this->owns($user, $outreach)
-            && $outreach->status->isEditableByPetugas();
+        return $this->editsAsPetugas($user, $outreach) || $this->editsAsAdmin($user, $outreach);
     }
 
     /**
      * Source and Type change by normal editing only before the first
-     * Finalisasi; afterwards only through Special Unlock (Workflow v2.1 7.3).
+     * Finalisasi; afterwards only through Special Unlock (Workflow v2.1 7.3, 9.6).
      */
     public function changeSourceType(User $user, Outreach $outreach): bool
     {
-        return $user->role === UserRole::Petugas
-            && $this->owns($user, $outreach)
-            && $outreach->status === OutreachStatus::Draft;
+        return ($this->editsAsPetugas($user, $outreach) && $outreach->status === OutreachStatus::Draft)
+            || $this->editsAsAdmin($user, $outreach);
+    }
+
+    /**
+     * Signatures come from the Petugas and the Warga on the Petugas's device,
+     * never from the ADMIN (Workflow v2.1 16).
+     */
+    public function sign(User $user, Outreach $outreach): bool
+    {
+        return $this->editsAsPetugas($user, $outreach);
     }
 
     public function finalize(User $user, Outreach $outreach): bool
     {
-        return $this->update($user, $outreach);
+        return $this->editsAsPetugas($user, $outreach);
+    }
+
+    /**
+     * Lock and Lock & Ajukan close the ADMIN's Special Unlock session.
+     */
+    public function lockSpecialUnlock(User $user, Outreach $outreach): bool
+    {
+        return $this->editsAsAdmin($user, $outreach);
     }
 
     public function return(User $user, Outreach $outreach): bool
@@ -109,7 +124,9 @@ class OutreachPolicy
 
     public function specialUnlock(User $user, Outreach $outreach): bool
     {
-        return $user->role === UserRole::Admin && $outreach->status->allowsSpecialUnlock();
+        return $user->role === UserRole::Admin
+            && $outreach->status->allowsSpecialUnlock()
+            && ! SpecialUnlock::isActive($outreach);
     }
 
     /**
@@ -120,6 +137,20 @@ class OutreachPolicy
     {
         return in_array($user->role, [UserRole::Kepala, UserRole::Admin], true)
             && $outreach->status === OutreachStatus::Selesai;
+    }
+
+    private function editsAsPetugas(User $user, Outreach $outreach): bool
+    {
+        return $user->role === UserRole::Petugas
+            && $this->owns($user, $outreach)
+            && $outreach->status->isEditableByPetugas();
+    }
+
+    private function editsAsAdmin(User $user, Outreach $outreach): bool
+    {
+        return $user->role === UserRole::Admin
+            && $outreach->status->allowsSpecialUnlock()
+            && SpecialUnlock::isActive($outreach);
     }
 
     private function owns(User $user, Outreach $outreach): bool

@@ -3,13 +3,16 @@
 namespace Tests\Feature\Outreach;
 
 use App\Actions\Outreach\FinalizeOutreach;
+use App\Actions\Outreach\SaveOutreachStep;
 use App\Enums\HistoryEventType;
 use App\Enums\OutreachStatus;
 use App\Models\HistoryEvent;
 use App\Models\InAppNotification;
+use App\Models\KifayahForm;
 use App\Models\Outreach;
 use App\Models\OutreachApproval;
 use App\Models\OutreachVersion;
+use App\Models\Signature;
 use App\Models\User;
 use Database\Seeders\MasterDataSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -274,7 +277,23 @@ class ReturnOutreachTest extends TestCase
                 ->assertInertia(fn (Assert $page) => $page
                     ->where('outreach.status', 'PERLU_PERBAIKAN')
                     ->where('returned.note', 'Foto rumah kurang jelas, mohon diganti.')
-                    ->where('returned.kepala', $kepala->name));
+                    ->where('returned.by', $kepala->name)->where('returned.kind', 'RETURNED'));
         }
+    }
+
+    public function test_revising_signed_data_keeps_the_signature_of_the_returned_version()
+    {
+        $outreach = $this->submitted();
+        $this->returnAs(User::factory()->kepala()->create(), $outreach);
+        $version = OutreachVersion::query()->sole();
+        $kifayahSignature = $version->kifayah_signature_id;
+
+        // No. telp is printed on both signed forms, so both signatures are cleared (16.4).
+        app(SaveOutreachStep::class)->handle($outreach, $outreach->petugas, 'klien', ['no_telp' => '080000000077'], $outreach->refresh()->edit_version);
+        $this->actingAs($outreach->petugas)->delete(route('outreaches.signatures.destroy', [$outreach, 'kifayah']), ['edit_version' => $outreach->refresh()->edit_version]);
+
+        $this->assertNull(KifayahForm::query()->sole()->signature_id, 'The current form needs a new signature.');
+        $this->assertNotNull(Signature::query()->find($kifayahSignature), 'The returned version keeps its signature.');
+        $this->assertSame($kifayahSignature, $version->refresh()->kifayah_signature_id);
     }
 }

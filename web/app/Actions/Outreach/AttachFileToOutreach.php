@@ -3,7 +3,6 @@
 namespace App\Actions\Outreach;
 
 use App\Enums\AttachmentCategory;
-use App\Enums\HistoryEventType;
 use App\Models\HistoryEvent;
 use App\Models\Outreach;
 use App\Models\OutreachAttachment;
@@ -109,7 +108,7 @@ class AttachFileToOutreach
 
                 $replaced?->delete();
 
-                HistoryEvent::record($outreach, $actor, HistoryEventType::SectionSaved, [
+                HistoryEvent::recordEdit($outreach, $actor, [
                     'description' => ($replaced ? 'Lampiran diganti: ' : 'Lampiran ditambahkan: ').$category->label(),
                     'metadata' => ['step' => 'lampiran', 'attachment_id' => $attachment->id, 'replaced_id' => $replaced?->id],
                 ]);

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { router, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import SpecialUnlockController from '@/actions/App/Http/Controllers/SpecialUnlockController';
 import SpecialUnlockRequestController from '@/actions/App/Http/Controllers/SpecialUnlockRequestController';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,6 +13,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { edit } from '@/routes/outreaches';
 
 export type SpecialUnlockRequestRow = {
     id: number;
@@ -28,6 +30,9 @@ export type SpecialUnlockRequestRow = {
 
 export type SpecialUnlock = {
     canRequest: boolean;
+    canUnlock: boolean;
+    session: { admin: string; reason: string | null; at: string | null } | null;
+    editVersion: number | null;
     openBy: string | null;
     requests: (SpecialUnlockRequestRow & { can_cancel: boolean })[];
 };
@@ -71,6 +76,30 @@ const submit = () => {
     );
 };
 
+const unlocking = ref(false);
+const unlockReason = ref('');
+
+// Opens the session; the stepper then accepts the Admin's edits (25.3).
+const unlock = () => {
+    if (unlockReason.value.trim() === '') {
+        return;
+    }
+
+    processing.value = true;
+    router.post(
+        SpecialUnlockController.unlock.url(props.outreachId),
+        {
+            reason: unlockReason.value,
+            edit_version: props.specialUnlock.editVersion,
+        },
+        {
+            preserveScroll: true,
+            onSuccess: () => (unlocking.value = false),
+            onFinish: () => (processing.value = false),
+        },
+    );
+};
+
 const cancel = (id: number) => {
     processing.value = true;
     router.post(
@@ -88,6 +117,8 @@ const cancel = (id: number) => {
     <section
         v-if="
             specialUnlock.canRequest ||
+            specialUnlock.canUnlock ||
+            specialUnlock.session ||
             specialUnlock.openBy ||
             specialUnlock.requests.length
         "
@@ -107,6 +138,32 @@ const cancel = (id: number) => {
         >
             {{ errors.special_unlock }}
         </p>
+        <div
+            v-if="specialUnlock.session"
+            class="rounded-md border border-amber-500 bg-amber-50 p-3 text-sm text-amber-950 dark:bg-amber-950/30 dark:text-amber-100"
+            data-test="unlock-session"
+        >
+            <p class="font-medium">
+                Special Unlock aktif sejak
+                {{ dateTime(specialUnlock.session.at) }} oleh
+                {{ specialUnlock.session.admin }}.
+            </p>
+            <p class="whitespace-pre-line">
+                Alasan: {{ specialUnlock.session.reason }}
+            </p>
+            <a
+                v-if="specialUnlock.editVersion !== null"
+                :href="edit.url(outreachId)"
+                class="mt-1 inline-block underline"
+                data-test="unlock-edit"
+                >Buka pengisian untuk koreksi</a
+            >
+        </div>
+        <div v-if="specialUnlock.canUnlock">
+            <Button data-test="open-special-unlock" @click="unlocking = true">
+                Special Unlock
+            </Button>
+        </div>
         <p
             v-if="specialUnlock.openBy"
             class="text-sm"
@@ -199,6 +256,49 @@ const cancel = (id: number) => {
                     @click="submit"
                 >
                     Kirim permintaan
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+
+    <Dialog v-model:open="unlocking">
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Buka Special Unlock?</DialogTitle>
+                <DialogDescription>
+                    Status Outreach tidak berubah. Setiap perubahan dicatat
+                    dengan alasan ini sampai Anda melakukan Lock atau Lock &amp;
+                    Ajukan. Kepala tidak dapat memutus pengajuan selama Special
+                    Unlock aktif.
+                </DialogDescription>
+            </DialogHeader>
+            <div class="grid gap-2">
+                <Label for="unlock-reason">Alasan (wajib)</Label>
+                <textarea
+                    id="unlock-reason"
+                    v-model="unlockReason"
+                    rows="4"
+                    maxlength="15000"
+                    class="min-h-24 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none md:text-sm"
+                    data-test="unlock-reason"
+                />
+                <p
+                    v-if="errors.reason || errors.edit_version"
+                    class="text-sm text-destructive"
+                >
+                    {{ errors.reason ?? errors.edit_version }}
+                </p>
+            </div>
+            <DialogFooter class="gap-2">
+                <Button variant="outline" @click="unlocking = false">
+                    Batal
+                </Button>
+                <Button
+                    :disabled="processing || unlockReason.trim() === ''"
+                    data-test="confirm-unlock"
+                    @click="unlock"
+                >
+                    Buka Special Unlock
                 </Button>
             </DialogFooter>
         </DialogContent>

@@ -10,6 +10,7 @@ use App\Http\Controllers\OutreachPdfController;
 use App\Http\Controllers\OutreachVersionController;
 use App\Http\Controllers\ReturnOutreachController;
 use App\Http\Controllers\SignatureController;
+use App\Http\Controllers\SpecialUnlockController;
 use App\Http\Controllers\SpecialUnlockRequestController;
 use Illuminate\Support\Facades\Route;
 
@@ -62,6 +63,12 @@ Route::middleware(['auth'])->group(function () {
         ->name('outreaches.versions.pdf');
     Route::post('outreach/{outreach}/special-unlock-requests', [SpecialUnlockRequestController::class, 'store'])
         ->name('outreaches.special-unlock-requests.store');
+    Route::post('outreach/{outreach}/special-unlock', [SpecialUnlockController::class, 'unlock'])
+        ->name('outreaches.special-unlock');
+    Route::post('outreach/{outreach}/special-unlock/lock', [SpecialUnlockController::class, 'lock'])
+        ->name('outreaches.special-unlock.lock');
+    Route::post('outreach/{outreach}/special-unlock/submit', [SpecialUnlockController::class, 'submit'])
+        ->name('outreaches.special-unlock.submit');
     Route::get('special-unlock-requests', [SpecialUnlockRequestController::class, 'index'])
         ->name('special-unlock-requests.index');
     Route::post('special-unlock-requests/{specialUnlockRequest}/cancel', [SpecialUnlockRequestController::class, 'cancel'])

@@ -5,6 +5,7 @@ namespace App\Actions\Outreach;
 use App\Enums\OutreachStatus;
 use App\Models\Outreach;
 use App\Models\OutreachVersion;
+use App\Support\SpecialUnlock;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -27,6 +28,13 @@ trait LocksPendingVersion
             || $version->status !== OutreachVersion::PENDING_APPROVAL) {
             throw ValidationException::withMessages([
                 $errorKey => 'Pengajuan ini sudah diputuskan atau diganti versi baru. Muat ulang halaman.',
+            ]);
+        }
+
+        // The Admin may be correcting this submission right now (D-056).
+        if (SpecialUnlock::isActive($locked)) {
+            throw ValidationException::withMessages([
+                $errorKey => 'Admin sedang melakukan Special Unlock pada Outreach ini. Keputusan dapat diambil setelah Admin melakukan Lock atau Lock & Ajukan.',
             ]);
         }
 

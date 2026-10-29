@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { stepStatusLabel } from '@/lib/outreach';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, reactive, ref } from 'vue';
 import SignatureController from '@/actions/App/Http/Controllers/SignatureController';
@@ -40,6 +41,7 @@ const props = defineProps<{
     steps: Step[];
     step: string;
     parties: Party[];
+    canSign: boolean;
 }>();
 
 defineOptions({
@@ -121,7 +123,7 @@ const clear = () => {
         <div class="flex max-w-3xl flex-1 flex-col gap-6">
             <Heading
                 title="Tanda Tangan"
-                :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · ${outreach.status === 'PERLU_PERBAIKAN' ? 'Perlu Perbaikan' : 'Draft'}`"
+                :description="`${outreach.code} · ${outreach.source} · ${outreach.type} · ${stepStatusLabel(outreach.status)}`"
             />
 
             <p class="text-sm text-muted-foreground">
@@ -174,6 +176,7 @@ const clear = () => {
                         Ditandatangani {{ signedAt(party.signed_at!) }}
                     </p>
                     <Button
+                        v-if="canSign"
                         type="button"
                         variant="outline"
                         size="sm"
@@ -184,6 +187,14 @@ const clear = () => {
                         Hapus dan tanda tangani ulang
                     </Button>
                 </template>
+                <p
+                    v-else-if="!canSign"
+                    class="text-sm text-muted-foreground"
+                    data-test="signature-admin"
+                >
+                    Belum ada tanda tangan. Tanda tangan dibuat oleh Petugas dan
+                    Warga; gunakan Lock agar Petugas melengkapinya.
+                </p>
                 <SignaturePad
                     v-else
                     :label="party.title"

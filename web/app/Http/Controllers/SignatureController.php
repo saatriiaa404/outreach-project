@@ -61,7 +61,7 @@ class SignatureController extends Controller
 
     private function authorizeChange(Outreach $outreach): void
     {
-        Gate::authorize('update', $outreach);
+        Gate::authorize('sign', $outreach);
         abort_unless($outreach->source->usesMustahikKifayah(), 404);
     }
 }

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 export type Returned = {
+    kind: 'RETURNED' | 'SPECIAL_UNLOCK_LOCKED';
     note: string | null;
-    kepala: string;
-    decided_at: string;
+    by: string;
+    at: string | null;
 };
 
 defineProps<{ returned: Returned }>();
@@ -14,13 +15,21 @@ defineProps<{ returned: Returned }>();
         data-test="return-notice"
     >
         <p class="font-medium">
-            Dikembalikan oleh {{ returned.kepala }} pada
             {{
-                new Date(returned.decided_at).toLocaleString('id-ID', {
-                    dateStyle: 'long',
-                    timeStyle: 'short',
-                })
+                returned.kind === 'RETURNED'
+                    ? 'Dikembalikan oleh'
+                    : 'Dikunci kembali setelah Special Unlock oleh'
             }}
+            {{ returned.by }}
+            <template v-if="returned.at">
+                pada
+                {{
+                    new Date(returned.at).toLocaleString('id-ID', {
+                        dateStyle: 'long',
+                        timeStyle: 'short',
+                    })
+                }}
+            </template>
         </p>
         <p class="mt-1 whitespace-pre-line">{{ returned.note }}</p>
         <p class="mt-2 text-xs opacity-80">
