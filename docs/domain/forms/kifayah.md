@@ -330,6 +330,8 @@ bukan dari data Outreach terkini.
     `kifayah.pdf` tidak memuat kolom skor, sehingga tidak ada perilaku
     skor yang perlu diterapkan.
 
+Template PDF versi 3 (D-070) meniru tata letak `docs/reference/kifayah.pdf`: A4, lebar kolom dan posisi tabel sesuai sumber, dan logo Baznas di tengah atas setiap halaman. Versi yang sudah difinalisasi tetap memakai template yang dicatatnya.
+
 ## 6. Aturan Implementasi yang Sudah Dikonfirmasi
 
 1.  Input Kifayah dilakukan oleh Petugas.

@@ -23,7 +23,7 @@ Gunakan password demo yang berbeda dari password pribadi dan jangan memakai akun
 | DEMO-003 | BANGGA_SURABAYA | BANTUAN_MODAL_USAHA | DRAFT | Alur Bangga Surabaya; pastikan form Mustahik/Kifayah dan signature Petugas/Warga sebelum approval tidak ditampilkan jika tidak diwajibkan Workflow v2.1 |
 | DEMO-004 | BAZNAS | ALAT_KESEHATAN | SELESAI | Uji Special Unlock dan pastikan history lama tetap utuh |
 
-Sejak 29 Oktober 2026 `DemoSeeder` menyiapkan keempat record: DEMO-001 dan DEMO-003 sebagai Draft; DEMO-002 dan DEMO-004 dibangun melalui alur aplikasi (isi data, empat lampiran sintetis, tanda tangan sintetis, Finalisasi, dan untuk DEMO-004 Approve oleh Kepala demo). Kepala demo memakai pangkat sintetis `Penata Tk. I`.
+Sejak 29 Oktober 2026 `DemoSeeder` menyiapkan keempat record: DEMO-001 dan DEMO-003 sebagai Draft; DEMO-002 dan DEMO-004 dibangun melalui alur aplikasi (isi data, empat lampiran sintetis, tanda tangan sintetis, Finalisasi, dan untuk DEMO-004 Approve oleh Kepala demo). Kepala demo memakai pangkat sintetis `Penata Tk. I`. NIK/No KK Kepala Keluarga pada form Mustahik demo berupa angka sintetis 16 digit berawalan nol (D-071).
 
 Gunakan nama sintetis seperti `Warga Demo Satu`, `Warga Demo Dua`, dan token identitas seperti `DUMMY-NIK-001`. Jangan gunakan nomor identitas yang menyerupai atau berpotensi menjadi NIK warga nyata. Data alamat, nomor kontak, dan tanggal lahir—jika dibutuhkan untuk demonstrasi—harus jelas sintetis.
 

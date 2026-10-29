@@ -21,7 +21,10 @@ Pustaka UI: Tailwind CSS + shadcn-vue melalui starter kit resmi Laravel untuk Vu
 | Arsip | ADMIN | Penandaan status arsip manual dan catatan referensi, tanpa integrasi E-Surat/E-Arsip (D-038). |
 | Master Source/Type | ADMIN | Menambah dan menonaktifkan Source/Type; `code` tampil read-only setelah dibuat (D-040). Prototype: tiga Source baseline hanya dapat diganti nama dan diaktifkan/dinonaktifkan; Jenis dapat ditambah (D-057). |
 | Manajemen user dan template | ADMIN | Akun dummy, status aktif, NIP Kepala (D-041), template tanda tangan Kepala, dan template stempel. Tidak ada registrasi publik (D-014). Prototype (R9.3): template diunggah sebagai gambar dan setiap unggahan menjadi versi aktif baru; stempel belum dicetak pada PDF (D-058). |
-| History/Notification | Semua | Timeline dan notifikasi in-app sesuai resource serta hak akses. |
+| History/Notification | Semua | Timeline dan notifikasi in-app sesuai resource serta hak akses. Riwayat Outreach menampilkan 3 kejadian terbaru beserta jumlahnya dan dapat dibuka seluruhnya lalu ditutup lagi (D-072). |
+| Profil | Semua | Pengaturan > Profil: foto, nomor telepon, dan alamat domisili opsional; nama dan email tampil read-only karena dikelola Admin. Admin mengubah profil akun lain dari menu Pengguna (D-067). |
+
+Setiap halaman kecuali Dashboard memiliki tombol berlabel "Kembali" di sisi kanan kepala halaman, terpisah dari tombol sidebar. Tombol kembali ke halaman sebelumnya; bila halaman dibuka langsung, ke halaman induk pada breadcrumb (D-072).
 
 ## Stepper Petugas
 
@@ -57,6 +60,7 @@ Desktop memakai vertical stepper; mobile memakai `Langkah X dari N`. Status step
 - **Bantuan yang pernah diterima:** pilihan Ya/Tidak; uraian teks bebas tampil dan wajib bila Ya (D-027).
 - **Penghasilan klien sebulan dan Pendidikan terakhir:** ditandai opsional; tidak muncul sebagai blocker Finalisasi (D-032).
 - **Identitas Kifayah:** Nama, NIK, Alamat (Alamat Domisili), dan No. HP tampil read-only dari Outreach; Kelurahan dan Kecamatan dari konstanta konfigurasi (D-036).
+- **Kolom angka (D-071):** hanya menerima angka; nilai tidak berubah saat halaman digeser (scroll/touchpad) atau tombol panah ditekan. Panah atas/bawah dan Enter memindahkan kursor ke kolom sebelumnya/berikutnya. NIK/No KK Mustahik tepat 16 digit saat Finalisasi; RT dan RW 1-3 digit.
 - **Header Mustahik:** Nama Petugas dan wilayah tampil read-only; No. Telepon HP tampil dari No. telp Outreach dengan keterangan bahwa itu kontak Outreach (D-036).
 
 ## Dashboard dan Pencarian
@@ -64,7 +68,8 @@ Desktop memakai vertical stepper; mobile memakai `Langkah X dari N`. Status step
 - PETUGAS: daftar Outreach miliknya per status.
 - KEPALA: antrean `MENUNGGU_PENGESAHAN` dan daftar `SELESAI`. Draft tidak ditampilkan; `PERLU_PERBAIKAN` hanya menampilkan status dan catatan Return pada riwayat (D-039). Prototype (R7.3): daftar Kepala dibuka pada antrean dengan pengajuan terlama di atas; filter status tersedia untuk semua peran.
 - Halaman tinjau Kepala menampilkan versi yang diajukan, bukan data yang sedang berjalan. Return membuka dialog dengan catatan wajib; Petugas melihat catatan Return terbaru di langkah pengisian dan Review selama `PERLU_PERBAIKAN`.
-- ADMIN: semua Outreach per status, permintaan Special Unlock, dan status arsip.
+- ADMIN: semua Outreach per status, permintaan Special Unlock, status arsip, dan grafik batang (D-068): Outreach per tanggal pada bulan yang dipilih, per Jenis dan per Source pada bulan itu, serta tren 12 bulan dibuat/disahkan.
+- Daftar perhatian di Dashboard berupa tabel (Kode, Nama, Jenis, Tanggal, Status). Judul kolom Tanggal, Jenis, dan Status dapat diklik untuk memfilter; di daftar Outreach juga Source. Pilihan Tanggal: hari ini, 7 hari terakhir, 30 hari terakhir, bulan ini, tahun ini. Filter tersimpan di URL dan hanya mempersempit data yang sudah boleh dilihat (D-072).
 - Pencarian: nama, NIK, ID internal, Source, Type, status, dan rentang tanggal. Hasil selalu dibatasi scope role; NIK tidak dipakai sebagai identifier URL.
 
 ## State Tampilan
@@ -81,6 +86,7 @@ Desktop memakai vertical stepper; mobile memakai `Langkah X dari N`. Status step
 - Jika pembuatan PDF wajib gagal, tampilkan pesan kegagalan yang jelas; jangan tampilkan persetujuan sebagai berhasil. Status tetap `MENUNGGU_PENGESAHAN`, keputusan persetujuan tidak disimpan sebagai berhasil, dan notifikasi `OUTREACH_COMPLETED` tidak dikirim.
 - Untuk BAZNAS/CSR, tampilkan status tiga PDF terpisah: PDF Outreach (termasuk halaman lampiran), PDF Mustahik, dan PDF Kifayah.
 - Untuk BANGGA_SURABAYA, tampilkan status PDF Outreach termasuk halaman lampiran.
+- Halaman detail Outreach (termasuk antrean Kepala) dan Review menampilkan Mustahik dan Kifayah sebagai dokumen dari template PDF yang sama, tanpa blok pengesahan (D-069).
 - Tampilkan error dan langkah pemulihan yang relevan tanpa menyiratkan bahwa PDF yang gagal sudah tersedia.
 
 ## Tanda Tangan, Versi, dan Perubahan
