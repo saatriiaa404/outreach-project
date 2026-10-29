@@ -980,6 +980,28 @@ rujuk keputusan pengganti.
                            historis tidak
                            dihapus saat data
                            berubah.
+
+  D-057       LOCKED       Master Source/Type     Persetujuan     Tanpa perubahan         `database.md` 4.2, 4.3;
+                           (R9.2): tiga Source    eksplisit       schema. Perubahan       `design.md`; `roles-
+                           baseline tidak         pemilik         dicatat di audit_logs.  permissions.md`; kode `web/`
+                           bertambah di           proyek, 29      Nama baru tampil pada
+                           prototype karena alur  Oktober 2026.   daftar dan form
+                           form dan paket PDF                     berikutnya; versi
+                           ditentukan per Source                  historis tetap memakai
+                           (Workflow 9.1 sampai                   nama di snapshot.
+                           9.3); Admin dapat                      Menambah Source baru
+                           mengganti nama dan me                  memerlukan keputusan
+                           ngaktifkan/menonaktif                  alur terlebih dahulu.
+                           kan Source. Type
+                           dapat ditambah (kode
+                           huruf kapital, angka,
+                           garis bawah, unik),
+                           diganti nama, dan
+                           dinonaktifkan. Kode
+                           tidak pernah berubah
+                           (D-040). Minimal satu
+                           Source dan satu Type
+                           tetap aktif.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

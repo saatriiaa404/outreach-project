@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApproveOutreachController;
 use App\Http\Controllers\FinalizeOutreachController;
 use App\Http\Controllers\KifayahController;
+use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\MustahikController;
 use App\Http\Controllers\OutreachAttachmentController;
 use App\Http\Controllers\OutreachController;
@@ -69,6 +70,14 @@ Route::middleware(['auth'])->group(function () {
         ->name('outreaches.special-unlock.lock');
     Route::post('outreach/{outreach}/special-unlock/submit', [SpecialUnlockController::class, 'submit'])
         ->name('outreaches.special-unlock.submit');
+    Route::get('master-data', [MasterDataController::class, 'index'])
+        ->name('master-data.index');
+    Route::post('master-data/types', [MasterDataController::class, 'storeType'])
+        ->name('master-data.types.store');
+    Route::put('master-data/sources/{source}', [MasterDataController::class, 'updateSource'])
+        ->name('master-data.sources.update');
+    Route::put('master-data/types/{type}', [MasterDataController::class, 'updateType'])
+        ->name('master-data.types.update');
     Route::get('special-unlock-requests', [SpecialUnlockRequestController::class, 'index'])
         ->name('special-unlock-requests.index');
     Route::post('special-unlock-requests/{specialUnlockRequest}/cancel', [SpecialUnlockRequestController::class, 'cancel'])
