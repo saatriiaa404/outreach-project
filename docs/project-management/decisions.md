@@ -1258,6 +1258,23 @@ rujuk keputusan pengganti.
                            pemilik lewat menu
                            Pengguna saat
                            dipakai.
+
+  D-066       LOCKED       Visibilitas repository Persetujuan     Tanpa perubahan kode    `setup.md` 8 dan 9; `tasks.md` ENV-003
+                           GitHub: `saatriiaa404/ eksplisit       atau schema. Seluruh
+                           outreach-project`      pemilik proyek, isi repo dapat dibaca
+                           bersifat publik.       30 Oktober 2026 publik, sehingga
+                           Mengamandemen bagian   (status publik  larangan rahasia,
+                           "repo GitHub private"  terverifikasi   password, dan data
+                           pada D-017; bagian     lewat `gh repo  warga asli di repo
+                           lain D-017 tetap       view`).         berlaku tanpa
+                           berlaku. Anggota tim                   pengecualian.
+                           dapat meng-clone dan                   Konfirmasi private pada
+                           menjalankan proyek di                  ENV-003 (25 Oktober
+                           laptopnya sendiri;                     2026) tidak lagi
+                           hanya collaborator                     berlaku.
+                           yang diundang pemilik
+                           proyek yang dapat
+                           mengirim perubahan.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru
