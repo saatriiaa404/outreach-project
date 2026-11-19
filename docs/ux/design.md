@@ -41,6 +41,8 @@ Setiap halaman kecuali Dashboard memiliki tombol berlabel "Kembali" di sisi kana
 
 Desktop memakai vertical stepper; mobile memakai `Langkah X dari N`. Status step: aktif, selesai, incomplete required, atau belum disentuh. Draft boleh incomplete; Finalisasi tidak.
 
+"Simpan & Lanjutkan" pada langkah yang masih punya kolom wajib kosong tetap menyimpan Draft tetapi tidak pindah langkah: setiap kolom kosong ditandai "wajib diisi sebelum lanjut" dan halaman menggulir serta menaruh kursor pada kolom pertama. Kesalahan format juga diarahkan ke kolomnya (D-073).
+
 ## Validasi dan Lampiran
 
 - Tampilkan empat lampiran dasar secara jelas: KTP, KK, Foto Klien, dan Foto Rumah (D-015). Keempatnya hanya menerima gambar (D-034).
@@ -60,7 +62,7 @@ Desktop memakai vertical stepper; mobile memakai `Langkah X dari N`. Status step
 - **Bantuan yang pernah diterima:** pilihan Ya/Tidak; uraian teks bebas tampil dan wajib bila Ya (D-027).
 - **Penghasilan klien sebulan dan Pendidikan terakhir:** ditandai opsional; tidak muncul sebagai blocker Finalisasi (D-032).
 - **Identitas Kifayah:** Nama, NIK, Alamat (Alamat Domisili), dan No. HP tampil read-only dari Outreach; Kelurahan dan Kecamatan dari konstanta konfigurasi (D-036).
-- **Kolom angka (D-071):** hanya menerima angka; nilai tidak berubah saat halaman digeser (scroll/touchpad) atau tombol panah ditekan. Panah atas/bawah dan Enter memindahkan kursor ke kolom sebelumnya/berikutnya. NIK/No KK Mustahik tepat 16 digit saat Finalisasi; RT dan RW 1-3 digit.
+- **Kolom angka (D-071):** hanya menerima angka; nilai tidak berubah saat halaman digeser (scroll/touchpad) atau tombol panah ditekan. Panah atas/bawah dan Enter memindahkan kursor ke kolom sebelumnya/berikutnya. NIK/No KK Mustahik dan NIK Klien tepat 16 digit saat Finalisasi; RT dan RW 1-3 digit; No. telp Klien 8-15 digit (D-073).
 - **Header Mustahik:** Nama Petugas dan wilayah tampil read-only; No. Telepon HP tampil dari No. telp Outreach dengan keterangan bahwa itu kontak Outreach (D-036).
 
 ## Dashboard dan Pencarian

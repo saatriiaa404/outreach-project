@@ -112,6 +112,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 | ID | Task |
 |---|---|
 | R12.1 | Revisi 30 Oktober 2026 — ✅ profil akun (D-067); tombol unggah template dan grafik dashboard Admin (D-068); pratinjau Mustahik/Kifayah sebagai dokumen (D-069); template PDF v3 meniru formulir sumber dan kop gambar (D-070); kolom angka NIK/RT/RW dan navigasi kolom (D-071); filter per kolom, Riwayat dapat dibuka-tutup, tombol Kembali (D-072); halaman awal langsung ke login |
+| R12.2 | Revisi 19 November 2026 — ✅ NIK dan No. telp Klien hanya angka serta Simpan & Lanjutkan diarahkan ke kolom wajib yang kosong (D-073); template PDF v4: semua A4 portrait, logo Baznas dua kali lebih besar, Mustahik satu halaman dengan blok tanda tangan rata tengah, Kifayah simetris dengan kolom centang dan Beban Keuangan sesuai sumber (D-074) |
 
 ## Keputusan Terbuka
 

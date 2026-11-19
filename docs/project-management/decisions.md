@@ -1379,6 +1379,52 @@ rujuk keputusan pengganti.
                            seluruhnya. Tombol
                            Kembali tersedia di
                            kepala halaman.
+
+  D-073       LOCKED       NIK Klien Outreach     Permintaan dan  Mengubah perilaku       `outreach.md` 3; `design.md`; kode
+                           hanya angka,           jawaban         tombol Simpan &         `web/`
+                           Finalisasi butuh tepat eksplisit       Lanjutkan; Draft tetap
+                           16 digit (Draft boleh  pemilik proyek, boleh belum lengkap
+                           belum lengkap); No.    19 November     lewat Simpan dan
+                           telp hanya angka, 8-15 2026.           autosave (D-048 tidak
+                           digit. "Simpan &                       berubah). Tanpa
+                           Lanjutkan" saat ada                    perubahan schema.
+                           kolom wajib langkah
+                           itu yang kosong tetap
+                           menyimpan Draft tetapi
+                           tidak pindah langkah;
+                           kolom kosong ditandai
+                           dan halaman langsung
+                           menggulir serta
+                           menaruh kursor pada
+                           kolom pertama. Berlaku
+                           untuk langkah
+                           Outreach, Mustahik,
+                           dan Kifayah; kesalahan
+                           format juga diarahkan
+                           ke kolomnya.
+
+  D-074       LOCKED       Template PDF versi 4:  Permintaan dan  Paket template v4 aktif `mustahik.md` 3; `kifayah.md` 5;
+                           semua dokumen dan      jawaban         (Outreach 3, Mustahik   `design.md`; kode `web/`
+                           lampiran A4 portrait   eksplisit       4, Kifayah 4); versi
+                           (Mustahik tidak lagi   pemilik proyek, yang sudah difinalisasi
+                           Legal); Mustahik       19 November     tetap memakai template
+                           margin 7/15/6/15 mm,   2026.           yang dicatatnya.
+                           tabel 180 mm, satu     Mengoreksi      Pratinjau di aplikasi
+                           halaman, blok tempat,  pilihan kertas  memakai margin halaman
+                           tanggal, dan Surveyor  Legal pada      template. Tanpa
+                           rata tengah; Kifayah   D-070.          perubahan schema.
+                           margin 8/27/18/27 mm
+                           sehingga tabel 156 mm
+                           di tengah, kolom
+                           centang mengikuti
+                           posisi kifayah.pdf,
+                           tabel Beban Keuangan
+                           memuat baris catatan
+                           seperti sumber; logo
+                           Baznas dipotong rapat
+                           dan dicetak 46 mm (dua
+                           kali v3). Outreach
+                           tetap template v3.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

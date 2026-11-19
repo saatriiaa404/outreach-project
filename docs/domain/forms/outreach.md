@@ -63,7 +63,7 @@ Template memiliki 23 field Data Klien.
 | No. | Label pada template | Aturan |
 |---:|---|---|
 | 1 | Nama | Wajib |
-| 2 | NIK | Wajib |
+| 2 | NIK | Wajib; hanya angka, tepat 16 digit saat Finalisasi; Draft boleh belum lengkap (D-073) |
 | 3 | Tempat dan Tanggal Lahir / Umur | Wajib; diisi terpisah pada form (D-045): Tempat lahir (teks) dan Tanggal lahir (isian tanggal, tidak setelah Tanggal Outreach). Umur tampil otomatis dalam tahun penuh terhadap Tanggal Outreach dan tidak disimpan. PDF tetap satu baris sesuai template |
 | 4 | Agama | Wajib; daftar opsi perlu bersumber dari ketentuan yang disetujui |
 | 5 | Alamat KTP | Wajib |
@@ -76,7 +76,7 @@ Template memiliki 23 field Data Klien.
 | 12 | Jumlah KK dalam 1 rumah | Wajib; berbeda dari jumlah anggota keluarga dalam satu KK |
 | 13 | Status tempat tinggal | Wajib; daftar opsi perlu bersumber dari ketentuan yang disetujui |
 | 14 | Penghasilan klien sebulan | Opsional (D-032): boleh kosong dan tidak memblokir Finalisasi; bila diisi tetap divalidasi sesuai jenis datanya (nilai uang) |
-| 15 | No. telp yang bisa dihubungi | Wajib |
+| 15 | No. telp yang bisa dihubungi | Wajib; hanya angka, 8 sampai 15 digit (D-073) |
 | 16 | Status Perkawinan | Wajib; daftar opsi perlu bersumber dari ketentuan yang disetujui |
 | 17 | Pendidikan terakhir | Opsional (D-032): boleh kosong dan tidak memblokir Finalisasi; bila diisi tetap divalidasi; teks bebas sesuai D-025 |
 | 18 | Status Kesejahteraan | Wajib; Petugas memilih desil 1–10; label diturunkan otomatis (lihat Pemetaan Status Kesejahteraan di bawah tabel; D-019) |
