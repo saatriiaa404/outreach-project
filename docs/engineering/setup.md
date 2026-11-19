@@ -190,7 +190,7 @@ Untuk anggota tim yang ikut menjalankan atau mengembangkan prototype di laptopny
 
 `migrate --seed` hanya membuat data demo DEMO-001 sampai DEMO-004. Bila diperlukan salinan data yang sama persis (termasuk lampiran), buat backup di laptop utama dengan `backup:create`, lalu pulihkan di laptop lain dengan `backup:restore` sesuai prosedur di atas.
 
-Setiap orang bekerja di branch sendiri dan menggabungkan perubahan ke `main` melalui pull request. Sebelum mulai bekerja, perbarui salinan lokal dengan `git pull` di `main`, lalu jalankan `composer install`, `npm install`, `php artisan migrate`, dan `npm run build` bila ada perubahan dependensi, migration, atau tampilan.
+Setiap orang bekerja di branch sendiri dan menggabungkan perubahan ke `main` melalui pull request. Sebelum mulai bekerja, perbarui salinan lokal dengan `git pull` di `main`, lalu jalankan `composer install`, `npm install`, `php artisan migrate`, dan `npm run build` bila ada perubahan dependensi, migration, atau tampilan. Bila ada versi template PDF baru (misalnya D-070, D-074), jalankan juga `php artisan db:seed --class=MasterDataSeeder` untuk mengaktifkannya; seeder ini tidak mengubah data Outreach.
 
 ## 10. Perubahan Dokumen Ini
 
