@@ -116,5 +116,12 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 
 ## Keputusan Terbuka
 
-1. Workflow CI bawaan `web/.github/workflows/tests.yml` sebelum ada push.
-2. Pustaka: kompresi gambar, signature pad, Dompdf (diajukan saat fasenya).
+Tidak ada keputusan teknis yang terbuka. Dua butir sebelumnya sudah diputuskan:
+
+1. Workflow CI bawaan dihapus sebelum push pertama (D-064); pengujian dijalankan lokal.
+2. Pustaka dipakai sesuai fasenya: kompresi gambar dengan GD bawaan PHP, signature pad (`signature_pad`), Dompdf, serta Chart shadcn-vue (`@unovis`, D-068).
+
+## Sisa di Luar Kode
+
+- Walkthrough demo bersama Kelurahan (`docs/prototype/demo-checklist.md`) dan bukti persetujuan OUT-VAL-05 serta nama resmi sumber desil (VAL-002).
+- Uji restore ke laptop lain dengan media eksternal sungguhan (R11.3 baru diuji dengan folder lokal).
