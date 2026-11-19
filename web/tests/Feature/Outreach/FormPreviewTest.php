@@ -40,7 +40,8 @@ class FormPreviewTest extends TestCase
             ->assertOk()
             ->assertHeader('X-Frame-Options', 'SAMEORIGIN')
             ->assertSee('FORM SURVEY MUSTAHIK')
-            ->assertSee('body { margin: 12mm 10mm; }', false);
+            // On screen the body takes the template's own page margins.
+            ->assertSee('body { margin: 7mm 15mm 6mm 15mm; }', false);
         $this->actingAs($kepala)->get(route('outreaches.versions.preview', [$outreach, $version, 'kifayah']))
             ->assertOk()
             ->assertSee($version->snapshot_data['client']['nama']);

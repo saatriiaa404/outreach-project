@@ -93,23 +93,35 @@ class OutreachPdfTest extends TestCase
         $this->assertStringStartsWith('%PDF-', $pdf->render($version, 'outreach'));
     }
 
-    public function test_template_v3_follows_the_source_forms_and_older_versions_keep_their_layout()
+    public function test_template_v4_prints_a4_forms_and_older_versions_keep_their_layout()
     {
         $version = $this->finalized();
         $pdf = app(OutreachPdf::class);
 
-        $this->assertSame(3, $version->documentTemplate->version_number);
+        // Package v4 keeps the v3 Outreach and changes Mustahik and Kifayah (D-074).
+        $this->assertSame(4, $version->documentTemplate->version_number);
+        $this->assertEquals(['outreach' => 3, 'mustahik' => 4, 'kifayah' => 4], $version->documentTemplate->metadata);
         $outreach = $pdf->html($version, 'outreach');
         $this->assertStringContainsString('<div class="kop"><img src="data:image/png;base64,', $outreach);
         $this->assertStringContainsString('Jenis Outreach : '.OutreachDocument::typeLabel($version->snapshot_data['meta']['type']['name']), $outreach);
         // Money rows keep the form's order although MySQL reorders the JSON keys.
         $this->assertLessThan(strpos($outreach, 'Biaya BBM / bensin'), strpos($outreach, 'Biaya sewa/kos/kontrak rumah'));
         $this->assertLessThan(strpos($outreach, 'Pendapatan lainnya'), strpos($outreach, 'Pendapatan Kepala Keluarga'));
-        $this->assertStringContainsString('size: legal portrait', $pdf->html($version, 'mustahik'));
-        $this->assertStringContainsString('<div class="logo"><img src="data:image/jpeg;base64,', $pdf->html($version, 'kifayah'));
+        $mustahik = $pdf->html($version, 'mustahik');
+        $kifayah = $pdf->html($version, 'kifayah');
+        $this->assertStringContainsString('size: a4 portrait', $mustahik);
+        $this->assertStringContainsString('<div class="logo"><img src="data:image/png;base64,', $mustahik);
+        $this->assertStringContainsString('margin: 8mm 27mm 18mm 27mm', $kifayah, 'Equal side margins centre the tables.');
+        $this->assertStringContainsString('<td class="b note-cell" colspan="2">', $kifayah, 'Beban Keuangan carries its note row.');
 
         // Versions finalized earlier render with the template they recorded.
         $template = fn (int $number) => DocumentTemplateVersion::query()->where('template_key', $version->documentTemplate->template_key)->where('version_number', $number)->sole();
+        $this->assertFalse($template(3)->is_active);
+        $version->forceFill(['document_template_version_id' => $template(3)->id])->saveQuietly();
+        $v3 = $version->refresh();
+        $this->assertStringContainsString('size: legal portrait', $pdf->html($v3, 'mustahik'));
+        $this->assertStringContainsString('<div class="logo"><img src="data:image/jpeg;base64,', $pdf->html($v3, 'kifayah'));
+
         $this->assertFalse($template(2)->is_active);
         $version->forceFill(['document_template_version_id' => $template(2)->id])->saveQuietly();
         $v2 = $version->refresh();
@@ -150,7 +162,8 @@ class OutreachPdfTest extends TestCase
         $this->assertStringContainsString('FORM SURVEY MUSTAHIK', $html);
         $this->assertSame(25, substr_count($html, '<span class="check">✓</span>'), 'One check per question (D-053).');
         $this->assertStringContainsString('Surabaya, 27 Oktober 2026', $html, 'Survey date above the Surveyor signature.');
-        $this->assertSame(1, substr_count($html, 'src="data:image/png'));
+        // The cropped logo and the Petugas signature.
+        $this->assertSame(2, substr_count($html, 'src="data:image/png'));
     }
 
     public function test_the_kifayah_pdf_uses_corrected_labels_ticks_expenses_and_keeps_literal_options()

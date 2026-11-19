@@ -191,9 +191,17 @@ class MustahikFormTest extends TestCase
 
         $this->actingAs($outreach->petugas)->put(route('outreaches.update', $outreach), [
             'step' => 'narasi', 'edit_version' => 0, 'next' => '1',
+            'upaya_dilakukan' => 'Upaya demo', 'harapan_klien' => 'Harapan demo', 'uraian_alasan_intervensi' => 'Alasan demo',
         ])->assertRedirect(route('outreaches.edit', ['outreach' => $outreach, 'step' => 'mustahik']));
 
+        // An incomplete Mustahik is saved but does not move on (D-073).
         $this->save($outreach, ['HOUSE_MCK' => '2'], 1, next: true)
+            ->assertRedirect(route('outreaches.edit', ['outreach' => $outreach, 'step' => 'mustahik']))
+            ->assertSessionHasErrors(['kepala_keluarga_nama' => 'Nama Kepala Keluarga wajib diisi sebelum lanjut.', 'HOUSE_BUILDING_AREA']);
+        $this->assertSame('2', $outreach->refresh()->mustahikForm->answers->firstWhere('question_code', 'HOUSE_MCK')->answer['option']);
+
+        $this->save($outreach, $this->completeForm(), 2, next: true)
+            ->assertSessionHasNoErrors()
             ->assertRedirect(route('outreaches.edit', ['outreach' => $outreach, 'step' => 'kifayah']));
     }
 }

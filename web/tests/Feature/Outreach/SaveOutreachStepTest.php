@@ -8,6 +8,7 @@ use App\Models\HistoryEvent;
 use App\Models\Outreach;
 use App\Models\OutreachSource;
 use App\Models\User;
+use App\Support\OutreachFormSchema;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
@@ -69,9 +70,9 @@ class SaveOutreachStepTest extends TestCase
             ->put(route('outreaches.update', $outreach), [
                 'step' => 'klien',
                 'edit_version' => 0,
-                'next' => 1,
+                'next' => 0,
                 'nama' => 'Warga Demo Satu',
-                'nik' => 'DUMMY-NIK-001',
+                'nik' => '0000000000000001',
                 'status_kependudukan' => 'WNI',
                 'desil_1_10' => '9',
                 'merokok' => '0',
@@ -81,7 +82,7 @@ class SaveOutreachStepTest extends TestCase
                 'besar_hutang' => '500000',
             ])
             ->assertSessionHasNoErrors()
-            ->assertRedirect(route('outreaches.edit', ['outreach' => $outreach, 'step' => 'keluarga']));
+            ->assertRedirect(route('outreaches.edit', ['outreach' => $outreach, 'step' => 'klien']));
 
         $outreach->refresh();
         $this->assertSame('Warga Demo Satu', $outreach->nama);
@@ -96,6 +97,45 @@ class SaveOutreachStepTest extends TestCase
 
         $event = HistoryEvent::query()->where('event_type', HistoryEventType::SectionSaved)->sole();
         $this->assertSame(['step' => 'klien'], $event->metadata);
+    }
+
+    public function test_save_and_continue_stays_on_the_step_while_required_fields_are_empty()
+    {
+        $outreach = $this->draft();
+        $put = fn (array $data, int $version) => $this->actingAs($outreach->petugas)->put(route('outreaches.update', $outreach), [
+            'step' => 'narasi', 'edit_version' => $version, 'next' => 1, ...$data,
+        ]);
+
+        // Saved, not moved on, and each empty required field is marked (D-073).
+        $put(['upaya_dilakukan' => 'Upaya demo'], 0)
+            ->assertRedirect(route('outreaches.edit', ['outreach' => $outreach, 'step' => 'narasi']))
+            ->assertSessionHasErrors([
+                'harapan_klien' => 'Harapan klien wajib diisi sebelum lanjut.',
+                'uraian_alasan_intervensi',
+            ])
+            ->assertSessionDoesntHaveErrors('upaya_dilakukan');
+        $this->assertSame('Upaya demo', $outreach->refresh()->getAttribute('upaya_dilakukan'));
+
+        $put(['upaya_dilakukan' => 'Upaya demo', 'harapan_klien' => 'Harapan', 'uraian_alasan_intervensi' => 'Alasan'], 1)
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('outreaches.edit', ['outreach' => $outreach, 'step' => 'mustahik']));
+    }
+
+    public function test_nik_and_phone_accept_digits_only()
+    {
+        $outreach = $this->draft();
+        $put = fn (array $data) => $this->actingAs($outreach->petugas)->put(route('outreaches.update', $outreach), [
+            'step' => 'klien', 'edit_version' => $outreach->refresh()->edit_version, 'next' => 0, ...$data,
+        ]);
+
+        $put(['nik' => '35780A0000000001'])->assertSessionHasErrors(['nik' => 'NIK hanya berisi angka, maksimal 16 digit.']);
+        $put(['no_telp' => '0812-3456-789'])->assertSessionHasErrors(['no_telp' => 'No. telp hanya berisi angka, 8 sampai 15 digit.']);
+        $put(['no_telp' => '0812345'])->assertSessionHasErrors('no_telp');
+
+        // A NIK still being typed is kept in the Draft but blocks Finalisasi (D-073).
+        $put(['nik' => '35780000', 'no_telp' => '081234567890'])->assertSessionHasNoErrors();
+        $this->assertContains('NIK (harus 16 digit)', OutreachFormSchema::missingFields($outreach->refresh(), 'klien'));
+        $this->assertNotContains('No. telp yang bisa dihubungi', OutreachFormSchema::missingFields($outreach, 'klien'));
     }
 
     public function test_birth_place_and_date_are_saved_separately_and_age_is_derived()

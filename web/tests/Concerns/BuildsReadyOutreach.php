@@ -65,6 +65,7 @@ trait BuildsReadyOutreach
                     $data[$name] = match ($field['input']) {
                         'integer', 'money' => 0,
                         'date' => '1980-01-01',
+                        'digits' => str_pad('1', $field['digits_exact'] ?? $field['digits_min'] ?? 1, '0', STR_PAD_LEFT),
                         'boolean' => false,
                         'select' => array_key_first($field['options']),
                         default => 'Isian demo',

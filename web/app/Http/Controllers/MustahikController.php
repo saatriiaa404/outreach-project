@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Outreach\SaveMustahik;
 use App\Http\Requests\Outreach\SaveMustahikRequest;
 use App\Models\Outreach;
+use App\Support\MustahikFormSchema;
 use App\Support\OutreachSteps;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -20,6 +21,10 @@ class MustahikController extends Controller
     public function update(SaveMustahikRequest $request, Outreach $outreach, SaveMustahik $save): RedirectResponse
     {
         $save->handle($outreach, $request->user(), $request->formData(), $request->integer('edit_version'));
+
+        if ($request->boolean('next') && ($missing = MustahikFormSchema::missingByField($outreach->refresh()->mustahikForm)) !== []) {
+            return OutreachController::stayOnStep($outreach, 'mustahik', $missing);
+        }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Draft Mustahik tersimpan.']);
 

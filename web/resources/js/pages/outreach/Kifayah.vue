@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAutosave } from '@/composables/useAutosave';
+import { useFocusFirstError } from '@/composables/useFocusFirstError';
 import { index } from '@/routes/outreaches';
 
 type Field = {
@@ -71,6 +72,8 @@ const values = reactive<Record<string, string>>(
         ]),
     ]),
 );
+
+useFocusFirstError();
 
 const autosave = useAutosave({
     url: KifayahController.autosave.url(props.outreach.id),
