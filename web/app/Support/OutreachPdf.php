@@ -31,8 +31,8 @@ class OutreachPdf
      */
     private const VIEWS = [
         'outreach' => [1 => 'pdf.v1.outreach', 2 => 'pdf.v2.outreach', 3 => 'pdf.v3.outreach'],
-        'mustahik' => [1 => 'pdf.v1.mustahik', 2 => 'pdf.v2.mustahik', 3 => 'pdf.v3.mustahik'],
-        'kifayah' => [1 => 'pdf.v1.kifayah', 2 => 'pdf.v2.kifayah', 3 => 'pdf.v3.kifayah'],
+        'mustahik' => [1 => 'pdf.v1.mustahik', 2 => 'pdf.v2.mustahik', 3 => 'pdf.v3.mustahik', 4 => 'pdf.v4.mustahik'],
+        'kifayah' => [1 => 'pdf.v1.kifayah', 2 => 'pdf.v2.kifayah', 3 => 'pdf.v3.kifayah', 4 => 'pdf.v4.kifayah'],
     ];
 
     /**
@@ -176,19 +176,25 @@ class OutreachPdf
             ],
             'mustahik' => $this->mustahik($snapshot, $signatures['mustahik']),
             default => $this->kifayah($snapshot, $signatures['kifayah']),
-        }, 'logo' => self::logo(self::LOGOS[$document]),
+        }, 'logo' => self::logo($document !== 'outreach' && $templateVersion >= 4
+            // The same Baznas logo without its white border, printed larger (D-074).
+            ? 'baznas-surabaya-crop.png'
+            : self::LOGOS[$document]),
             // The Kelurahan letterhead as one image from template v3 (D-070).
             'kop' => $document === 'outreach' && $templateVersion >= 3 ? self::logo('kop-manukan.png') : null,
         ])->render();
     }
 
     /**
-     * On screen the page margins of @page do not apply, so the body gets
-     * them instead; the template itself stays as printed.
+     * On screen the page margins of @page do not apply, so the body gets the
+     * template's own page margins; the template itself stays as printed. The
+     * rule is added here, not in the template, because Dompdf renders with
+     * the screen media type too.
      */
     private static function forScreen(string $html): string
     {
-        $style = '<style>@media screen { html { background: #fff; } body { margin: 12mm 10mm; } }</style>';
+        $margin = preg_match('/@page\s*\{[^}]*margin:\s*([^;}]+)/', $html, $match) === 1 ? trim($match[1]) : '12mm 10mm';
+        $style = "<style>@media screen { html { background: #fff; } body { margin: {$margin}; } }</style>";
 
         return str_replace('</head>', $style.'</head>', $html);
     }

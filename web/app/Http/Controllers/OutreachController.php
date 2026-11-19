@@ -383,12 +383,31 @@ class OutreachController extends Controller
 
         $saveStep->handle($outreach, $request->user(), $step, $request->stepData(), $request->integer('edit_version'));
 
+        if ($request->boolean('next') && ($missing = OutreachFormSchema::missingByField($outreach->refresh(), $step)) !== []) {
+            return $this->stayOnStep($outreach, $step, $missing);
+        }
+
         $next = OutreachSteps::nextAfter($outreach->load('source'), $step);
         $target = $request->boolean('next') && $next ? $next : $step;
 
         Inertia::flash('toast', ['type' => 'success', 'message' => $outreach->status === OutreachStatus::Draft ? 'Draft tersimpan.' : 'Perubahan tersimpan.']);
 
         return to_route('outreaches.edit', ['outreach' => $outreach, 'step' => $target]);
+    }
+
+    /**
+     * "Simpan & Lanjutkan" with required fields still empty: the data is
+     * saved, but the Petugas stays on the step with each empty field marked,
+     * and the page scrolls to the first one (D-073).
+     *
+     * @param  array<string, string>  $missing  field name => label
+     */
+    public static function stayOnStep(Outreach $outreach, string $step, array $missing): RedirectResponse
+    {
+        Inertia::flash('toast', ['type' => 'warning', 'message' => 'Tersimpan, tetapi belum bisa lanjut: lengkapi '.count($missing).' isian wajib yang ditandai.']);
+
+        return to_route('outreaches.edit', ['outreach' => $outreach, 'step' => $step])
+            ->withErrors(array_map(fn (string $label) => "{$label} wajib diisi sebelum lanjut.", $missing));
     }
 
     /**

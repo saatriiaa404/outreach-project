@@ -122,15 +122,25 @@ class MustahikFormSchema
      */
     public static function missing(?MustahikForm $form): array
     {
+        return array_values(self::missingByField($form));
+    }
+
+    /**
+     * The same, keyed by field name or question code (D-073).
+     *
+     * @return array<string, string>
+     */
+    public static function missingByField(?MustahikForm $form): array
+    {
         $missing = [];
 
         foreach (self::HEADER as $name => $field) {
             $value = $form?->getAttribute($name);
 
             if ($value === null || $value === '') {
-                $missing[] = $field['label'];
+                $missing[$name] = $field['label'];
             } elseif ($name === 'kepala_keluarga_nik_no_kk' && preg_match('/^\d{16}$/', (string) $value) !== 1) {
-                $missing[] = "{$field['label']} (harus 16 digit)";
+                $missing[$name] = "{$field['label']} (harus 16 digit)";
             }
         }
 
@@ -138,7 +148,7 @@ class MustahikFormSchema
 
         foreach (self::QUESTIONS as $code => $question) {
             if (! in_array($code, $answered, true)) {
-                $missing[] = $question['label'];
+                $missing[$code] = $question['label'];
             }
         }
 

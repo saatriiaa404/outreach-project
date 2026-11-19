@@ -57,6 +57,8 @@ class SaveOutreachStepRequest extends FormRequest
     {
         return [
             'tanggal_lahir.before_or_equal' => 'Tanggal lahir tidak boleh setelah Tanggal Outreach.',
+            'nik.regex' => 'NIK hanya berisi angka, maksimal 16 digit.',
+            'no_telp.regex' => 'No. telp hanya berisi angka, 8 sampai 15 digit.',
         ];
     }
 

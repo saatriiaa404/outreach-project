@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/select';
 import type { AutosaveState } from '@/composables/useAutosave';
 import { useAutosave } from '@/composables/useAutosave';
+import { useFocusFirstError } from '@/composables/useFocusFirstError';
 import { index } from '@/routes/outreaches';
 
 type Field = {
@@ -32,6 +33,7 @@ type Field = {
     label: string;
     input:
         | 'text'
+        | 'digits'
         | 'textarea'
         | 'integer'
         | 'money'
@@ -42,6 +44,7 @@ type Field = {
     requiredIf?: [string, boolean | string];
     options?: Record<string, string>;
     group?: string;
+    digits?: number;
     showsAge?: boolean;
     value: string | number | boolean | null;
 };
@@ -87,6 +90,8 @@ const values = reactive<Record<string, string>>(
         ]),
     ),
 );
+
+useFocusFirstError();
 
 const autosave = useAutosave({
     url: OutreachController.autosave.url(props.outreach.id),
@@ -342,12 +347,19 @@ const rupiah = (amount: number) =>
                         <NumberInput
                             v-else-if="
                                 field.input === 'integer' ||
-                                field.input === 'money'
+                                field.input === 'money' ||
+                                field.input === 'digits'
                             "
                             :id="field.name"
                             v-model="values[field.name]"
                             :name="field.name"
-                            :maxlength="field.input === 'money' ? 12 : 5"
+                            :maxlength="
+                                field.input === 'digits'
+                                    ? field.digits
+                                    : field.input === 'money'
+                                      ? 12
+                                      : 5
+                            "
                         />
 
                         <Input

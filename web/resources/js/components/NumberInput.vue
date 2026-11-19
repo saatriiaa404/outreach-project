@@ -4,7 +4,9 @@ import { Input } from '@/components/ui/input';
 
 // A digits-only field (D-071). It is a text field, so scrolling the page or
 // pressing the arrow keys never changes the number; Arrow Up/Down and Enter
-// move to the previous or next field instead, like a paper form.
+// move to the previous or next field instead, like a paper form. The length
+// is cut in onInput, not with the maxlength attribute, which would count the
+// letters that are about to be removed.
 const props = defineProps<{ maxlength?: number }>();
 const model = defineModel<string | number | null | undefined>();
 
@@ -65,7 +67,7 @@ const move = (event: KeyboardEvent) => {
         type="text"
         inputmode="numeric"
         autocomplete="off"
-        :maxlength="maxlength"
+        :data-maxlength="maxlength"
         @input="onInput"
         @keydown="move"
     />

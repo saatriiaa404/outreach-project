@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Outreach\SaveKifayah;
 use App\Http\Requests\Outreach\SaveKifayahRequest;
 use App\Models\Outreach;
+use App\Support\KifayahFormSchema;
 use App\Support\OutreachSteps;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -20,6 +21,10 @@ class KifayahController extends Controller
     public function update(SaveKifayahRequest $request, Outreach $outreach, SaveKifayah $save): RedirectResponse
     {
         $save->handle($outreach, $request->user(), $request->formData(), $request->integer('edit_version'));
+
+        if ($request->boolean('next') && ($missing = KifayahFormSchema::missingByField($outreach->refresh()->kifayahForm)) !== []) {
+            return OutreachController::stayOnStep($outreach, 'kifayah', $missing);
+        }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Draft Kifayah tersimpan.']);
 

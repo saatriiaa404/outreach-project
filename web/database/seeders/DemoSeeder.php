@@ -53,25 +53,25 @@ class DemoSeeder extends Seeder
 
         $this->draft($petugas, 'DRAFT-DEMO00000001', 'BAZNAS', 'RUTILAHU', [
             'nama' => 'Warga Demo Satu',
-            'nik' => 'DUMMY-NIK-001',
+            'nik' => '0000000000000001',
             'alamat_domisili' => 'Jalan Demo No. 1 (alamat sintetis)',
         ]);
 
         $this->draft($petugas, 'DRAFT-DEMO00000003', 'BANGGA_SURABAYA', 'BANTUAN_MODAL_USAHA', [
             'nama' => 'Warga Demo Tiga',
-            'nik' => 'DUMMY-NIK-003',
+            'nik' => '0000000000000003',
             'alamat_domisili' => 'Jalan Demo No. 3 (alamat sintetis)',
         ]);
 
         $this->submitted($petugas, 'DRAFT-DEMO00000002', 'CSR', 'BEASISWA', [
             'nama' => 'Warga Demo Dua',
-            'nik' => 'DUMMY-NIK-002',
+            'nik' => '0000000000000002',
             'alamat_domisili' => 'Jalan Demo No. 2 (alamat sintetis)',
         ]);
 
         $completed = $this->submitted($petugas, 'DRAFT-DEMO00000004', 'BAZNAS', 'ALAT_KESEHATAN', [
             'nama' => 'Warga Demo Empat',
-            'nik' => 'DUMMY-NIK-004',
+            'nik' => '0000000000000004',
             'alamat_domisili' => 'Jalan Demo No. 4 (alamat sintetis)',
         ]);
 
@@ -176,6 +176,7 @@ class DemoSeeder extends Seeder
                     $values[$name] = match ($field['input']) {
                         'integer', 'money' => 0,
                         'date' => '1980-01-01',
+                        'digits' => str_pad('1', $field['digits_exact'] ?? $field['digits_min'] ?? 1, '0', STR_PAD_LEFT),
                         'boolean' => false,
                         'select' => array_key_first($field['options']),
                         default => 'Isian demo (sintetis)',

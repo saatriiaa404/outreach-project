@@ -13,8 +13,9 @@ use InvalidArgumentException;
  * and "requiredIf" drive the Finalisasi completeness check, which also feeds
  * the step completion indicator. NULL means not filled and is never read as 0.
  *
- * Field shape: label, input (text|textarea|integer|money|date|select|boolean),
- * required (bool), optional options, requiredIf ([field, value]), group.
+ * Field shape: label, input (text|digits|textarea|integer|money|date|select|boolean),
+ * required (bool), optional options, requiredIf ([field, value]), group;
+ * digits fields carry digits (max), digits_min and digits_exact (D-073).
  */
 class OutreachFormSchema
 {
@@ -74,7 +75,8 @@ class OutreachFormSchema
                 'title' => 'Data Klien',
                 'fields' => [
                     'nama' => $text('Nama'),
-                    'nik' => $text('NIK'),
+                    // Digits only (D-073): 16 at Finalisasi; a Draft may hold fewer.
+                    'nik' => ['label' => 'NIK', 'input' => 'digits', 'required' => true, 'digits' => 16, 'digits_exact' => 16],
                     // Template field 3 is entered as separate parts; age is derived (D-045).
                     'tempat_lahir' => $text('Tempat lahir'),
                     'tanggal_lahir' => ['label' => 'Tanggal lahir', 'input' => 'date', 'required' => true, 'showsAge' => true],
@@ -89,7 +91,7 @@ class OutreachFormSchema
                     'jumlah_kk_dalam_rumah' => ['label' => 'Jumlah KK dalam 1 rumah', 'input' => 'integer', 'required' => true],
                     'status_tempat_tinggal' => $text('Status tempat tinggal'),
                     'penghasilan_klien' => ['label' => 'Penghasilan klien sebulan', 'input' => 'money', 'required' => false],
-                    'no_telp' => $text('No. telp yang bisa dihubungi'),
+                    'no_telp' => ['label' => 'No. telp yang bisa dihubungi', 'input' => 'digits', 'required' => true, 'digits' => 15, 'digits_min' => 8],
                     'status_perkawinan' => $text('Status Perkawinan'),
                     'pendidikan_terakhir' => $text('Pendidikan terakhir', false),
                     'desil_1_10' => ['label' => 'Status Kesejahteraan', 'input' => 'select', 'required' => true, 'options' => self::desilOptions()],
@@ -182,6 +184,7 @@ class OutreachFormSchema
         foreach (self::steps()[$step]['fields'] as $name => $field) {
             $rules[$name] = match ($field['input']) {
                 'text' => ['nullable', 'string', 'max:'.self::maxLength($name)],
+                'digits' => ['nullable', 'string', 'regex:/^\d{'.($field['digits_min'] ?? 1).','.$field['digits'].'}$/'],
                 'textarea' => ['nullable', 'string', 'max:'.self::MAX_TEXT],
                 'integer' => ['nullable', 'integer', 'min:0', 'max:65535'],
                 'money' => ['nullable', 'integer', 'min:0', 'max:'.self::MAX_RUPIAH],
@@ -223,11 +226,30 @@ class OutreachFormSchema
      */
     public static function missingFields(Outreach $outreach, string $step): array
     {
+        return array_values(self::missingByField($outreach, $step));
+    }
+
+    /**
+     * The same, keyed by field name, so "Simpan & Lanjutkan" can point at
+     * the first one (D-073). A NIK that is not 16 digits counts as missing (D-071).
+     *
+     * @return array<string, string>
+     */
+    public static function missingByField(Outreach $outreach, string $step): array
+    {
         $missing = [];
 
         foreach (self::steps()[$step]['fields'] as $name => $field) {
-            if (self::isRequired($outreach, $field) && self::isBlank($outreach->getAttribute($name))) {
-                $missing[] = $field['label'];
+            if (! self::isRequired($outreach, $field)) {
+                continue;
+            }
+
+            $value = $outreach->getAttribute($name);
+
+            if (self::isBlank($value)) {
+                $missing[$name] = $field['label'];
+            } elseif (isset($field['digits_exact']) && preg_match('/^\d{'.$field['digits_exact'].'}$/', (string) $value) !== 1) {
+                $missing[$name] = "{$field['label']} (harus {$field['digits_exact']} digit)";
             }
         }
 

@@ -11,6 +11,7 @@ use App\Models\Outreach;
 use App\Models\OutreachSource;
 use App\Models\User;
 use App\Support\KifayahFormSchema;
+use App\Support\MustahikFormSchema;
 use App\Support\OutreachFormSchema;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -178,11 +179,22 @@ class KifayahFormTest extends TestCase
     {
         $outreach = $this->draft();
 
+        $mustahik = [
+            'survey_date' => '2026-10-28', 'kepala_keluarga_nama' => 'Kepala Demo', 'kepala_keluarga_nik_no_kk' => '0000000000000001',
+            'kepala_keluarga_alamat' => 'Jl. Demo 1', 'kepala_keluarga_rt' => '001', 'kepala_keluarga_rw' => '002',
+            ...array_map(fn () => '1', MustahikFormSchema::QUESTIONS),
+        ];
+
         $this->actingAs($outreach->petugas)
-            ->put(route('outreaches.mustahik.update', $outreach), ['edit_version' => 0, 'next' => '1'])
+            ->put(route('outreaches.mustahik.update', $outreach), [...$mustahik, 'edit_version' => 0, 'next' => '1'])
             ->assertRedirect(route('outreaches.edit', ['outreach' => $outreach, 'step' => 'kifayah']));
 
+        // An empty Kifayah is not skipped (D-073).
         $this->put(route('outreaches.kifayah.update', $outreach), ['edit_version' => 1, 'next' => '1'])
+            ->assertRedirect(route('outreaches.edit', ['outreach' => $outreach, 'step' => 'kifayah']))
+            ->assertSessionHasErrors('income_head_family');
+
+        $this->put(route('outreaches.kifayah.update', $outreach), [...$this->completeForm(), 'edit_version' => 2, 'next' => '1'])
             ->assertRedirect(route('outreaches.edit', ['outreach' => $outreach, 'step' => 'lampiran']));
     }
 }

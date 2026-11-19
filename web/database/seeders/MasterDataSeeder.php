@@ -31,7 +31,19 @@ class MasterDataSeeder extends Seeder
      * Documents in each template package (Workflow v2.1: three PDFs for
      * Baznas/CSR, only the Outreach PDF for Bangga Surabaya).
      */
-    public const CURRENT_TEMPLATE = 3;
+    public const CURRENT_TEMPLATE = 4;
+
+    /**
+     * Template version of each document per package version; a document
+     * that did not change keeps its previous template (v4 changes only
+     * Mustahik and Kifayah, D-074).
+     */
+    public const TEMPLATE_VERSIONS = [
+        1 => ['outreach' => 1, 'mustahik' => 1, 'kifayah' => 1],
+        2 => ['outreach' => 2, 'mustahik' => 2, 'kifayah' => 2],
+        3 => ['outreach' => 3, 'mustahik' => 3, 'kifayah' => 3],
+        4 => ['outreach' => 3, 'mustahik' => 4, 'kifayah' => 4],
+    ];
 
     public const TEMPLATE_PACKAGES = [
         'PACKAGE_BAZNAS_CSR' => ['outreach', 'mustahik', 'kifayah'],
@@ -50,16 +62,17 @@ class MasterDataSeeder extends Seeder
 
         // One template package per Source (Q-09). Version 2 adds the logos, the
         // rank, the stamp and the ticked Kifayah boxes (D-064, D-065); version 3
-        // the letterhead image and the geometry of the source forms (D-070).
+        // the letterhead image and the geometry of the source forms (D-070);
+        // version 4 A4 Mustahik, larger logos and the Kifayah check columns (D-074).
         // Versions already finalized keep rendering with the one they recorded.
         foreach (self::TEMPLATE_PACKAGES as $key => $documents) {
-            foreach ([1, 2, self::CURRENT_TEMPLATE] as $number) {
+            foreach (array_keys(self::TEMPLATE_VERSIONS) as $number) {
                 $template = DocumentTemplateVersion::query()->firstOrNew(['template_key' => $key, 'version_number' => $number]);
 
                 if (! $template->exists) {
                     $template->forceFill([
                         'renderer_key' => "outreach-package-v{$number}",
-                        'metadata' => array_fill_keys($documents, $number),
+                        'metadata' => array_intersect_key(self::TEMPLATE_VERSIONS[$number], array_flip($documents)),
                         'is_active' => true,
                     ]);
                 }

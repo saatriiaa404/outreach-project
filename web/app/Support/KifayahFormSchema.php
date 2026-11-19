@@ -96,11 +96,21 @@ class KifayahFormSchema
      */
     public static function missing(?KifayahForm $form): array
     {
+        return array_values(self::missingByField($form));
+    }
+
+    /**
+     * The same, keyed by field name or question code (D-073).
+     *
+     * @return array<string, string>
+     */
+    public static function missingByField(?KifayahForm $form): array
+    {
         $missing = [];
 
         foreach (self::FIELDS as $name => $field) {
             if ($form?->getAttribute($name) === null) {
-                $missing[] = $field['label'];
+                $missing[$name] = $field['label'];
             }
         }
 
@@ -108,7 +118,7 @@ class KifayahFormSchema
 
         foreach (self::QUESTIONS as $code => $question) {
             if (! in_array($code, $answered, true)) {
-                $missing[] = $question['label'];
+                $missing[$code] = $question['label'];
             }
         }
 
