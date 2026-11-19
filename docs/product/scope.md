@@ -49,15 +49,15 @@ Hal-hal berikut tidak dibangun sebagai kemampuan operasional dalam prototype awa
 
 Hal-hal berikut harus tetap ditandai `PENDING VALIDATION` sampai ada bukti atau konfirmasi yang memadai:
 
-- Sumber resmi label/status kesejahteraan atau desil.
-- Format PDF final yang belum dapat dipastikan dari template sumber.
+- ~~Sumber resmi label/status kesejahteraan atau desil.~~ Ditutup: DTSEN (D-064, D-076).
+- Format PDF final yang belum dapat dipastikan dari template sumber. Posisi Jenis Outreach dan tata letak PDF disetujui (OUT-VAL-05, D-076).
 - Batas ukuran unggahan, tipe file yang diterima, dan parameter kompresi final; nilai awal untuk pengujian harus didokumentasikan sebagai konfigurasi prototype, bukan aturan operasional final. Empat lampiran wajib sudah ditetapkan berupa gambar (D-034).
-- Kebijakan retensi dan prosedur koreksi resmi. Prosedur arsip manual untuk prototype sudah ditetapkan pada D-038.
+- ~~Kebijakan retensi dan prosedur koreksi resmi.~~ Ditutup: data disimpan tanpa batas waktu, koreksi setelah disahkan melalui Special Unlock (D-076). Prosedur arsip manual untuk prototype sudah ditetapkan pada D-038.
 - Prosedur pergantian Kepala dan penyesuaian kewenangan terkait.
 - Penyimpanan nomor/reference arsip dan cara verifikasi arsip E-Surat/E-Arsip; uploader adalah ADMIN secara manual (D-038).
-- Pemilik, frekuensi, dan media backup untuk operasional setelah serah terima; backup prototype mengikuti D-038.
-- Kebutuhan hosting/domain atau penggunaan LAN setelah evaluasi awal.
-- Persyaratan digital stamp atau tanda tangan digital resmi.
+- ~~Pemilik, frekuensi, dan media backup untuk operasional setelah serah terima.~~ Ditutup: Admin, mingguan, disk eksternal, sama dengan prototype (D-038, D-076).
+- Kebutuhan hosting/domain atau penggunaan LAN setelah evaluasi awal. Untuk sekarang tetap satu komputer; hosting mungkin dipertimbangkan nanti sebagai tahap terpisah (D-076).
+- ~~Persyaratan digital stamp atau tanda tangan digital resmi.~~ Ditutup: gambar tanda tangan dan stempel cukup, tanpa TTE/BSrE (D-076).
 - Format dan posisi cetak NIP Kepala pada blok pengesahan PDF (D-041).
 
 Prototype boleh menampilkan placeholder atau mencatat pertanyaan validasi, tetapi tidak boleh menyimpulkan jawaban atau menerapkannya sebagai aturan final tanpa persetujuan yang sesuai.

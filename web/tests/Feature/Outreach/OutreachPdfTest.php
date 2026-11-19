@@ -93,15 +93,17 @@ class OutreachPdfTest extends TestCase
         $this->assertStringStartsWith('%PDF-', $pdf->render($version, 'outreach'));
     }
 
-    public function test_template_v4_prints_a4_forms_and_older_versions_keep_their_layout()
+    public function test_template_v5_prints_carlito_a4_forms_and_older_versions_keep_their_layout()
     {
         $version = $this->finalized();
         $pdf = app(OutreachPdf::class);
 
-        // Package v4 keeps the v3 Outreach and changes Mustahik and Kifayah (D-074).
-        $this->assertSame(4, $version->documentTemplate->version_number);
-        $this->assertEquals(['outreach' => 3, 'mustahik' => 4, 'kifayah' => 4], $version->documentTemplate->metadata);
+        // Package v5 sets all three documents in Carlito (D-075).
+        $this->assertSame(5, $version->documentTemplate->version_number);
+        $this->assertEquals(['outreach' => 5, 'mustahik' => 5, 'kifayah' => 5], $version->documentTemplate->metadata);
         $outreach = $pdf->html($version, 'outreach');
+        $this->assertStringContainsString('font-family: "Carlito"', $outreach);
+        $this->assertStringContainsString('/Carlito-Bold.ttf', $outreach);
         $this->assertStringContainsString('<div class="kop"><img src="data:image/png;base64,', $outreach);
         $this->assertStringContainsString('Jenis Outreach : '.OutreachDocument::typeLabel($version->snapshot_data['meta']['type']['name']), $outreach);
         // Money rows keep the form's order although MySQL reorders the JSON keys.
@@ -111,11 +113,18 @@ class OutreachPdfTest extends TestCase
         $kifayah = $pdf->html($version, 'kifayah');
         $this->assertStringContainsString('size: a4 portrait', $mustahik);
         $this->assertStringContainsString('<div class="logo"><img src="data:image/png;base64,', $mustahik);
-        $this->assertStringContainsString('margin: 8mm 27mm 18mm 27mm', $kifayah, 'Equal side margins centre the tables.');
+        $this->assertStringContainsString('margin: 6mm 27mm 16mm 27mm', $kifayah, 'Equal side margins centre the tables.');
         $this->assertStringContainsString('<td class="b note-cell" colspan="2">', $kifayah, 'Beban Keuangan carries its note row.');
+        $this->assertStringStartsWith('%PDF-', $pdf->render($version, 'kifayah'), 'Dompdf loads the bundled font.');
 
         // Versions finalized earlier render with the template they recorded.
         $template = fn (int $number) => DocumentTemplateVersion::query()->where('template_key', $version->documentTemplate->template_key)->where('version_number', $number)->sole();
+        $this->assertFalse($template(4)->is_active);
+        $version->forceFill(['document_template_version_id' => $template(4)->id])->saveQuietly();
+        $v4 = $version->refresh();
+        $this->assertStringContainsString('font-family: Helvetica', $pdf->html($v4, 'kifayah'));
+        $this->assertStringNotContainsString('Carlito', $pdf->html($v4, 'outreach'));
+
         $this->assertFalse($template(3)->is_active);
         $version->forceFill(['document_template_version_id' => $template(3)->id])->saveQuietly();
         $v3 = $version->refresh();

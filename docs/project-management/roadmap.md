@@ -113,6 +113,7 @@ ENV-001, BOOT-001 (Laravel 13.38 di `project/web/`, terhubung ke MySQL tanpa mig
 |---|---|
 | R12.1 | Revisi 30 Oktober 2026 — ✅ profil akun (D-067); tombol unggah template dan grafik dashboard Admin (D-068); pratinjau Mustahik/Kifayah sebagai dokumen (D-069); template PDF v3 meniru formulir sumber dan kop gambar (D-070); kolom angka NIK/RT/RW dan navigasi kolom (D-071); filter per kolom, Riwayat dapat dibuka-tutup, tombol Kembali (D-072); halaman awal langsung ke login |
 | R12.2 | Revisi 19 November 2026 — ✅ NIK dan No. telp Klien hanya angka serta Simpan & Lanjutkan diarahkan ke kolom wajib yang kosong (D-073); template PDF v4: semua A4 portrait, logo Baznas dua kali lebih besar, Mustahik satu halaman dengan blok tanda tangan rata tengah, Kifayah simetris dengan kolom centang dan Beban Keuangan sesuai sumber (D-074) |
+| R12.3 | Revisi 19 November 2026 — ✅ template PDF v5 dengan font Carlito setara Calibri sumber (D-075); jawaban validasi pemilik proyek dicatat dan VAL-002 ditutup: DTSEN, OUT-VAL-05, tanda tangan gambar, backup, retensi, hosting (D-076) |
 
 ## Keputusan Terbuka
 
@@ -123,5 +124,5 @@ Tidak ada keputusan teknis yang terbuka. Dua butir sebelumnya sudah diputuskan:
 
 ## Sisa di Luar Kode
 
-- Walkthrough demo bersama Kelurahan (`docs/prototype/demo-checklist.md`) dan bukti persetujuan OUT-VAL-05 serta nama resmi sumber desil (VAL-002).
+- Walkthrough demo bersama Kelurahan (`docs/prototype/demo-checklist.md`). VAL-002 sudah ditutup (D-076).
 - Uji restore ke laptop lain dengan media eksternal sungguhan (R11.3 baru diuji dengan folder lokal).

@@ -78,6 +78,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('outreach/{outreach}/versions/{version}/preview/{form}', [FormPreviewController::class, 'version'])
         ->whereIn('form', ['mustahik', 'kifayah'])
         ->name('outreaches.versions.preview');
+    // The Carlito files the form previews use (D-075).
+    Route::get('pdf-fonts/{file}', fn (string $file) => response()->file(resource_path("views/pdf/fonts/{$file}"), [
+        'Content-Type' => 'font/ttf',
+        'Cache-Control' => 'private, max-age=604800',
+    ]))->whereIn('file', ['Carlito-Regular.ttf', 'Carlito-Bold.ttf'])->name('pdf-fonts');
     Route::get('outreach/{outreach}/preview/{form}', [FormPreviewController::class, 'draft'])
         ->whereIn('form', ['mustahik', 'kifayah'])
         ->name('outreaches.preview');

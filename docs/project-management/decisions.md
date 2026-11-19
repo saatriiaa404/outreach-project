@@ -1425,6 +1425,60 @@ rujuk keputusan pengganti.
                            dan dicetak 46 mm (dua
                            kali v3). Outreach
                            tetap template v3.
+
+  D-075       LOCKED       Template PDF versi 5:  Persetujuan     Aset font baru sekitar  `outreach.md` 8.2; `mustahik.md` 3;
+                           ketiga dokumen memakai eksplisit       1,3 MB, tanpa           `kifayah.md` 5; kode `web/`
+                           font Carlito (metrik   pemilik proyek  dependensi paket. Paket
+                           setara Calibri pada    atas Carlito    template v5 aktif;
+                           formulir sumber, SIL   dan unduhan     versi yang sudah
+                           Open Font License)     tiga berkasnya, difinalisasi tetap
+                           dengan ukuran sumber   19 November     memakai template yang
+                           (Outreach dan Kifayah  2026.           dicatatnya. Pratinjau
+                           11 pt); tata letak                     di aplikasi memuat font
+                           v3/v4 dipertahankan                    yang sama. Tanpa
+                           dan jarak baris                        perubahan schema.
+                           disesuaikan agar
+                           pembagian halaman sama
+                           dengan sumber. Berkas
+                           Carlito-Regular.ttf,
+                           Carlito-Bold.ttf, dan
+                           OFL.txt dari
+                           repositori resmi
+                           Google Fonts disimpan
+                           di resources/views/pdf
+                           /fonts.
+
+  D-076       LOCKED       Jawaban validasi       Jawaban         Menutup VAL-002 dan     `outreach.md` 3, 9; `database.md`;
+                           pemilik proyek: (1)    eksplisit       butir pending terkait   `scope.md` 4; `demo-checklist.md`;
+                           sumber label desil     pemilik proyek, di scope.md dan         `tasks.md` VAL-002
+                           bernama DTSEN,         19 November     demo-checklist.md.
+                           menggantikan sebutan   2026.           Tanpa perubahan kode
+                           DTST pada D-064 tanpa  OUT-VAL-05      selain sebutan DTSEN
+                           mengubah label; (2)    berupa          pada komentar; tanpa
+                           OUT-VAL-05, posisi     konfirmasi      perubahan schema.
+                           Jenis Outreach dan     lisan tanpa
+                           tata letak PDF,        berkas bukti.
+                           disetujui Kelurahan
+                           secara lisan; (3)
+                           tanda tangan dan
+                           stempel berupa gambar
+                           cukup, tanpa TTE/BSrE;
+                           (4) backup setelah
+                           serah terima tetap
+                           oleh Admin, mingguan,
+                           ke disk eksternal; (5)
+                           data disimpan tanpa
+                           batas waktu dan
+                           koreksi setelah
+                           disahkan melalui
+                           Special Unlock; (6)
+                           aplikasi tetap di satu
+                           komputer untuk
+                           sekarang, hosting
+                           mungkin
+                           dipertimbangkan nanti
+                           sebagai tahap
+                           terpisah.
   -----------------------------------------------------------------------------------------------------------------------------------
 
 ## Template Entri Baru

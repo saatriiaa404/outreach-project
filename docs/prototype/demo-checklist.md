@@ -69,13 +69,13 @@ Hasil uji otomatis per skenario (R11.1, 29 Oktober 2026) dicatat di `docs/engine
 
 Item berikut harus tetap diberi label `PENDING VALIDATION` sampai tersedia bukti atau konfirmasi yang memadai. Jangan menandainya disetujui hanya karena walkthrough berjalan.
 
-- [ ] Persyaratan formal lampiran tambahan berdasarkan jenis bantuan.
-- [ ] Batas ukuran/jumlah lampiran setelah uji kompresi dan upload.
-- [ ] Label/opsi Mustahik yang belum dapat diverifikasi dari sumber.
-- [ ] Persyaratan produksi, termasuk hosting/domain, keamanan operasional, retensi, backup, dan restore.
-- [ ] Kebutuhan akses LAN/multi-pengguna, jika diajukan sebagai tahap terpisah.
+- [x] Persyaratan formal lampiran tambahan berdasarkan jenis bantuan — tidak ada daftar per jenis; "Lampiran lain" (D-064).
+- [x] Batas ukuran/jumlah lampiran setelah uji kompresi dan upload — 10 MB per berkas, 10 lampiran (D-064).
+- [x] Label/opsi Mustahik yang belum dapat diverifikasi dari sumber — dipakai apa adanya (VAL-001, D-064).
+- [ ] Persyaratan produksi, termasuk hosting/domain dan keamanan operasional. Retensi tanpa batas, backup mingguan oleh Admin ke disk eksternal, dan koreksi lewat Special Unlock sudah diputuskan (D-076).
+- [ ] Kebutuhan akses LAN/multi-pengguna, jika diajukan sebagai tahap terpisah. Untuk sekarang satu komputer (D-076).
 - [ ] Integrasi E-Surat/E-Arsip.
-- [ ] Persyaratan digital stamp/tanda tangan digital yang belum dikonfirmasi.
+- [x] Persyaratan digital stamp/tanda tangan digital — gambar tanda tangan dan stempel cukup, tanpa TTE/BSrE (D-076).
 - [ ] Aturan operasional tambahan yang belum didukung Workflow v2.1 atau bukti dari Kelurahan.
 
 ## Penutupan Walkthrough

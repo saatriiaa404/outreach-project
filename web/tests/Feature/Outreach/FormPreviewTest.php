@@ -41,7 +41,11 @@ class FormPreviewTest extends TestCase
             ->assertHeader('X-Frame-Options', 'SAMEORIGIN')
             ->assertSee('FORM SURVEY MUSTAHIK')
             // On screen the body takes the template's own page margins.
-            ->assertSee('body { margin: 7mm 15mm 6mm 15mm; }', false);
+            ->assertSee('body { margin: 7mm 15mm 6mm 15mm; }', false)
+            // The browser loads the PDF fonts over HTTP (D-075).
+            ->assertSee(url('pdf-fonts').'/Carlito-Regular.ttf', false);
+        $this->actingAs($kepala)->get(url('pdf-fonts/Carlito-Regular.ttf'))->assertOk()->assertHeader('Content-Type', 'font/ttf');
+        $this->actingAs($kepala)->get(url('pdf-fonts/OFL.txt'))->assertNotFound();
         $this->actingAs($kepala)->get(route('outreaches.versions.preview', [$outreach, $version, 'kifayah']))
             ->assertOk()
             ->assertSee($version->snapshot_data['client']['nama']);
