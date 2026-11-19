@@ -330,7 +330,7 @@ bukan dari data Outreach terkini.
     `kifayah.pdf` tidak memuat kolom skor, sehingga tidak ada perilaku
     skor yang perlu diterapkan.
 
-Template PDF versi 3 (D-070) meniru tata letak `docs/reference/kifayah.pdf`: A4, lebar kolom dan posisi tabel sesuai sumber, dan logo Baznas di tengah atas setiap halaman. Template versi 4 (D-074) memakai margin kiri dan kanan sama (27 mm) sehingga tabel berada di tengah, kolom centang sesuai posisi pada sumber, tabel Beban Keuangan dengan baris catatan "*Centang ✔ pada kotak pilihan" seperti sumber, dan logo Baznas dua kali lebih besar. Versi yang sudah difinalisasi tetap memakai template yang dicatatnya.
+Template PDF versi 3 (D-070) meniru tata letak `docs/reference/kifayah.pdf`: A4, lebar kolom dan posisi tabel sesuai sumber, dan logo Baznas di tengah atas setiap halaman. Template versi 4 (D-074) memakai margin kiri dan kanan sama (27 mm) sehingga tabel berada di tengah, kolom centang sesuai posisi pada sumber, tabel Beban Keuangan dengan baris catatan "*Centang ✔ pada kotak pilihan" seperti sumber, dan logo Baznas dua kali lebih besar. Template versi 5 memakai font Carlito 11 pt yang setara Calibri sumber (D-075). Versi yang sudah difinalisasi tetap memakai template yang dicatatnya.
 
 ## 6. Aturan Implementasi yang Sudah Dikonfirmasi
 

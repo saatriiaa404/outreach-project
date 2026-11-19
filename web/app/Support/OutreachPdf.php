@@ -30,9 +30,9 @@ class OutreachPdf
      * available so historical documents keep their layout.
      */
     private const VIEWS = [
-        'outreach' => [1 => 'pdf.v1.outreach', 2 => 'pdf.v2.outreach', 3 => 'pdf.v3.outreach'],
-        'mustahik' => [1 => 'pdf.v1.mustahik', 2 => 'pdf.v2.mustahik', 3 => 'pdf.v3.mustahik', 4 => 'pdf.v4.mustahik'],
-        'kifayah' => [1 => 'pdf.v1.kifayah', 2 => 'pdf.v2.kifayah', 3 => 'pdf.v3.kifayah', 4 => 'pdf.v4.kifayah'],
+        'outreach' => [1 => 'pdf.v1.outreach', 2 => 'pdf.v2.outreach', 3 => 'pdf.v3.outreach', 5 => 'pdf.v5.outreach'],
+        'mustahik' => [1 => 'pdf.v1.mustahik', 2 => 'pdf.v2.mustahik', 3 => 'pdf.v3.mustahik', 4 => 'pdf.v4.mustahik', 5 => 'pdf.v5.mustahik'],
+        'kifayah' => [1 => 'pdf.v1.kifayah', 2 => 'pdf.v2.kifayah', 3 => 'pdf.v3.kifayah', 4 => 'pdf.v4.kifayah', 5 => 'pdf.v5.kifayah'],
     ];
 
     /**
@@ -195,8 +195,10 @@ class OutreachPdf
     {
         $margin = preg_match('/@page\s*\{[^}]*margin:\s*([^;}]+)/', $html, $match) === 1 ? trim($match[1]) : '12mm 10mm';
         $style = "<style>@media screen { html { background: #fff; } body { margin: {$margin}; } }</style>";
+        // The browser loads the PDF fonts over HTTP, not from the server's disk.
+        $fonts = str_replace('\\', '/', resource_path('views/pdf/fonts'));
 
-        return str_replace('</head>', $style.'</head>', $html);
+        return str_replace([$fonts.'/', '</head>'], [url('pdf-fonts').'/', $style.'</head>'], $html);
     }
 
     /**

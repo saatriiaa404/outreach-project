@@ -87,7 +87,7 @@ Bagian header PDF sumber diisi dari sumber berikut. Label PDF sumber tidak diuba
 
 **Aturan wajib header (D-048, VAL-005 selesai).** Seluruh field header yang diisi Petugas wajib sebelum Finalisasi: Tanggal survei (`survey_date`), Nama, NIK/No KK, Alamat (Jalan), RT, dan RW Kepala Keluarga. Draft boleh kosong. Tanggal survei terisi awal dari Tanggal Outreach saat form pertama kali dibuka dan tetap dapat diubah. Tombol eksplisit "Salin dari data Klien" menyalin Nama, NIK, dan Alamat Domisili Klien bila Klien memang Kepala Keluarga; penyalinan tidak pernah terjadi otomatis, dan RT/RW diisi manual.
 
-**Format angka (D-071).** NIK/No KK Kepala Keluarga hanya berisi angka dan harus tepat 16 digit saat Finalisasi; Draft boleh menyimpan isian yang belum lengkap. RT dan RW berisi 1 sampai 3 digit angka dan disimpan persis seperti diketik. PDF Mustahik template versi 3 dicetak pada kertas Legal seperti file sumber (D-070); sejak template versi 4 semua dokumen dicetak A4 portrait, Mustahik muat satu halaman dengan logo Baznas lebih besar dan blok tempat, tanggal, serta Surveyor rata tengah (D-074).
+**Format angka (D-071).** NIK/No KK Kepala Keluarga hanya berisi angka dan harus tepat 16 digit saat Finalisasi; Draft boleh menyimpan isian yang belum lengkap. RT dan RW berisi 1 sampai 3 digit angka dan disimpan persis seperti diketik. PDF Mustahik template versi 3 dicetak pada kertas Legal seperti file sumber (D-070); sejak template versi 4 semua dokumen dicetak A4 portrait, Mustahik muat satu halaman dengan logo Baznas lebih besar dan blok tempat, tanggal, serta Surveyor rata tengah (D-074). Sejak template versi 5 memakai font Carlito yang setara Calibri sumber (D-075).
 
 ## 4. Data Konteks dan Batas Perilaku
 

@@ -358,7 +358,7 @@ updated_at
 - Finalisasi melakukan validasi penuh.
 - Field conditional mengikuti business rules form.
 - `desil_1_10` menyimpan pilihan desil 1–10 dan `status_kesejahteraan` diisi
-  otomatis dengan label pasangannya sesuai pembagian resmi DTST (D-019,
+  otomatis dengan label pasangannya sesuai pembagian resmi DTSEN (D-019,
   D-064; pemetaan label ada di `docs/domain/forms/outreach.md`); jangan
   mengubah atau menambah label di luar keputusan tersebut.
 - Total pendapatan dan total pengeluaran dihitung dari source fields.
@@ -1656,7 +1656,7 @@ Bagian berikut belum boleh dianggap final sebelum validasi Kelurahan atau
 penetapan teknis yang memang belum tersedia:
 
 1. ~~Evidence sumber resmi label desil~~: label mengikuti pembagian resmi
-   DTST (D-064).
+   DTSEN (D-064, D-076).
 2. ~~Lampiran tambahan wajib berdasarkan Jenis Outreach~~: tidak ada daftar
    resmi; lampiran di luar empat wajib masuk "Lampiran lain" (D-064).
 3. ~~Batas ukuran dan jumlah file lampiran~~: 10 MB per berkas dan paling
@@ -1784,7 +1784,7 @@ Sebelum implementasi dianggap sesuai baseline, pastikan:
       Bangga Surabaya menghasilkan Outreach beserta halaman lampiran.
 - [ ] Kegagalan render PDF pada approval membuat approval gagal; status tetap
       `MENUNGGU_PENGESAHAN` dan `OUTREACH_COMPLETED` tidak dikirim.
-- [ ] Label desil mengikuti pembagian resmi DTST (D-019, D-064).
+- [ ] Label desil mengikuti pembagian resmi DTSEN (D-019, D-064).
 - [ ] Pending validation tidak di-hard-code sebagai keputusan final.
 
 ---

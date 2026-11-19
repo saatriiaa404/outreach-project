@@ -20,7 +20,7 @@ use InvalidArgumentException;
 class OutreachFormSchema
 {
     /**
-     * Status Kesejahteraan labels per desil from the official DTST division
+     * Status Kesejahteraan labels per desil from the official DTSEN division
      * used by the Kelurahan (D-019, D-064).
      */
     public const DESIL_LABELS = [

@@ -86,7 +86,7 @@ Template memiliki 23 field Data Klien.
 | 22 | Apakah klien punya pinjaman / hutang | Wajib; menentukan apakah field besar hutang berlaku |
 | 23 | Berapa besar pinjaman / hutang | Wajib jika field 22 menunjukkan klien memiliki hutang; tidak berlaku jika klien tidak memiliki hutang |
 
-**Pemetaan Status Kesejahteraan (D-019).** Petugas memilih desil 1–10. Angka disimpan pada `desil_1_10`, dan label diturunkan otomatis ke `status_kesejahteraan` sehingga keduanya tidak dapat saling bertentangan. Tidak ada perubahan schema. Label berikut mengikuti pembagian resmi desil kesejahteraan DTST yang dipakai Kelurahan, sesuai keterangan pemilik proyek pada 29 Oktober 2026 (D-064, menggantikan label awal D-019).
+**Pemetaan Status Kesejahteraan (D-019).** Petugas memilih desil 1–10. Angka disimpan pada `desil_1_10`, dan label diturunkan otomatis ke `status_kesejahteraan` sehingga keduanya tidak dapat saling bertentangan. Tidak ada perubahan schema. Label berikut mengikuti pembagian resmi desil kesejahteraan DTSEN yang dipakai Kelurahan (nama sumber dikonfirmasi pada D-076), sesuai keterangan pemilik proyek pada 29 Oktober 2026 (D-064, menggantikan label awal D-019).
 
 | Desil | Label |
 |---:|---|
@@ -219,7 +219,7 @@ Tanggal pada kalimat pembuka berasal dari Tanggal Outreach yang tersimpan. Hari,
 ### 8.2 Judul dan Type
 
 - Judul utama mengikuti template: `LAPORAN HASIL OUTREACH`.
-- Type ditampilkan di bawah judul sesuai keputusan yang telah dibahas. Sejak template versi 3 (D-070) ditulis rata kiri sebagai `Jenis Outreach : Bantuan <Jenis>`; kata "Bantuan" tidak ditambahkan bila nama Jenis sudah diawali "Bantuan". Kop surat memakai gambar kop Kelurahan (`docs/reference/Kop Manukan.png`), dan margin serta lebar kolom mengikuti `blank_outreach.pdf`.
+- Type ditampilkan di bawah judul sesuai keputusan yang telah dibahas (disetujui, D-076). Sejak template versi 5 seluruh PDF memakai font Carlito yang setara Calibri sumber (D-075). Sejak template versi 3 (D-070) ditulis rata kiri sebagai `Jenis Outreach : Bantuan <Jenis>`; kata "Bantuan" tidak ditambahkan bila nama Jenis sudah diawali "Bantuan". Kop surat memakai gambar kop Kelurahan (`docs/reference/Kop Manukan.png`), dan margin serta lebar kolom mengikuti `blank_outreach.pdf`.
 - Source tidak ditampilkan pada PDF utama Outreach.
 
 ### 8.3 Layout adaptif
@@ -287,7 +287,7 @@ Lampiran harus disertakan sebagai halaman setelah halaman utama PDF Outreach. Pa
 | OUT-VAL-02 | Daftar opsi dropdown untuk field berkategori | **Kebijakan diputuskan (D-025)** — dropdown hanya bila opsi tertulis pada PDF atau ketentuan yang disetujui, selain itu teks bebas (lihat bagian 5). Daftar opsi untuk field lain tetap menunggu ketentuan yang disetujui |
 | OUT-VAL-03 | Apakah Pekerjaan dan Bantuan yang pernah diterima menggunakan dropdown, teks bebas, atau kombinasi | **CLOSED** — D-025 dan D-027. Pekerjaan teks bebas; Bantuan mengisi dua kolom Database v1.1 dari pilihan Ya/Tidak dan uraian teks bebas. Tanpa perubahan schema |
 | OUT-VAL-04 | Lampiran tambahan berdasarkan Type | **CLOSED** — D-064. Tidak ada daftar resmi per Type; lampiran di luar empat wajib masuk "Lampiran lain", maksimal 10 lampiran per Outreach |
-| OUT-VAL-05 | Evidence persetujuan posisi Type dan layout adaptif | Pengguna mengonfirmasi keduanya sudah disetujui Kelurahan; tautkan bukti/artefak persetujuan di catatan evidence gate jika belum tersimpan |
+| OUT-VAL-05 | Evidence persetujuan posisi Type dan layout adaptif | **CLOSED** — D-076. Disetujui Kelurahan secara lisan, dikonfirmasi pemilik proyek 19 November 2026; tidak ada berkas bukti |
 | OUT-VAL-06 | Pemetaan field kendaraan | **CLOSED** — D-020. Input angka per jenis pada kolom Database v1.1; PDF merangkai satu baris dari jenis bernilai lebih dari 0, atau `Tidak ada`. Tanpa perubahan schema |
 | OUT-VAL-07 | Pemetaan `Fasilitas MCK` | **CLOSED** — D-021. Empat nilai (Layak, Kurang layak, Tidak layak, Tidak ada) pada kolom `mck_layak`; nama kolom tetap, bukan boolean |
 | OUT-VAL-09 | Format dan posisi cetak NIP Kepala pada blok pengesahan | **CLOSED** — tata letak dan sumber tanggal (tanggal pengesahan) dikonfirmasi pemilik proyek, 27 Oktober 2026 (bagian 8.4, VAL-004). Letak tanda tangan dicek pada hasil render |
