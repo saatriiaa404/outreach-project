@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import BarChart from '@/components/BarChart.vue';
-import { dashboard } from '@/routes';
 
-export type AdminChartData = {
+export type OutreachChartData = {
     month: string;
     month_label: string;
     total: number;
@@ -19,7 +17,7 @@ export type AdminChartData = {
     }[];
 };
 
-const props = defineProps<{ charts: AdminChartData }>();
+const props = defineProps<{ charts: OutreachChartData }>();
 
 const created = [{ key: 'created', name: 'Outreach', color: 'var(--chart-1)' }];
 
@@ -45,22 +43,10 @@ const trend = computed(() =>
         values: [item.created, item.approved],
     })),
 );
-
-const pick = (event: Event) => {
-    const bulan = (event.target as HTMLInputElement).value;
-
-    if (bulan) {
-        router.get(
-            dashboard.url({ query: { bulan } }),
-            {},
-            { preserveScroll: true, preserveState: true, only: ['charts'] },
-        );
-    }
-};
 </script>
 
 <template>
-    <section class="grid min-w-0 gap-4" data-test="admin-charts">
+    <section class="grid min-w-0 gap-4" data-test="outreach-charts">
         <div class="flex flex-wrap items-end justify-between gap-3">
             <div>
                 <h3 class="font-medium">Grafik Outreach</h3>
@@ -69,16 +55,6 @@ const pick = (event: Event) => {
                     {{ charts.total }} Outreach pada {{ charts.month_label }}.
                 </p>
             </div>
-            <label class="grid gap-1 text-sm">
-                <span class="text-muted-foreground">Bulan</span>
-                <input
-                    type="month"
-                    :value="charts.month"
-                    class="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
-                    data-test="chart-month"
-                    @change="pick"
-                />
-            </label>
         </div>
 
         <div class="min-w-0 rounded-xl border p-4">
