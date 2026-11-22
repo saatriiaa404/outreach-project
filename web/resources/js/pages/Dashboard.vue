@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import AdminCharts from '@/components/AdminCharts.vue';
-import type { AdminChartData } from '@/components/AdminCharts.vue';
 import ColumnFilter from '@/components/ColumnFilter.vue';
 import Heading from '@/components/Heading.vue';
+import OutreachCharts from '@/components/OutreachCharts.vue';
+import type { OutreachChartData } from '@/components/OutreachCharts.vue';
 import { Badge } from '@/components/ui/badge';
 import { dashboard } from '@/routes';
 import { index as archiveIndex } from '@/routes/archive';
@@ -15,6 +15,7 @@ type Status = 'DRAFT' | 'MENUNGGU_PENGESAHAN' | 'PERLU_PERBAIKAN' | 'SELESAI';
 
 const props = defineProps<{
     role: 'PETUGAS' | 'KEPALA' | 'ADMIN';
+    period: { tahun: number; bulan: number; label: string; years: number[] };
     statuses: { status: Status; total: number }[];
     focus: {
         id: number;
@@ -40,7 +41,7 @@ const props = defineProps<{
         archive_pending: number;
         archive_overdue: number;
     } | null;
-    charts: AdminChartData | null;
+    charts: OutreachChartData;
 }>();
 
 defineOptions({
@@ -76,7 +77,38 @@ const filtered = computed(() =>
 const focusTitle = {
     PETUGAS: 'Perlu dikerjakan',
     KEPALA: 'Antrean pengesahan',
-    ADMIN: 'Antrean pengesahan Kepala',
+    ADMIN: '',
+};
+
+const monthNames = [
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
+];
+
+// One Tahun/Bulan filter for the whole page: the status cards and the charts
+// follow it. It rides in the URL next to the table's own column filters.
+const pickPeriod = (param: 'tahun' | 'bulan', event: Event) => {
+    const query = Object.fromEntries(
+        new URLSearchParams(window.location.search),
+    );
+    query.tahun = String(props.period.tahun);
+    query.bulan = String(props.period.bulan);
+    query[param] = (event.target as HTMLSelectElement).value;
+
+    router.get(window.location.pathname, query, {
+        preserveScroll: true,
+        preserveState: true,
+    });
 };
 </script>
 
@@ -84,19 +116,58 @@ const focusTitle = {
     <Head title="Dashboard" />
 
     <div class="flex flex-1 flex-col gap-6 p-4">
-        <Heading
-            title="Dashboard"
-            :description="
-                role === 'PETUGAS'
-                    ? 'Outreach milik Anda per status'
-                    : role === 'KEPALA'
-                      ? 'Antrean pengesahan dan Outreach yang selesai'
-                      : 'Semua Outreach, permintaan Special Unlock, dan arsip'
-            "
-        />
+        <div class="flex flex-wrap items-end justify-between gap-3">
+            <Heading
+                title="Dashboard"
+                :description="
+                    role === 'PETUGAS'
+                        ? 'Outreach milik Anda per status'
+                        : role === 'KEPALA'
+                          ? 'Antrean pengesahan dan Outreach per status'
+                          : 'Semua Outreach, permintaan Special Unlock, dan arsip'
+                "
+            />
+            <div class="flex gap-3" data-test="period-filter">
+                <label class="grid gap-1 text-sm">
+                    <span class="text-muted-foreground">Tahun</span>
+                    <select
+                        :value="period.tahun"
+                        class="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                        data-test="filter-tahun"
+                        @change="pickPeriod('tahun', $event)"
+                    >
+                        <option
+                            v-for="year in period.years"
+                            :key="year"
+                            :value="year"
+                        >
+                            {{ year }}
+                        </option>
+                    </select>
+                </label>
+                <label class="grid gap-1 text-sm">
+                    <span class="text-muted-foreground">Bulan</span>
+                    <select
+                        :value="period.bulan"
+                        class="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                        data-test="filter-bulan"
+                        @change="pickPeriod('bulan', $event)"
+                    >
+                        <option
+                            v-for="(name, index) in monthNames"
+                            :key="name"
+                            :value="index + 1"
+                        >
+                            {{ name }}
+                        </option>
+                    </select>
+                </label>
+            </div>
+        </div>
 
         <section
-            class="grid grid-cols-2 gap-3 md:grid-cols-4"
+            class="grid grid-cols-2 gap-3"
+            :class="statuses.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-4'"
             data-test="status-counts"
         >
             <Link
@@ -151,9 +222,9 @@ const focusTitle = {
             </Link>
         </section>
 
-        <AdminCharts v-if="charts" :charts="charts" />
+        <OutreachCharts :charts="charts" />
 
-        <section class="grid gap-2" data-test="focus">
+        <section v-if="role !== 'ADMIN'" class="grid gap-2" data-test="focus">
             <div class="flex items-center justify-between gap-2">
                 <h3 class="font-medium">{{ focusTitle[role] }}</h3>
                 <Link

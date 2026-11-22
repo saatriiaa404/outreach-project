@@ -20,11 +20,12 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * Minimum dashboard per role (PRD 4.9, D-039): the PETUGAS sees their own
- * Outreach per status, the KEPALA the approval queue and completed
- * Outreach, the ADMIN every status, Special Unlock requests, archive status
- * and monthly charts (D-068). Every count goes through the same visibility
- * as the list.
+ * Dashboard per role (PRD 4.9, D-039, D-068): every role gets the status
+ * cards and the charts for the month picked in the global Tahun/Bulan
+ * filter. The PETUGAS sees only their own Outreach, the KEPALA everything
+ * but Drafts, the ADMIN every status plus Special Unlock requests and
+ * archive status. The PETUGAS and KEPALA also get a work queue; the ADMIN
+ * has none. Every count goes through the same visibility as the list.
  */
 class DashboardController extends Controller
 {
@@ -36,23 +37,24 @@ class DashboardController extends Controller
     public function __invoke(Request $request): Response
     {
         $user = $request->user();
+        $period = $this->period($request);
 
         $counts = Outreach::query()
             ->visibleTo($user)
+            ->whereBetween('outreach_date', [$period->startOfMonth()->toDateString(), $period->endOfMonth()->toDateString()])
             ->selectRaw('status, count(*) as total')
             ->groupBy('status')
             ->pluck('total', 'status');
 
+        // D-039: the KEPALA never sees Drafts, not even as a count.
         $statuses = collect(OutreachStatus::cases())
-            ->reject(fn (OutreachStatus $status) => match ($user->role) {
-                UserRole::Kepala => ! in_array($status, [OutreachStatus::MenungguPengesahan, OutreachStatus::Selesai], true),
-                default => false,
-            })
+            ->reject(fn (OutreachStatus $status) => $user->role === UserRole::Kepala && $status === OutreachStatus::Draft)
             ->map(fn (OutreachStatus $status) => ['status' => $status->value, 'total' => (int) ($counts[$status->value] ?? 0)])
             ->values();
 
         return Inertia::render('Dashboard', [
             'role' => $user->role->value,
+            'period' => $this->periodOptions($user, $period),
             'statuses' => $statuses,
             'focus' => $this->focus($user, $filters = OutreachColumnFilters::from($request), $focusStatus = $this->focusStatus($request, $user)),
             // Column filters of the focus table (D-072).
@@ -63,7 +65,7 @@ class DashboardController extends Controller
                 'statuses' => array_map(fn (OutreachStatus $status) => $status->value, $this->focusStatuses($user)),
             ],
             'admin' => $user->role === UserRole::Admin ? $this->adminSummary() : null,
-            'charts' => $user->role === UserRole::Admin ? $this->adminCharts($this->month($request)) : null,
+            'charts' => $this->charts($user, $period),
         ]);
     }
 
@@ -74,9 +76,12 @@ class DashboardController extends Controller
      */
     private function focusStatuses(User $user): array
     {
-        return $user->role === UserRole::Petugas
-            ? [OutreachStatus::PerluPerbaikan, OutreachStatus::Draft]
-            : [OutreachStatus::MenungguPengesahan];
+        return match ($user->role) {
+            UserRole::Petugas => [OutreachStatus::PerluPerbaikan, OutreachStatus::Draft],
+            UserRole::Kepala => [OutreachStatus::MenungguPengesahan],
+            // The ADMIN has no work queue on the dashboard.
+            UserRole::Admin => [],
+        };
     }
 
     private function focusStatus(Request $request, User $user): ?OutreachStatus
@@ -94,6 +99,10 @@ class DashboardController extends Controller
      */
     private function focus(User $user, array $filters, ?OutreachStatus $status): array
     {
+        if ($user->role === UserRole::Admin) {
+            return [];
+        }
+
         $query = OutreachColumnFilters::apply(Outreach::query()->visibleTo($user), $filters)
             ->whereIn('status', $status ? [$status] : $this->focusStatuses($user))
             ->with('type:id,name');
@@ -103,7 +112,7 @@ class DashboardController extends Controller
             UserRole::Petugas => $query->orderByRaw('status = ? desc', [OutreachStatus::PerluPerbaikan->value])
                 ->latest('updated_at'),
             // The approval queue, oldest submission first.
-            UserRole::Kepala, UserRole::Admin => $query
+            UserRole::Kepala => $query
                 ->orderBy(OutreachVersion::query()->select('finalized_at')->whereColumn('outreach_id', 'outreaches.id')->orderByDesc('version_number')->limit(1)),
         };
 
@@ -119,41 +128,71 @@ class DashboardController extends Controller
     }
 
     /**
-     * The month picked with ?bulan=YYYY-MM, the current one otherwise.
+     * The month picked with ?tahun=YYYY&bulan=M, each falling back to the
+     * current one when missing or malformed.
      */
-    private function month(Request $request): CarbonImmutable
+    private function period(Request $request): CarbonImmutable
     {
-        $value = $request->string('bulan')->toString();
+        $now = now(self::TIMEZONE);
+        $year = $request->string('tahun')->toString();
+        $month = $request->string('bulan')->toString();
 
-        return preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $value) === 1
-            ? CarbonImmutable::parse($value.'-01')->startOfMonth()
-            : now(self::TIMEZONE)->startOfMonth();
+        return CarbonImmutable::create(
+            preg_match('/^(20\d{2}|2100)$/', $year) === 1 ? (int) $year : $now->year,
+            preg_match('/^([1-9]|1[0-2])$/', $month) === 1 ? (int) $month : $now->month,
+            1,
+        )->startOfMonth();
+    }
+
+    /**
+     * What the global Tahun/Bulan filter offers: every year from the user's
+     * oldest visible Outreach to the current year, the picked year always
+     * included.
+     *
+     * @return array{tahun: int, bulan: int, label: string, years: list<int>}
+     */
+    private function periodOptions(User $user, CarbonImmutable $period): array
+    {
+        $currentYear = now(self::TIMEZONE)->year;
+        $oldest = Outreach::query()->visibleTo($user)->min('outreach_date');
+        $first = min($period->year, $oldest ? (int) substr((string) $oldest, 0, 4) : $currentYear, $currentYear);
+
+        return [
+            'tahun' => $period->year,
+            'bulan' => $period->month,
+            'label' => $period->translatedFormat('F Y'),
+            'years' => range(max($period->year, $currentYear), $first),
+        ];
     }
 
     /**
      * Counted by the Outreach date the Petugas entered; approvals by the
-     * moment the Kepala approved, in local time.
+     * moment the Kepala approved, in local time. Only Outreach this user may
+     * see is counted.
      *
      * @return array<string, mixed>
      */
-    private function adminCharts(CarbonImmutable $month): array
+    private function charts(User $user, CarbonImmutable $month): array
     {
         $start = $month->copy()->startOfMonth();
         $end = $month->copy()->endOfMonth();
         $trendStart = $start->copy()->subMonths(11);
 
-        $inMonth = Outreach::query()->whereBetween('outreach_date', [$start->toDateString(), $end->toDateString()]);
+        $visible = fn () => Outreach::query()->visibleTo($user);
+
+        $inMonth = $visible()->whereBetween('outreach_date', [$start->toDateString(), $end->toDateString()]);
         $perDay = (clone $inMonth)->selectRaw('day(outreach_date) as day, count(*) as total')->groupBy('day')->pluck('total', 'day');
         $perType = (clone $inMonth)->selectRaw('type_id, count(*) as total')->groupBy('type_id')->pluck('total', 'type_id');
         $perSource = (clone $inMonth)->selectRaw('source_id, count(*) as total')->groupBy('source_id')->pluck('total', 'source_id');
 
-        $created = Outreach::query()
+        $created = $visible()
             ->whereBetween('outreach_date', [$trendStart->toDateString(), $end->toDateString()])
             ->selectRaw("date_format(outreach_date, '%Y-%m') as month, count(*) as total")
             ->groupBy('month')
             ->pluck('total', 'month');
         $approved = OutreachApproval::query()
             ->where('decision', OutreachApproval::APPROVED)
+            ->whereIn('outreach_id', $visible()->select('id'))
             ->whereBetween('decided_at', [$trendStart->copy()->shiftTimezone(self::TIMEZONE)->utc(), $end->copy()->endOfDay()->shiftTimezone(self::TIMEZONE)->utc()])
             ->pluck('decided_at')
             ->countBy(fn ($at) => CarbonImmutable::parse($at)->setTimezone(self::TIMEZONE)->format('Y-m'));

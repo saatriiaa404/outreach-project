@@ -14,7 +14,7 @@ export type BarRow = { label: string; tooltip?: string; values: number[] };
 export type BarSeries = { key: string; name: string; color: string };
 
 // Vertical bars over days or months (D-068); ranked categories are drawn
-// as labelled bars in AdminCharts.
+// as labelled bars in OutreachCharts.
 const props = withDefaults(
     defineProps<{
         rows: BarRow[];
